@@ -1,0 +1,71 @@
+ [
+   {
+     "name": "data-container",
+     "Image": "lukewendling\/data-container:1",
+     "DockerFilePath": "",
+     "Hostname": "data-container"
+   },
+   {
+     "name": "mongo",
+     "Image": "jreeme\/mongo:2.6",
+     "DockerFilePath": "docker\/mongo\/2.6",
+     "Hostname": "mongo",
+     "HostConfig": {
+       "VolumesFrom": [
+         "data-container"
+       ],
+       "PortBindings": {
+         "27017\/tcp": [
+           {
+             "HostPort": "27017"
+           }
+         ]
+       }
+     }
+   },
+  {
+     "name": "extract",
+     "Image": "jreeme/strongloop:12",
+     "DockerFilePath": "docker/strong-pm",
+     "Hostname": "extract",
+     "ExposedPorts": {
+       "3001/tcp": {}
+     },
+     "HostConfig": {
+       "Links": [
+         "mongo:mongo"
+       ],
+       "PortBindings": {
+         "3001/tcp": [
+           {
+             "HostPort": "3004"
+           }
+         ],
+         "8701/tcp": [
+           {
+             "HostPort": "8701"
+           }
+         ]
+       }
+     },
+     "ExpressApps": [
+       {
+         "GitUrl": "https://github.com/justinlueders/extract.git",
+         "GitSrcBranchName": "master",
+         "StrongLoopBranchName": "deploy",
+         "StrongLoopServerUrl": "http://localhost:8701",
+         "ServiceName": "extract",
+         "Scripts":[
+           {
+             "RelativeWorkingDir":".",
+             "Command": "bower",
+             "Args":[
+               "install",
+               "--config.interactive=false"
+             ]
+           }
+         ]
+       }
+     ]
+   }
+ ]

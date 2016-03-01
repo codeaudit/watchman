@@ -1,0 +1,11 @@
+extends /modules/core/views/layouts/layout
+block content
+   .row
+      .col-md-6.col-md-offset-3
+         form(role='form' ng-controller='CoreCtrl')
+            .form-group
+               label(for='dataString') dataString
+               input#dataString.form-control(type='text', name='dataString', ng-model="request_model.dataString")
+
+            button.btn.btn-default(ng-click="submit()") Submit
+

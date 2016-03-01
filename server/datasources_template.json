@@ -1,0 +1,6 @@
+{
+  "mem_db": {
+    "name": "mem_db",
+    "connector": "memory"
+  }
+}
