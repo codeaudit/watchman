@@ -35,5 +35,9 @@
   "extract": {
     "dataSource": null,
     "public": true
+  },
+  "geocoder": {
+    "dataSource": null,
+    "public": true
   }
 }

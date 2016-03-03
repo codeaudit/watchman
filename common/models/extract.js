@@ -36,8 +36,8 @@ module.exports = function(Extract) {
         console.log("StanNER Extractor POST received");
         try {
             textract.fromBufferWithMime('text/html', new Buffer(req.body.dataString), function (err, data) {
-                var filePath = path.join(__dirname, relativeUploadPath + "/temp");
-                console.log("Entering DW StanNER Extractor for trail: " + req.body.dwTrailUrlId +",requester:" + req.body.requester);
+                var filePath = path.join(__dirname, relativeUploadPath + "/data.txt");
+                console.log("Entering DW StanNER Extractor");
 
                 fs.writeFile(filePath, data, function(err) {
                     if(err) {

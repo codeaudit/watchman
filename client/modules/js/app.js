@@ -1,5 +1,5 @@
 
-angular.module('rancor', [
+angular.module('eventParser', [
     'ngResource',
     'lbServices',
     'com.module.core'

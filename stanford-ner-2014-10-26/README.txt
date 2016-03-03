@@ -32,7 +32,7 @@ For questions about this distribution, please contact Stanford's JavaNLP group
 at java-nlp-support@lists.stanford.edu.  We provide assistance on a best-effort
 basis.
 
-TUTORIAL
+TUTORIALbower install
 
 Quickstart guidelines, primarily for end users who wish to use the included NER
 models, are below.  For further instructions on training your own NER model,

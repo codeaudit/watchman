@@ -1,1 +1,1 @@
-angular.module('com.module.core',[]);
+angular.module('com.module.core',['leaflet-directive']);
