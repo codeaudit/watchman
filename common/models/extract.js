@@ -86,7 +86,7 @@ module.exports = function(Extract) {
                                 return;
                             }
                             request({
-                                url:  "http://localhost:3003/api/geocoder/geocode?id=" + obj.id
+                                url:  "http://localhost:3001/api/geocoder/geocode?id=" + obj.id
                             }, function (error, response) {
                                 if (response) {
                                     if(response.statusCode != 200 ){
