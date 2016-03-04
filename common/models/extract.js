@@ -39,7 +39,7 @@ module.exports = function(Extract) {
         res.status(200).send("processing post");
         try {
             textract.fromBufferWithMime('text/html', new Buffer(req.body.dataString), function (err, data) {
-                var filePath = path.join(__dirname, relativeUploadPath + "/data.txt");
+                var filePath = path.join(__dirname, relativeUploadPath + "/data" + Date.now() + ".txt");
                 console.log("Entering DW StanNER Extractor");
 
                 fs.writeFile(filePath, data, function(err) {
