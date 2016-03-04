@@ -25,8 +25,8 @@
   },
   {
     "name": "EventParser",
-    "Image": "jreeme/sljava",
-    "DockerFilePath": "docker/strong-pm-java8",
+    "Image": "jreeme\/sljava",
+    "DockerFilePath": "docker\/strong-pm-java8",
     "Hostname": "EventParser",
     "ExposedPorts": {
       "3001/tcp": {}
@@ -43,7 +43,7 @@
         ],
         "8701/tcp": [
           {
-            "HostPort": "8702"
+            "HostPort": "8701"
           }
         ]
       }
