@@ -7,7 +7,7 @@ angular.module('com.module.core')
         $scope.eventCount = 0;
 
         $scope.request_model = {
-            'dataString':'This is a test string rocking all the way to 1st and Congress, Austin Tx.'
+            'dataString':"North Korea leader Kim Jong Un ordered his country to be ready to use its nuclear weapons at any time"
         };
 
         $scope.submit = function(){
@@ -38,10 +38,11 @@ angular.module('com.module.core')
 
             ParsedEvent.find(whereClause).$promise.then(function(parsedEvents){
                 if(parsedEvents.length===0){
+                    $scope.removeMarkers();
                     return;
                 }
                 $scope.removeMarkers();
-                $scope.addEvents(parsedEvents);
+                $scope.addEvents(JSON.parse(JSON.stringify(parsedEvents)));
             });
         },5000);
 

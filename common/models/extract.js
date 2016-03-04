@@ -53,14 +53,20 @@ module.exports = function(Extract) {
                     ner.fromFile(filePath, function(entities) {
                         console.log(entities);
 
-                        var message = req.body.dataString;
+                        var message = '';
 
                         if(entities.PERSON){
-                            message = entities.PERSON[0];
+                            message += 'PERSON:' +entities.PERSON[0] + "</br>";
                         }
-                        else if(entities.ORGANIZATION){
-                            message = entities.ORGANIZATION[0];
+                        if(entities.LOCATION){
+                            message += 'LOCATION:' +entities.LOCATION[0] + "</br>";
                         }
+
+                        if(entities.ORGANIZATION){
+                            message += 'ORG:' +entities.ORGANIZATION[0] + "</br>";
+                        }
+
+                        message += 'SOURCE:' + req.body.dataString;
 
                         var newEvent = {
                             'people':entities.PERSON,

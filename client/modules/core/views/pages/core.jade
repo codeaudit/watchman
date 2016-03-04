@@ -12,3 +12,6 @@ block content
                button.btn.btn-default(ng-click="submit()") Submit
 
             leaflet(style="height:512px", markers="markers")
+            form(role='form', action='/api/parsedEvents/destroy', method='get', target="hiddenFrame")
+               button.btn.btn-default(type='submit') Destroy all data
+            iframe(name="hiddenFrame", style="display:none;width='0';height='0'")
