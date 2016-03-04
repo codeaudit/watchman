@@ -14,22 +14,22 @@
     ]
   },
   "User": {
-    "dataSource": "mem_db"
+    "dataSource": "db"
   },
   "AccessToken": {
-    "dataSource": "mem_db",
+    "dataSource": "db",
     "public": false
   },
   "ACL": {
-    "dataSource": "mem_db",
+    "dataSource": "db",
     "public": false
   },
   "RoleMapping": {
-    "dataSource": "mem_db",
+    "dataSource": "db",
     "public": false
   },
   "Role": {
-    "dataSource": "mem_db",
+    "dataSource": "db",
     "public": false
   },
   "extract": {
@@ -41,7 +41,7 @@
     "public": true
   },
   "parsedEvent": {
-    "dataSource": "mem_db",
+    "dataSource": "db",
     "public": true
   }
 }
