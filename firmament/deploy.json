@@ -24,10 +24,10 @@
     }
   },
   {
-    "name": "stanford",
+    "name": "EventParser",
     "Image": "jreeme/sljava",
     "DockerFilePath": "docker/strong-pm-java8",
-    "Hostname": "stanford",
+    "Hostname": "EventParser",
     "ExposedPorts": {
       "3001/tcp": {}
     },
