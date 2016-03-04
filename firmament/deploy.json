@@ -50,11 +50,11 @@
      },
      "ExpressApps": [
        {
-         "GitUrl": "https://github.com/justinlueders/extract.git",
+         "GitUrl": "https://github.com/justinlueders/entityExtractor.git",
          "GitSrcBranchName": "master",
          "StrongLoopBranchName": "deploy",
          "StrongLoopServerUrl": "http://localhost:8701",
-         "ServiceName": "extract",
+         "ServiceName": "eventParser",
          "Scripts":[
            {
              "RelativeWorkingDir":".",
