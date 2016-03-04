@@ -39,5 +39,9 @@
   "geocoder": {
     "dataSource": null,
     "public": true
+  },
+  "parsedEvent": {
+    "dataSource": "mem_db",
+    "public": true
   }
 }

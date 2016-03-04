@@ -1,0 +1,51 @@
+{
+  "name": "parsedEvent",
+  "plural": "parsedEvents",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "lat": {
+      "type": "number"
+    },
+    "lng": {
+      "type": "number"
+    },
+    "people": {
+      "type": [
+        "string"
+      ]
+    },
+    "organizations": {
+      "type": [
+        "string"
+      ]
+    },
+    "dates": {
+      "type": [
+        "date"
+      ]
+    },
+    "locations": {
+      "type": [
+        "string"
+      ]
+    },
+    "message": {
+      "type": "string"
+    },
+    "sourceText": {
+      "type": "string"
+    },
+    "geoCoded": {
+      "type": "boolean",
+      "default":false
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

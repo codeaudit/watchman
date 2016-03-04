@@ -1,5 +1,5 @@
 angular.module('com.module.core')
-    .controller('CoreCtrl',['$scope','$http',function($scope,$http) {
+    .controller('CoreCtrl',['$scope','$http','ParsedEvent',function($scope,$http,ParsedEvent) {
         angular.extend($scope, {
             markers: {}
         });
@@ -14,33 +14,6 @@ angular.module('com.module.core')
 
             $http.post("/api/extract/process", $scope.request_model).success(function(data, status) {
                 console.log(data);
-                if(!data){
-                    return;
-                }
-                $scope.eventCount++;
-                var newEvent = {
-                    'id':$scope.eventCount.toString(),
-                    'people':data.PERSON,
-                    'organizations':data.ORGANIZATION,
-                    'when':data.DATE,
-                    'where':data.LOCATION,
-                    'message':$scope.request_model.dataString
-                };
-                if(data.LOCATION && data.LOCATION.length > 0){
-                    $scope.extractLocation(data.LOCATION[0],newEvent);
-                }
-            })
-        };
-
-        $scope.extractLocation = function(locationString,newEvent){
-            $http.get("/api/geocoder/geocode?locationString=" + locationString).success(function(data, status) {
-                console.log(data);
-                newEvent.lat = data.latitude;
-                newEvent.lng = data.longitude;
-                var newEvents = {};
-                newEvents.id = newEvent;
-                $scope.removeMarkers();
-                $scope.addEvents(newEvents);
             })
         };
 
@@ -52,6 +25,24 @@ angular.module('com.module.core')
 
         $scope.removeMarkers = function() {
             $scope.markers = {};
-        }
+        };
+
+        setInterval(function(){
+            var whereClause={
+                filter: {
+                    where: {
+                        geoCoded:true
+                    }
+                }
+            };
+
+            ParsedEvent.find(whereClause).$promise.then(function(parsedEvents){
+                if(parsedEvents.length===0){
+                    return;
+                }
+                $scope.removeMarkers();
+                $scope.addEvents(parsedEvents);
+            });
+        },5000);
 
     }]);
