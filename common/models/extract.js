@@ -34,11 +34,9 @@ module.exports = function(Extract) {
       };
     };
 
-    Extract.processPost = function(req,res, cb) {
-        console.log("StanNER Extractor POST received");
-        res.status(200).send("processing post");
+    Extract.sendToNer = function(data){
         try {
-            textract.fromBufferWithMime('text/html', new Buffer(req.body.dataString), function (err, data) {
+            textract.fromBufferWithMime('text/html', new Buffer(data), function (err, data) {
                 var filePath = path.join(__dirname, relativeUploadPath + "/data" + Date.now() + ".txt");
                 console.log("Entering DW StanNER Extractor");
 
@@ -66,7 +64,7 @@ module.exports = function(Extract) {
                             message += 'ORG:' +entities.ORGANIZATION[0] + "</br>";
                         }
 
-                        message += 'SOURCE:' + req.body.dataString;
+                        message += 'SOURCE:' + data;
 
                         var newEvent = {
                             'people':entities.PERSON,
@@ -74,7 +72,7 @@ module.exports = function(Extract) {
                             'dates':entities.DATE,
                             'locations':entities.LOCATION,
                             'message':message,
-                            'sourceText':req.body.dataString,
+                            'sourceText':data,
                             'lat':null,
                             'lng':null
                         };
@@ -110,9 +108,18 @@ module.exports = function(Extract) {
             });
         }
         catch (getError) {
-          console.log("Error during stanNER extraction");
-          console.log(getError);
+            console.log("Error during stanNER extraction");
+            console.log(getError);
         }
+    };
+
+    Extract.processPost = function(req,res, cb) {
+        console.log("StanNER Extractor POST received");
+        cb(null,"processing post");
+        if(!req.body || !req.body.dataString){
+            return;
+        }
+        Extract.sendToNer(req.body.dataString);
   };
 
   Extract.remoteMethod(
@@ -126,5 +133,44 @@ module.exports = function(Extract) {
       http: {path: '/process',verb: 'post'}
     }
   );
+
+    Extract.processPostBlock = function(req,res, cb) {
+        console.log("Block Received");
+        cb(null,"Processing");
+        try {
+            var data = req.body.dataString;
+            var result = data.match( /[^\.!\?]+[\.!\?]+/g );
+            result.forEach(function(dataString){
+                if(dataString < 10){
+                    return;
+                }
+                request.post({
+                    url:  "http://localhost:3001/api/extract/process",
+                    body:{dataString:dataString},
+                    json:true
+                }, function (error) {
+                    if (error) {
+                        console.log("error creating event: " + error);
+                    }
+                });
+            })
+        }
+        catch (getError) {
+            console.log("Error during stanNER extraction");
+            console.log(getError);
+        }
+    };
+
+    Extract.remoteMethod(
+        'processPostBlock',
+        {
+            accepts: [
+                {arg: 'req', type: 'object', 'http': {source: 'req'}},
+                {arg: 'res', type: 'object', 'http': {source: 'res'}}
+            ],
+            returns: {arg: 'data', root:true},
+            http: {path: '/processBlock',verb: 'post'}
+        }
+    );
 
 };
