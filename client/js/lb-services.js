@@ -1,14 +1,3 @@
-// CommonJS package manager support
-if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.exports === exports) {
-  // Export the *name* of this Angular module
-  // Sample usage:
-  //
-  //   import lbServices from './lb-services';
-  //   angular.module('app', [lbServices]);
-  //
-  module.exports = "lbServices";
-}
-
 (function(window, angular, undefined) {'use strict';
 
 var urlBase = "/api";
@@ -2448,6 +2437,43 @@ module.factory(
 
         /**
          * @ngdoc method
+         * @name lbServices.TextFeed#stopFeeds
+         * @methodOf lbServices.TextFeed
+         *
+         * @description
+         *
+         * <em>
+         * (The remote method definition does not provide any description.)
+         * </em>
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `req` – `{object=}` - 
+         *
+         *  - `res` – `{object=}` - 
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `TextFeed` object.)
+         * </em>
+         */
+        "stopFeeds": {
+          url: urlBase + "/textFeeds/stop",
+          method: "GET"
+        },
+
+        /**
+         * @ngdoc method
          * @name lbServices.TextFeed#destroyData
          * @methodOf lbServices.TextFeed
          *
@@ -2674,13 +2700,9 @@ module
     // Note: LocalStorage converts the value to string
     // We are using empty string as a marker for null/undefined values.
     function save(storage, name, value) {
-      try {
-        var key = propsPrefix + name;
-        if (value == null) value = '';
-        storage[key] = value;
-      } catch(err) {
-        console.log('Cannot access local/session storage:', err);
-      }
+      var key = propsPrefix + name;
+      if (value == null) value = '';
+      storage[key] = value;
     }
 
     function load(name) {

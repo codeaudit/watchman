@@ -1,20 +1,20 @@
 extends /modules/core/views/layouts/layout
 block content
-   .row
-      .col-md-6.col-md-offset-3
-         div(ng-controller='CoreCtrl')
-            form(role='form' )
-               .form-group
-                  label(for='dataString') dataString
-                  input#dataString.form-control(type='text', name='dataString', ng-model="request_model.dataString")
+  .row
+    .col-md-6.col-md-offset-3
+      div(ng-controller='CoreCtrl')
+        form(role='form' )
+          .form-group
+            label(for='dataString') dataString
+            input#dataString.form-control(type='text', name='dataString', ng-model="request_model.dataString")
 
 
-               button.btn.btn-default(ng-click="submit()") Submit
+        button.btn.btn-default(ng-click="submit()") Submit
 
-               button.btn.btn-default(ng-click="processNewsFeed(true)") Start News Feed
-               button.btn.btn-default(ng-click="processNewsFeed(false)") Stop News Feed
+        button.btn.btn-default(ng-click="processNewsFeed(true)") Start News Feed
+        button.btn.btn-default(ng-click="processNewsFeed(false)") Stop News Feed
 
-            leaflet(style="height:512px", markers="markers")
-            form(role='form', action='/api/parsedEvents/destroy', method='get', target="hiddenFrame")
-               button.btn.btn-default(type='submit') Destroy all data
-            iframe(name="hiddenFrame", style="display:none;width='0';height='0'")
+        leaflet(style="height:512px", markers="markers")
+        form(role='form', action='/api/parsedEvents/destroy', method='get', target="hiddenFrame")
+          button.btn.btn-default(type='submit') Destroy all data
+        iframe(name="hiddenFrame", style="display:none;width='0';height='0'")

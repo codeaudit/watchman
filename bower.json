@@ -1,5 +1,5 @@
 {
-  "name": "Entity Extractor",
+  "name": "entity-extractor",
   "description": "parses events from plain text",
   "main": "server/server.js",
   "authors": [
@@ -10,8 +10,11 @@
   "private": true,
   "dependencies": {
     "vis": "~4.12.0",
-    "angular": "1.3.12",
-    "angular-resource": "1.3.12",
-    "lodash": "^4.6.1"
+    "angular": "1.4.9",
+    "angular-resource": "1.4.9",
+    "lodash": "~4.6.1"
+  },
+  "resolutions": {
+    "angular": "1.4.9"
   }
 }

@@ -1,16 +1,26 @@
 {
-  "name": "sample_extractor",
+  "name": "entity-extractor",
+  "description": "parses events from plain text",
   "version": "1.0.0",
   "main": "server/server.js",
   "scripts": {
-    "pretest": "jshint ."
+    "pretest": "jshint .",
+    "predev": "npm install && bower install",
+    "dev": "nodemon server/server.js -w server -w common -i server/datasources.json --ext js,json"
+  },
+  "private": true,
+  "engines": {
+    "node": "4.2.x",
+    "npm": "2.14.x"
   },
   "dependencies": {
     "body-parser": "^1.15.0",
     "compression": "^1.0.3",
     "cors": "^2.5.2",
+    "delayed-stream": "^1.0.0",
     "feedparser": "^1.1.4",
     "jade": "^1.11.0",
+    "kue": "^0.10.5",
     "loopback": "^2.22.0",
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^2.1.0",
@@ -29,7 +39,6 @@
   },
   "repository": {
     "type": "",
-    "url": ""
-  },
-  "description": "sample_extractor"
+    "url": "https://github.com/justinlueders/entityExtractor"
+  }
 }
