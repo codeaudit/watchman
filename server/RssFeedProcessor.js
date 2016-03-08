@@ -21,21 +21,20 @@ module.exports = class RssFeedProcessor{
     processFeed(rssFeedProcessor){
         var feedParser = new FeedParser();
         feedParser.on('readable',rssFeedProcessor.processFeedReadable);
-
         request.get(rssFeedProcessor.textFeedUrl)
-        .on('error',function(error) {
-            if (error) {
-                console.log("error processing feed " + rssFeedProcessor.textFeedUrl);
-                return;
-            }
-        }).pipe(feedParser);
+            .on('error',function(error) {
+                if (error) {
+                    console.log("error processing feed " + rssFeedProcessor.textFeedUrl);
+                    return;
+                }
+            }).pipe(feedParser);
     }
 
     processFeedReadable(){
         var item;
         while (item = this.read()) {
             request.post({
-                url:  "http://localhost:3003/api/extract/process",
+                url:  "http://localhost:3001/api/extract/process",
                 body:{dataString:item.description},
                 json:true
             }, function (error) {
