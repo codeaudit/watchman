@@ -37,7 +37,7 @@ module.exports = class RssFeedProcessor{
           function() {
             delayed.pipe(feedParser);
           },
-          1000);
+          5000);
       })
       // .pipe(feedParser);
   }
