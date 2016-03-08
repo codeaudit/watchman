@@ -1,6 +1,6 @@
 "use strict";
 
-var RSS = require('../../server/RssFeedProcessor.js');
+var RSS = require('../../server/feed_processors/RssFeedProcessor.js');
 var textFeedList = [];
 
 module.exports = function(TextFeed) {
