@@ -12,6 +12,7 @@ module.exports = function(TextFeed) {
 
     TextFeed.find().then(function(feeds){
       var FeedClass, textFeed;
+      //expects textfeed.feedType to match feed-processors/ file names
       feeds.forEach(function(feed){
         FeedClass = require('../../server/feed-processors/' + feed.feedType.toLowerCase() + '.js');
         textFeed = new FeedClass(feed);
