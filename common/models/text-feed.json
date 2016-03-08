@@ -1,0 +1,30 @@
+{
+  "name": "textFeed",
+  "plural": "textFeeds",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "url": {
+      "type": "string",
+      "required": true
+    },
+    "feedType": {
+      "type": "string",
+      "required": true
+    },
+    "locale": {
+      "type": "string"
+    },
+    "interval": {
+      "type": "number",
+      "default":60000
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

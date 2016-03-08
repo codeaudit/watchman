@@ -120,7 +120,7 @@ module.exports = function(Extract) {
             return;
         }
         Extract.sendToNer(req.body.dataString);
-  };
+    };
 
   Extract.remoteMethod(
     'processPost',

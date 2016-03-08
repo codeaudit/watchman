@@ -9,6 +9,7 @@
     "body-parser": "^1.15.0",
     "compression": "^1.0.3",
     "cors": "^2.5.2",
+    "feedparser": "^1.1.4",
     "jade": "^1.11.0",
     "loopback": "^2.22.0",
     "loopback-boot": "^2.6.5",

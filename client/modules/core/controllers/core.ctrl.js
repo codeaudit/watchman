@@ -17,7 +17,22 @@ angular.module('com.module.core')
             })
         };
 
-        $scope.processNewsFeed = function() {
+        $scope.processNewsFeed = function(start) {
+
+            if(!start){
+                $http.get("/api/textFeeds/stop")
+                    .then(function(data, status) {
+                        console.log(data);
+                    })
+                    .catch(console.error);
+                return;
+            }
+
+            $http.get("/api/textFeeds/start")
+                .then(function(data, status) {
+                    console.log(data);
+                })
+                .catch(console.error);
 
             // dump the sections if we want to filter below
             $http.get('http://api.nytimes.com/svc/news/v3/content/section-list?api-key=238cd8a60d87d3b49ce118ef1d94850c:8:74624285')
@@ -28,7 +43,7 @@ angular.module('com.module.core')
                 $http.get('http://api.nytimes.com/svc/news/v3/content/all/all/48?offset=' + i*20 + 
                     '&api-key=238cd8a60d87d3b49ce118ef1d94850c:8:74624285')
                 .then(function(data) {
-                    console.log(data)
+                    console.log(data);
                     var submissions = [];
                     var results = data.data.results;
                     results.forEach(function(res) {
@@ -38,8 +53,8 @@ angular.module('com.module.core')
                             //     time: res.created_date,
                             //     locations: geo_facet.join('|'),
                             // };
-                            var news = [res.abstract, res.title, res.created_date, res.geo_facet.toString()].join('|')
-                            console.log(news)
+                            var news = [res.abstract, res.title, res.created_date, res.geo_facet.toString()].join('|');
+                            console.log(news);
                             submissions.push(news);
                         }
                     });

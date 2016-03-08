@@ -11,7 +11,8 @@ block content
 
                button.btn.btn-default(ng-click="submit()") Submit
 
-               button.btn.btn-default(ng-click="processNewsFeed()") News Feed
+               button.btn.btn-default(ng-click="processNewsFeed(true)") Start News Feed
+               button.btn.btn-default(ng-click="processNewsFeed(false)") Stop News Feed
 
             leaflet(style="height:512px", markers="markers")
             form(role='form', action='/api/parsedEvents/destroy', method='get', target="hiddenFrame")

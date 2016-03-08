@@ -41,7 +41,7 @@
     },
     "geoCoded": {
       "type": "boolean",
-      "default":false
+      "default": false
     }
   },
   "validations": [],
