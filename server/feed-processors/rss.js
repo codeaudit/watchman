@@ -1,17 +1,13 @@
 "use strict";
 var FeedParser = require('feedparser')
   , request = require('request')
-  , DelayedStream = require('delayed-stream')
-  , queue = require('queue');
+  , DelayedStream = require('delayed-stream');
 
 
 module.exports = class RssFeedProcessor{
 
   constructor(textFeed){
     this.textFeedUrl = textFeed.url;
-    this.queue = queue();
-    this.queue.concurrency=2;
-
   }
 
   startFeed(){
@@ -25,7 +21,10 @@ module.exports = class RssFeedProcessor{
   processFeed(){
     var context = this;
     var feedParser = new FeedParser();
-    feedParser.on('readable',function(){this.processFeedReadable(this)});
+    feedParser.on('readable',function()
+    {
+      context.processFeedReadable(feedParser);
+    });
     request.get(this.textFeedUrl)
       .on('error',function(err) {
         if (err) {
@@ -40,18 +39,17 @@ module.exports = class RssFeedProcessor{
           function() {
             delayed.pipe(feedParser);
           },
-          5000);
+          0);
       });
       // .pipe(feedParser);
   }
 
-  processFeedReadable(rssFeedProcessor){
+  processFeedReadable(feedParser){
     var item;
-    while (item = this.read()) {
+    while (item = feedParser.read()) {
       if(!item || !item.description){return;}
 
-      rssFeedProcessor.queue.push(function() {
-        request.post({
+      request.post({
           url: "http://localhost:3001/api/extract/process",
           body: {dataString: item.description},
           json: true
@@ -60,8 +58,7 @@ module.exports = class RssFeedProcessor{
             console.error("error creating event:", err);
           }
         });
-      });
-    }
-    rssFeedProcessor.queue.start();
+      }
+
   }
 };

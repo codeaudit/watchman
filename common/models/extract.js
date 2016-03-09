@@ -5,7 +5,9 @@ var app = require('../../server/server'),
     mkdirp = require('mkdirp'),
     Ner = require('node-ner'),
     request = require('request'),
-    textract = require('textract');
+    textract = require('textract'),
+    promiseQueue = [],
+    promiseRunning = false;
 
 
 mkdirp(path.join(__dirname, relativeUploadPath), function (err) {
@@ -18,6 +20,20 @@ module.exports = function(Extract) {
     var extractorName = "stanford-ner";
 
     Extract.extractionMap = {};
+
+    Extract.processPromises = function(){
+      setInterval(function(){
+        if(promiseRunning){
+          return;
+        }
+        var next = promiseQueue.shift();
+        if(next){
+          next();
+        }
+      },500);
+    };
+
+    Extract.processPromises();
 
     Extract.createOrUpdateExtraction = function(name,value,dwTrailUrlId,requester){
       if(Extract.extractionMap[value]){
@@ -35,82 +51,92 @@ module.exports = function(Extract) {
     };
 
     Extract.sendToNer = function(data){
-        try {
+        return new Promise(function(resolve,reject){
+          try {
             textract.fromBufferWithMime('text/html', new Buffer(data), function (err, data) {
-                var filePath = path.join(__dirname, relativeUploadPath + "/data" + Date.now() + ".txt");
-                console.log("Entering DW StanNER Extractor");
+              var filePath = path.join(__dirname, relativeUploadPath + "/data" + Date.now() + ".txt");
+              console.log("Entering DW StanNER Extractor");
 
-                fs.writeFile(filePath, data, function(err) {
-                    if(err) {
-                        return console.log(err);
-                    }
-                    var ner = new Ner({
-                        install_path:	path.join(__dirname, '../../stanford-ner-2014-10-26')
-                    });
-
-                    ner.fromFile(filePath, function(entities) {
-                        console.log(entities);
-
-                        var message = '';
-
-                        if(entities.PERSON){
-                            message += 'PERSON:' +entities.PERSON[0] + "</br>";
-                        }
-                        if(entities.LOCATION){
-                            message += 'LOCATION:' +entities.LOCATION[0] + "</br>";
-                        }
-
-                        if(entities.ORGANIZATION){
-                            message += 'ORG:' +entities.ORGANIZATION[0] + "</br>";
-                        }
-
-                        message += 'SOURCE:' + data;
-
-                        var newEvent = {
-                            'people':entities.PERSON,
-                            'organizations':entities.ORGANIZATION,
-                            'dates':entities.DATE,
-                            'locations':entities.LOCATION,
-                            'message':message,
-                            'sourceText':data,
-                            'lat':null,
-                            'lng':null
-                        };
-
-                        var parsedEvent = app.models.ParsedEvent;
-                        parsedEvent.create(newEvent,function(err,obj){
-                            if(!obj || err){
-                                console.log("error creating event: " + err);
-                                return;
-                            }
-                            request({
-                                url:  "http://localhost:3001/api/geocoder/geocode?id=" + obj.id
-                            }, function (error, response) {
-                                if (response) {
-                                    if(response.statusCode != 200 ){
-                                        console.log("sending event to geocoder");
-                                    }                                }
-                                else if (error) {
-                                    console.log("error creating event: " + error);
-                                }
-                            });
-                        });
-
-                        fs.unlink(filePath, function(err) {
-                            if (err) {
-                                return console.error(err);
-                            }
-                            console.log("File deleted successfully!");
-                        });
-                    });
-                    console.log("The file was saved!");
+              fs.writeFile(filePath, data, function(err) {
+                if(err) {
+                  reject(err);
+                  return console.log(err);
+                }
+                var ner = new Ner({
+                  install_path:	path.join(__dirname, '../../stanford-ner-2014-10-26')
                 });
+
+                ner.fromFile(filePath, function(entities) {
+                  console.log(entities);
+
+                  var message = '';
+
+                  if(entities.PERSON){
+                    message += 'PERSON:' +entities.PERSON[0] + "</br>";
+                  }
+                  if(entities.LOCATION){
+                    message += 'LOCATION:' +entities.LOCATION[0] + "</br>";
+                  }
+
+                  if(entities.ORGANIZATION){
+                    message += 'ORG:' +entities.ORGANIZATION[0] + "</br>";
+                  }
+
+                  message += 'SOURCE:' + data;
+
+                  var newEvent = {
+                    'people':entities.PERSON,
+                    'organizations':entities.ORGANIZATION,
+                    'dates':entities.DATE,
+                    'locations':entities.LOCATION,
+                    'message':message,
+                    'sourceText':data,
+                    'lat':null,
+                    'lng':null
+                  };
+
+                  var parsedEvent = app.models.ParsedEvent;
+                  parsedEvent.create(newEvent,function(err,obj){
+                    if(!obj || err){
+                      console.log("error creating event: " + err);
+                      reject(err);
+                      return;
+                    }
+                    request({
+                      url:  "http://localhost:3001/api/geocoder/geocode?id=" + obj.id
+                    }, function (error, response) {
+                      if (response) {
+                        if(response.statusCode != 200 ){
+                          console.log("sending event to geocoder");
+
+                        }                                }
+                      else if (error) {
+                        reject(error);
+                        console.log("error creating event: " + error);
+                      }
+                    });
+                  });
+
+                  fs.unlink(filePath, function(err) {
+                    if (err) {
+                      reject(err);
+                      return console.error(err);
+                    }
+                    console.log("File deleted successfully!");
+                    resolve("event complete");
+                  });
+                });
+                console.log("The file was saved!");
+              });
             });
-        }
-        catch (getError) {
+          }
+          catch (getError) {
             console.log("Error during stanNER extraction");
             console.log(getError);
-        }
+            reject(getError);
+          }
+        });
+
     };
 
     Extract.processPost = function(req,res, cb) {
@@ -119,7 +145,13 @@ module.exports = function(Extract) {
         if(!req.body || !req.body.dataString){
             return;
         }
-        Extract.sendToNer(req.body.dataString);
+
+        promiseQueue.push(function(){
+          promiseRunning = true;
+          Extract.sendToNer(req.body.dataString).then(function(){
+            promiseRunning = false;
+          })
+        });
     };
 
   Extract.remoteMethod(

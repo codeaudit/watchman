@@ -30,7 +30,7 @@
     "multiparty": "^4.1.2",
     "node-geocoder": "^3.8.0",
     "node-ner": "git+https://github.com/Sotera/node-ner.git",
-    "queue": "^3.1.0",
+    "promise-queue": "^2.2.3",
     "request": "^2.69.0",
     "serve-favicon": "^2.0.1",
     "textract": "^1.2.1"
