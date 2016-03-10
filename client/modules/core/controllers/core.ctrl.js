@@ -19,7 +19,7 @@ angular.module('com.module.core')
     };
 
     $scope.destroyData = function() {
-      TextFeed.destroyData()
+      ParsedEvent.destroyData()
       .$promise
       .then(function(data) { console.log(data); })
       .catch(console.error);
