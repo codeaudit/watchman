@@ -18,6 +18,13 @@ angular.module('com.module.core')
       })
     };
 
+    $scope.destroyData = function() {
+      TextFeed.destroyData()
+      .$promise
+      .then(function(data) { console.log(data); })
+      .catch(console.error);
+    }
+
     $scope.processNewsFeed = function(start) {
 
       if(!start){

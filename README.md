@@ -14,4 +14,5 @@ lb-ng server/server.js client/js/lb-services.js
 ```
 npm run dev
 open localhost:3001
+node server/workers/extractor.js
 ```

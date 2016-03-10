@@ -17,7 +17,6 @@
     "body-parser": "^1.15.0",
     "compression": "^1.0.3",
     "cors": "^2.5.2",
-    "delayed-stream": "^1.0.0",
     "feedparser": "^1.1.4",
     "jade": "^1.11.0",
     "kue": "^0.10.5",
@@ -30,7 +29,6 @@
     "multiparty": "^4.1.2",
     "node-geocoder": "^3.8.0",
     "node-ner": "git+https://github.com/Sotera/node-ner.git",
-    "promise-queue": "^2.2.3",
     "request": "^2.69.0",
     "serve-favicon": "^2.0.1",
     "textract": "^1.2.1"

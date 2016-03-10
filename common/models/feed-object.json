@@ -1,0 +1,33 @@
+{
+  "name": "feedObject",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "indexes": {
+    "uniq_idx": {
+      "keys": {
+        "guid": 1
+      },
+      "options": {
+        "unique": true
+      }
+    }
+  },
+  "properties": {
+    "guid": {
+      "required": true,
+      "type": "string"
+    },
+    "processed": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

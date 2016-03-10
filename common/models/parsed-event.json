@@ -1,6 +1,5 @@
 {
   "name": "parsedEvent",
-  "plural": "parsedEvents",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {

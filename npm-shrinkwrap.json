@@ -193,11 +193,6 @@
         }
       }
     },
-    "delayed-stream": {
-      "version": "1.0.0",
-      "from": "delayed-stream@latest",
-      "resolved": "https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz"
-    },
     "feedparser": {
       "version": "1.1.4",
       "from": "feedparser@>=1.1.4 <2.0.0",

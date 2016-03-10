@@ -47,5 +47,9 @@
   "textFeed": {
     "dataSource": "db",
     "public": true
+  },
+  "feedObject": {
+    "dataSource": "db",
+    "public": true
   }
 }

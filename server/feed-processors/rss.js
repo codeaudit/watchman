@@ -1,7 +1,7 @@
 "use strict";
 var FeedParser = require('feedparser')
   , request = require('request')
-  , DelayedStream = require('delayed-stream');
+  , feedq = require('../../lib/feed-q');
 
 
 module.exports = class RssFeedProcessor{
@@ -11,7 +11,7 @@ module.exports = class RssFeedProcessor{
   }
 
   startFeed(){
-    this.intervalId = setInterval(this.processFeed.bind(this), 1000 * 5);
+    this.intervalId = setInterval(this.processFeed.bind(this), 1000 * 15);
   }
 
   stopFeed(){
@@ -21,44 +21,21 @@ module.exports = class RssFeedProcessor{
   processFeed(){
     var context = this;
     var feedParser = new FeedParser();
-    feedParser.on('readable',function()
-    {
-      context.processFeedReadable(feedParser);
-    });
+    feedParser.on('readable', this.processFeedReadable);
     request.get(this.textFeedUrl)
-      .on('error',function(err) {
+      .on('error', function(err) {
         if (err) {
           console.error("error processing feed", context.textFeedUrl, err);
+          return;
         }
       })
-      .on('response', function(res) {
-        if (res.statusCode != 200) return this.emit('error', new Error('Bad status code'));
-        var delayed = DelayedStream.create(res);
-        // slow down the stream for NER to catch up
-        setTimeout(
-          function() {
-            delayed.pipe(feedParser);
-          },
-          0);
-      });
-      // .pipe(feedParser);
+      .pipe(feedParser);
   }
 
-  processFeedReadable(feedParser){
+  processFeedReadable(){
     var item;
-    while (item = feedParser.read()) {
-      if(!item || !item.description){return;}
-
-      request.post({
-          url: "http://localhost:3001/api/extract/process",
-          body: {dataString: item.description},
-          json: true
-        }, function (err) {
-          if (err) {
-            console.error("error creating event:", err);
-          }
-        });
-      }
-
+    while (item = this.read()) {
+      feedq.add(item);
+    }
   }
 };

@@ -1,6 +1,5 @@
 {
   "name": "textFeed",
-  "plural": "textFeeds",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
@@ -20,7 +19,7 @@
     },
     "interval": {
       "type": "number",
-      "default":60000
+      "default": 60000
     }
   },
   "validations": [],

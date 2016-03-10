@@ -1,64 +1,56 @@
-var geocoderProvider = 'openstreetmap',
-    app = require('../../server/server'),
-    httpAdapter = 'https';
+'use strict';
 
-// optionnal
+var geocoderProvider = 'openstreetmap',
+  app = require('../../server/server'),
+  protocol = 'https';
+
+// optional
 var extra = {
-    apiKey: 'YOUR_API_KEY', // for Mapquest, OpenCage, Google Premier
-    formatter: null         // 'gpx', 'string', ...
+  apiKey: 'YOUR_API_KEY', // for Mapquest, OpenCage, Google Premier
+  formatter: null     // 'gpx', 'string', ...
 };
 
-var geocoder = require('node-geocoder')(geocoderProvider, httpAdapter, extra);
-
-// Using callback
+var geocoder = require('node-geocoder')(geocoderProvider, protocol, extra);
 
 module.exports = function(Geocoder) {
 
-    Geocoder.geoCode = function(req,res, cb) {
+  Geocoder.geocode = function(parsedEventId) {
 
-        cb(null,'geocoding object');
+    var ParsedEvent = Geocoder.app.models.ParsedEvent;
 
-        var whereClause={
-            where: {
-                id: req.query.id
-            }
-        };
-        var parsedEvent = app.models.ParsedEvent;
-        parsedEvent.findOne(whereClause).then(function(item, err){
-            if(err || !item){
-                console.log("no item found to geo code.");
-                return;
-            }
-
-            if(!item.locations || item.locations.length === 0){
-                console.log("no locations to geo code.");
-                return;
-            }
-
-            geocoder.geocode(item.locations[0], function(err, res) {
-                if(res.length === 0){
-                    return;
-                }
-
-                item.lat = res[0].latitude;
-                item.lng = res[0].longitude;
-                item.geoCoded = true;
-
-                item.save();
-            });
-        });
+    var filter = {
+      where: {
+        id: parsedEventId
+      }
     };
 
-    Geocoder.remoteMethod(
-        'geoCode',
-        {
-            accepts: [
-                {arg: 'req', type: 'object', 'http': {source: 'req'}},
-                {arg: 'res', type: 'object', 'http': {source: 'res'}}
-            ],
-            returns: {arg: 'data', root:true},
-            http: {path: '/geoCode',verb: 'get'}
+    return ParsedEvent.findOne(filter)
+    .then(function(item){
+      if (!item){
+        console.log("no item found to geocode.");
+        return;
+      }
+
+      if (!item.locations || !item.locations.length){
+        console.log("no locations to geocode.");
+        return;
+      }
+
+      return geocoder.geocode(item.locations[0])
+      .then(function(res) {
+        if (!res.length){
+          return;
         }
-    );
+
+        item.lat = res[0].latitude;
+        item.lng = res[0].longitude;
+        item.geoCoded = true;
+
+        return item.save();
+      });
+
+    })
+    .catch(console.error);
+  };
 
 };
