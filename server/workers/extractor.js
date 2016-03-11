@@ -18,8 +18,18 @@ const WAIT_SECS = 10;
 function extract(feedObject) {
   if (!feedObject) return;
   console.log('ETL for', feedObject.guid);
-  return Extract.sendToNer(feedObject.description)
-  .then(() => feedObject);
+  return ner(feedObject).then(() => feedObject);
+}
+
+function ner(feedObject) {
+  switch(feedObject.extractType.toLowerCase()) {
+    case 'stanford':
+      return Extract.sendToStanNer(feedObject.description);
+    case 'mitie':
+      return Extract.sendToMitie(feedObject.description);
+    default:
+      throw new Error('unknown extract type');
+  }
 }
 
 function markAsProcessed(feedObject) {

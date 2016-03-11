@@ -5,12 +5,14 @@ var app = require('../../server/server'),
   path = require('path'),
   tmpPath = '../../temp/',
   mkdirp = require('mkdirp'),
-  Ner = require('node-ner'),
-  request = require('request'),
+  StanNer = require('node-ner'),
+  request = require('request-json-light'),
   textract = require('textract'),
-  ner = new Ner({
+  _ = require('lodash'),
+  stanNer = new StanNer({
     install_path: path.join(__dirname, '../../stanford-ner-2014-10-26')
-  });
+  }),
+  mitieUrl = 'http://localhost:8888/';
 
 mkdirp(path.join(__dirname, tmpPath), function(err) {
   if (err) {
@@ -20,32 +22,58 @@ mkdirp(path.join(__dirname, tmpPath), function(err) {
 
 module.exports = function(Extract) {
 
-  // var extractorName = "stanford-ner";
+  Extract.sendToMitie = function(text){
+    var models = Extract.app.models;
+    var ParsedEvent = models.ParsedEvent;
+    var Geocoder = models.Geocoder;
+    var client = request.newClient(mitieUrl);
+    text = text.replace(/[^\x00-\x7F]/g, ""); // rm non-ascii for mitie
 
-  // Extract.extractionMap = {};
+    function extract(entities, tag) {
+      return _(entities).filter(item => item.tag == tag).map('label').value();
+    }
 
-  // Extract.createOrUpdateExtraction = function(name,value,dwTrailUrlId,requester){
-  //   if(Extract.extractionMap[value]){
-  //     Extract.extractionMap[value].occurrences++;
-  //   return;
-  //   }
-  //   Extract.extractionMap[value] = {
-  //     "value": value,
-  //     "occurrences":1,
-  //     "dwTrailUrlId": dwTrailUrlId,
-  //     "extractorTypes":[name],
-  //     "extractor": extractorName,
-  //     "requester": requester
-  //   };
-  // };
+    return new Promise(function(resolve,reject){
+      client.post('ner', {text: text}, function(err, res, body) {
+        if(err) {
+          reject(err);
+          return console.error(err);
+        }
+        console.log(body);
+        var entities = body.entities;
 
-  Extract.sendToNer = function(data){
+        var newEvent = {
+          people: extract(entities, 'PERSON'),
+          organizations: extract(entities, 'ORGANIZATION'),
+          dates: extract(entities, 'DATE'),
+          locations: extract(entities, 'LOCATION'),
+          sourceText: text
+        };
+        newEvent.message = JSON.stringify(entities);
+
+        ParsedEvent.create(newEvent)
+        .then(function(parsedEvent) {
+          return Geocoder.geocode(parsedEvent.id);
+        })
+        .then(function(parsedEvent) {
+          resolve(parsedEvent);
+        })
+        .catch(function(err){
+          reject(err);
+          return console.error(err);
+        });
+      });
+
+    });
+  };
+
+  Extract.sendToStanNer = function(text){
     var models = Extract.app.models;
     var ParsedEvent = models.ParsedEvent;
     var Geocoder = models.Geocoder;
 
     return new Promise(function(resolve,reject){
-      textract.fromBufferWithMime('text/html', new Buffer(data), function(err, data) {
+      textract.fromBufferWithMime('text/html', new Buffer(text), function(err, data) {
         if(err) {
           reject(err);
           return console.error(err);
@@ -60,9 +88,7 @@ module.exports = function(Extract) {
           }
           console.log("file saved");
 
-          ner.fromFile(filePath, function(entities) {
-            console.log(entities);
-
+          stanNer.fromFile(filePath, function(entities) {
             var message = '';
 
             if(entities.PERSON){
@@ -75,7 +101,7 @@ module.exports = function(Extract) {
               message += 'ORG:' +entities.ORGANIZATION[0] + "</br>";
             }
 
-            message += 'SOURCE:' + data;
+            // message += 'SOURCE:' + data;
 
             var newEvent = {
               people: entities.PERSON,
@@ -83,9 +109,7 @@ module.exports = function(Extract) {
               dates: entities.DATE,
               locations: entities.LOCATION,
               message: message,
-              sourceText: data,
-              lat: null,
-              lng: null
+              sourceText: data
             };
 
             ParsedEvent.create(newEvent)

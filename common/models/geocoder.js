@@ -44,7 +44,7 @@ module.exports = function(Geocoder) {
 
         item.lat = res[0].latitude;
         item.lng = res[0].longitude;
-        item.geoCoded = true;
+        item.geocoded = true;
 
         return item.save();
       });

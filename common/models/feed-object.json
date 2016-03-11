@@ -8,7 +8,8 @@
   "indexes": {
     "uniq_idx": {
       "keys": {
-        "guid": 1
+        "guid": 1,
+        "extractType": 1
       },
       "options": {
         "unique": true
@@ -23,6 +24,11 @@
     "processed": {
       "type": "boolean",
       "default": false,
+      "required": true
+    },
+    "extractType": {
+      "type": "string",
+      "default": "mitie",
       "required": true
     }
   },

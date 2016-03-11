@@ -7,7 +7,7 @@ var FeedParser = require('feedparser')
 module.exports = class RssFeedProcessor{
 
   constructor(textFeed){
-    this.textFeedUrl = textFeed.url;
+    this.textFeed = textFeed;
   }
 
   startFeed(){
@@ -21,21 +21,24 @@ module.exports = class RssFeedProcessor{
   processFeed(){
     var context = this;
     var feedParser = new FeedParser();
-    feedParser.on('readable', this.processFeedReadable);
-    request.get(this.textFeedUrl)
+    feedParser.on('readable', this.processFeedReadable(this.textFeed));
+    request.get(this.textFeed.url)
       .on('error', function(err) {
         if (err) {
-          console.error("error processing feed", context.textFeedUrl, err);
+          console.error("error processing feed", context.textFeed.url, err);
           return;
         }
       })
       .pipe(feedParser);
   }
 
-  processFeedReadable(){
-    var item;
-    while (item = this.read()) {
-      feedq.add(item);
+  processFeedReadable(textFeed){
+    return function() {
+      var item;
+      while (item = this.read()) {
+        item.extractType = textFeed.extractType; // pass-thru to feed q
+        feedq.add(item);
+      }
     }
   }
 };

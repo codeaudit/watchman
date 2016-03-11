@@ -5,6 +5,17 @@
   "options": {
     "validateUpsert": true
   },
+  "indexes": {
+    "uniq_idx": {
+      "keys": {
+        "url": 1,
+        "extractType": 1
+      },
+      "options": {
+        "unique": true
+      }
+    }
+  },
   "properties": {
     "url": {
       "type": "string",
@@ -12,6 +23,12 @@
     },
     "feedType": {
       "type": "string",
+      "default": "rss",
+      "required": true
+    },
+    "extractType": {
+      "type": "string",
+      "default": "mitie",
       "required": true
     },
     "locale": {

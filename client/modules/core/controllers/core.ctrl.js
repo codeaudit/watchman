@@ -7,13 +7,14 @@ angular.module('com.module.core')
 
     $scope.eventCount = 0;
 
-    $scope.request_model = {
+    $scope.myModel = {
       'dataString':"North Korea leader Kim Jong Un ordered his country to be ready to use its nuclear weapons at any time"
     };
 
     $scope.submit = function(){
 
-      $http.post("/api/extract/process", $scope.request_model).success(function(data, status) {
+      $http.post("/api/extract/process", $scope.myModel)
+      .success(function(data, status) {
         console.log(data);
       })
     };
@@ -77,9 +78,9 @@ angular.module('com.module.core')
       // }
     };
 
-    $scope.addEvents = function(newEvents) {
+    $scope.addEvents = function(events) {
       angular.extend($scope, {
-        markers: newEvents
+        markers: events
       });
     };
 
@@ -88,18 +89,18 @@ angular.module('com.module.core')
     };
 
     setInterval(function(){
-      var whereClause={
+      var filter={
         filter: {
           where: {
-            geoCoded:true
+            geocoded:true
           }
         }
       };
 
-      ParsedEvent.find(whereClause)
+      ParsedEvent.find(filter)
       .$promise
       .then(function(parsedEvents){
-        if(parsedEvents.length===0){
+        if(!parsedEvents.length){
           $scope.removeMarkers();
           return;
         }

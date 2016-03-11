@@ -38,9 +38,10 @@
     "sourceText": {
       "type": "string"
     },
-    "geoCoded": {
+    "geocoded": {
       "type": "boolean",
-      "default": false
+      "default": false,
+      "required": true
     }
   },
   "validations": [],
