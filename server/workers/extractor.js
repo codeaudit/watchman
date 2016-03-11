@@ -1,3 +1,4 @@
+// def: find stored feed data and send to ner
 'use strict';
 
 const request = require('request');
@@ -36,7 +37,7 @@ function markAsProcessed(feedObject) {
   if (!feedObject) {
     // if no more items, lets take a short break
     return new Promise((resolve, _) => {
-      setInterval(resolve, WAIT_SECS * 1000);
+      setTimeout(resolve, WAIT_SECS * 1000);
     });
   } else {
     console.log('Processing:', feedObject);

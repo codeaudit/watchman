@@ -28,13 +28,13 @@ angular.module('com.module.core')
 
     $scope.processNewsFeed = function(start) {
 
-      if(!start){
-        TextFeed.stopFeeds()
-        .$promise
-        .then(function(data) { console.log(data); })
-        .catch(console.error);
-        return;
-      }
+      // if(!start){
+      //   TextFeed.stopFeeds()
+      //   .$promise
+      //   .then(function(data) { console.log(data); })
+      //   .catch(console.error);
+      //   return;
+      // }
 
       TextFeed.startFeeds()
       .$promise

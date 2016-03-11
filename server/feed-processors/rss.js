@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var FeedParser = require('feedparser')
   , request = require('request')
   , feedq = require('../../lib/feed-q');
@@ -10,22 +10,14 @@ module.exports = class RssFeedProcessor{
     this.textFeed = textFeed;
   }
 
-  startFeed(){
-    this.intervalId = setInterval(this.processFeed.bind(this), 1000 * 15);
-  }
-
-  stopFeed(){
-    clearInterval(this.intervalId);
-  }
-
-  processFeed(){
+  process(){
     var context = this;
     var feedParser = new FeedParser();
     feedParser.on('readable', this.processFeedReadable(this.textFeed));
     request.get(this.textFeed.url)
       .on('error', function(err) {
         if (err) {
-          console.error("error processing feed", context.textFeed.url, err);
+          console.error('error processing feed', context.textFeed.url, err);
           return;
         }
       })

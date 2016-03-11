@@ -6,7 +6,7 @@
   "scripts": {
     "pretest": "jshint .",
     "predev": "npm install && bower install",
-    "dev": "nodemon server/server.js -w server -w common -i server/datasources.json --ext js,json"
+    "dev": "node-dev server/server.js"
   },
   "private": true,
   "engines": {
@@ -19,7 +19,6 @@
     "cors": "^2.5.2",
     "feedparser": "^1.1.4",
     "jade": "^1.11.0",
-    "kue": "^0.10.5",
     "lodash": "^4.6.1",
     "loopback": "^2.22.0",
     "loopback-boot": "^2.6.5",
