@@ -6,7 +6,7 @@ const extractorUrl = 'http://localhost:3001/api/extract/process';
 const app = require('../../server/server');
 const Extract = app.models.Extract;
 const FeedObject = app.models.FeedObject;
-const WAIT_SECS = 10;
+const WAIT = 10; //seconds
 
 (function recurse() {
   return FeedObject.findOne({where: {processed: false}})
@@ -37,7 +37,7 @@ function markAsProcessed(feedObject) {
   if (!feedObject) {
     // if no more items, lets take a short break
     return new Promise((resolve, _) => {
-      setTimeout(resolve, WAIT_SECS * 1000);
+      setTimeout(resolve, WAIT * 1000);
     });
   } else {
     console.log('Processing:', feedObject);
