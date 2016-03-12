@@ -8,11 +8,20 @@ const Extract = app.models.Extract;
 const FeedObject = app.models.FeedObject;
 const WAIT = 10; //seconds
 
-(function recurse() {
-  return FeedObject.findOne({where: {processed: false}})
+// recursively run, with a wait period
+(function run() {
+  FeedObject.findOne({where: {processed: false}})
   .then(extract)
   .then(markAsProcessed)
-  .then(recurse)
+  .then(feedObject => {
+    if (!feedObject) {
+      // if no more items, lets take a break
+      return new Promise((resolve, _) => {
+        setTimeout(resolve, WAIT * 1000);
+      });
+    }
+    run();
+  })
   .catch(console.error);
 })();
 
@@ -35,10 +44,7 @@ function ner(feedObject) {
 
 function markAsProcessed(feedObject) {
   if (!feedObject) {
-    // if no more items, lets take a short break
-    return new Promise((resolve, _) => {
-      setTimeout(resolve, WAIT * 1000);
-    });
+    return;
   } else {
     console.log('Processing:', feedObject);
     return feedObject.updateAttributes({processed: true});
