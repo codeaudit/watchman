@@ -92,13 +92,13 @@ module.exports = function(Extract) {
             var message = '';
 
             if(entities.PERSON){
-              message += 'PERSON:' +entities.PERSON[0] + "</br>";
+              message += 'PERSON:' + entities.PERSON[0] + "</br>";
             }
             if(entities.LOCATION){
-              message += 'LOCATION:' +entities.LOCATION[0] + "</br>";
+              message += 'LOCATION:' + entities.LOCATION[0] + "</br>";
             }
             if(entities.ORGANIZATION){
-              message += 'ORG:' +entities.ORGANIZATION[0] + "</br>";
+              message += 'ORG:' + entities.ORGANIZATION[0] + "</br>";
             }
 
             // message += 'SOURCE:' + data;
@@ -119,16 +119,16 @@ module.exports = function(Extract) {
             .then(function(parsedEvent) {
               fs.unlink(filePath, function(err) {
                 if (err) {
+                  console.error(err);
                   reject(err);
-                  return console.error(err);
                 }
                 console.log("File deleted successfully!");
                 resolve(parsedEvent);
               });
             })
             .catch(function(err){
+              console.error(err);
               reject(err);
-              return console.error(err);
             });
           });
         });

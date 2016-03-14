@@ -9,10 +9,10 @@ const ParsedEvent = app.models.ParsedEvent;
 
 const textFeed = {
   url: 'http://spdblotter.seattle.gov/feed/',
-  extractType: 'mitie'
+  extractType: 'stanford'
 };
 
-TextFeed.findOrCreate(textFeed, textFeed)
+TextFeed.findOrCreate({where: textFeed}, textFeed)
 .then(() => FeedObject.destroyAll())
 .then(() => ParsedEvent.destroyAll())
 .then(() => console.log('✔ done'))

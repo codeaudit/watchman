@@ -27,7 +27,7 @@ const WAIT = 10; //seconds
 
 function extract(feedObject) {
   if (!feedObject) return;
-  console.log('ETL for', feedObject.guid);
+  console.log('Extract object with guid', feedObject.guid);
   return ner(feedObject).then(() => feedObject);
 }
 
