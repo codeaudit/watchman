@@ -36,7 +36,8 @@
     },
     "interval": {
       "type": "number",
-      "default": 60000
+      "default": 60000,
+      "required": true
     }
   },
   "validations": [],

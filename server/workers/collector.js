@@ -9,7 +9,7 @@ let runningFeedIds = []; //already running
 var worker = module.exports = {
   start: function() {
     const TextFeed = app.models.TextFeed;
-    run();
+    run(); //first run
     // periodically check for new TextFeed sources
     setInterval(run, 60 * 1000);
 
@@ -40,7 +40,8 @@ function process(feeds) {
         processor = new FeedClass(feed);
 
         // periodically check for new feed items
-        setInterval(processor.process.bind(processor), 1000 * INTERVAL);
+        setInterval(processor.process.bind(processor), feed.interval);
+        processor.process(); // first run
         runningFeedIds.push(feed.id);
       }
     });
