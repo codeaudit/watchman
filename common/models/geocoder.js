@@ -14,7 +14,29 @@ var geocoder = require('node-geocoder')(geocoderProvider, protocol, extra);
 
 module.exports = function(Geocoder) {
 
-  Geocoder.geocode = function(parsedEventId) {
+  Geocoder.remoteMethod(
+    'forwardGeo',
+    {
+      description: 'Geocode a partial address',
+      accepts: {
+        arg: 'args',
+        type: 'object',
+        description: 'object with "address" property',
+        required: true,
+        http: { source: 'body' }
+      },
+      returns: {type: 'array', root: true},
+      http: {path: '/forward-geo', verb: 'post'}
+    }
+  );
+
+  Geocoder.forwardGeo = function(args, cb) {
+    geocoder.geocode(args.address)
+    .then(data => cb(null, data))
+    .catch(cb);
+  };
+
+  Geocoder.geocodeEvent = function(parsedEventId) {
 
     var ParsedEvent = Geocoder.app.models.ParsedEvent;
 

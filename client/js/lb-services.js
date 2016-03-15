@@ -1137,6 +1137,46 @@ module.factory(
       urlBase + "/extract/:id",
       { 'id': '@id' },
       {
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Extract#run
+         * @methodOf lbServices.Extract
+         *
+         * @description
+         *
+         * Run entity extraction for given text
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *   This method does not accept any parameters.
+         *   Supply an empty object or omit this argument altogether.
+         *
+         * @param {Object} postData Request data.
+         *
+         *  - `text` – `{string}` - text to analyze
+         *
+         *  - `extract_type` – `{string}` - type: mitie or stanford
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `Extract` object.)
+         * </em>
+         */
+        "run": {
+          url: urlBase + "/extract/run",
+          method: "POST"
+        },
       }
     );
 
@@ -1181,6 +1221,44 @@ module.factory(
       urlBase + "/geocoder/:id",
       { 'id': '@id' },
       {
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Geocoder#forwardGeo
+         * @methodOf lbServices.Geocoder
+         *
+         * @description
+         *
+         * Forward geocode a partial address
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *   This method does not accept any parameters.
+         *   Supply an empty object or omit this argument altogether.
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `Geocoder` object.)
+         * </em>
+         */
+        "forwardGeo": {
+          url: urlBase + "/geocoder/forward-geo",
+          method: "POST"
+        },
       }
     );
 
@@ -2309,42 +2387,6 @@ module.factory(
          */
         "startFeeds": {
           url: urlBase + "/textFeeds/start",
-          method: "GET"
-        },
-
-        /**
-         * @ngdoc method
-         * @name lbServices.TextFeed#stopFeeds
-         * @methodOf lbServices.TextFeed
-         *
-         * @description
-         *
-         * <em>
-         * (The remote method definition does not provide any description.)
-         * </em>
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *   This method does not accept any parameters.
-         *   Supply an empty object or omit this argument altogether.
-         *
-         * @param {function(Object,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Object} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * <em>
-         * (The remote method definition does not provide any description.
-         * This usually means the response is a `TextFeed` object.)
-         * </em>
-         */
-        "stopFeeds": {
-          url: urlBase + "/textFeeds/stop",
           method: "GET"
         },
 

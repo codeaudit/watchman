@@ -1,12 +1,13 @@
 // def: find stored feed data and send to ner
 'use strict';
 
-const request = require('request');
-const extractorUrl = 'http://localhost:3001/api/extract/process';
-const app = require('../../server/server');
-const Extract = app.models.Extract;
-const FeedObject = app.models.FeedObject;
-const WAIT = 10; //seconds
+const request = require('request'),
+  entityExtractor = require('../../lib/entity-extractor'),
+  app = require('../../server/server'),
+  Extract = app.models.Extract,
+  FeedObject = app.models.FeedObject,
+  _ = require('lodash'),
+  WAIT = 10; //seconds
 
 // recursively run, with a wait period
 (function run() {
@@ -28,18 +29,12 @@ const WAIT = 10; //seconds
 function extract(feedObject) {
   if (!feedObject) return;
   console.log('Extract object with guid', feedObject.guid);
-  return ner(feedObject).then(() => feedObject);
+  return eventize(feedObject).then(() => feedObject);
 }
 
-function ner(feedObject) {
-  switch(feedObject.extractType.toLowerCase()) {
-    case 'stanford':
-      return Extract.sendToStanNer(feedObject.description);
-    case 'mitie':
-      return Extract.sendToMitie(feedObject.description);
-    default:
-      throw new Error('unknown extract type');
-  }
+function eventize(feedObject) {
+  var extractType = _.capitalize(feedObject.extractType);
+  return entityExtractor['eventizeWith' + extractType](feedObject.description);
 }
 
 function markAsProcessed(feedObject) {
