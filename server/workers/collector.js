@@ -19,7 +19,7 @@ var worker = module.exports = {
       .catch(console.error);
     }
   }
-}
+};
 
 // start if run as a worker process
 if (require.main === module)

@@ -2,6 +2,7 @@
 
 // var textFeedList = [];
 var collector = require('../../server/workers/collector');
+var extractor = require('../../server/workers/extractor')
 
 module.exports = function(TextFeed) {
 
@@ -12,6 +13,7 @@ module.exports = function(TextFeed) {
 
     // TODO: remove this endpoint if we like using the worker process instead
     collector.start();
+    extractor.run();
 
     cb(null, {data: 'started'});
   };

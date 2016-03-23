@@ -24,6 +24,21 @@
     }
   },
   {
+    "name": "mitie",
+    "Image": "lukewendling/mitie-server",
+    "DockerFilePath": "",
+    "Hostname": "mitie",
+    "HostConfig": {
+      "PortBindings": {
+        "8888\/tcp": [
+          {
+            "HostPort": "8888"
+          }
+        ]
+      }
+    }
+  },
+  {
     "name": "EventParser",
     "Image": "jreeme\/sljava",
     "DockerFilePath": "docker\/strong-pm-java8",
@@ -33,7 +48,8 @@
     },
     "HostConfig": {
       "Links": [
-        "mongo:mongo"
+        "mongo:mongo",
+        "mitie:mitie"
       ],
       "PortBindings": {
         "3001/tcp": [

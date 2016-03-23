@@ -16,4 +16,4 @@ TextFeed.findOrCreate({where: textFeed}, textFeed)
 .then(() => FeedObject.destroyAll())
 .then(() => ParsedEvent.destroyAll())
 .then(() => console.log('✔ done'))
-.catch(console.error)
+.catch(console.error);
