@@ -42,6 +42,11 @@
       "type": "boolean",
       "default": false,
       "required": true
+    },
+    "created": {
+      "type": "date",
+      "defaultFn": "now",
+      "required": true
     }
   },
   "validations": [],
