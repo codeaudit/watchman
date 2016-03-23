@@ -33,7 +33,7 @@ function process(feeds) {
     let FeedClass, processor;
     //expects textfeed.feedType to match feed-processors/ file names
     feeds.forEach(feed => {
-      console.log('found', feed.url);
+      console.log('watching', feed.url);
       if (!_.includes(runningFeedIds, feed.id)) {
         console.log('processing', feed.url);
         FeedClass = require('../feed-processors/' + feed.feedType.toLowerCase() + '.js');

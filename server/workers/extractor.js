@@ -11,17 +11,17 @@ const request = require('request'),
 
 // recursively run, with a wait period
 (function run() {
-  FeedObject.findOne({where: {processed: false}})
+  FeedObject.findOne({ where: { processed: false } })
   .then(extract)
   .then(markAsProcessed)
   .then(feedObject => {
     if (!feedObject) {
       // if no more items, lets take a break
-      return new Promise((resolve, _) => {
-        setTimeout(resolve, WAIT * 1000);
-      });
+      console.log('waiting for new feed data...');
+      setTimeout(run, WAIT * 1000);
+    } else {
+      run();
     }
-    run();
   })
   .catch(console.error);
 })();
