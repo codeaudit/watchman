@@ -8,7 +8,7 @@ const FeedObject = app.models.FeedObject;
 const ParsedEvent = app.models.ParsedEvent;
 
 const textFeed = {
-  url: 'http://spdblotter.seattle.gov/feed/',
+  url: 'http://www.policeone.com/law-enforcement-police-rss-feeds/news.xml',
   extractType: 'stanford'
 };
 
