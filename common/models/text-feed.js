@@ -11,13 +11,13 @@ module.exports = function(TextFeed) {
     //   return cb(new Error('stop the current feeds'));
     // }
 
-    // TODO: remove this endpoint if we like using the worker process instead
     collector.start();
     extractor = require('../../server/workers/extractor');
 
     cb(null, {data: 'started'});
   };
 
+  // TODO: remove this endpoint if we like using the worker process instead
   TextFeed.remoteMethod(
     'startFeeds',
     {
