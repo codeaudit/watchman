@@ -30,6 +30,10 @@
       "type": "string",
       "default": "mitie",
       "required": true
+    },
+    "description": {
+      "type": "string",
+      "required": true
     }
   },
   "validations": [],
