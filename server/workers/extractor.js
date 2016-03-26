@@ -34,7 +34,7 @@ function extract(feedObject) {
 
 function eventize(feedObject) {
   var extractType = _.capitalize(feedObject.extractType);
-  return entityExtractor['eventizeWith' + extractType](feedObject.description);
+  return entityExtractor['eventizeWith' + extractType](feedObject.description, 'text/html');
 }
 
 function markAsProcessed(feedObject) {
