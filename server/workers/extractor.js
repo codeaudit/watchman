@@ -7,7 +7,7 @@ const request = require('request'),
   Extract = app.models.Extract,
   FeedObject = app.models.FeedObject,
   _ = require('lodash'),
-  WAIT = 10; //seconds
+  WAIT = 30; //seconds
 
 // recursively run, with a wait period
 (function run() {
@@ -33,8 +33,11 @@ function extract(feedObject) {
 }
 
 function eventize(feedObject) {
+  // TODO: obj.description ok? is it truncated in some feeds? etc.
   var extractType = _.capitalize(feedObject.extractType);
-  return entityExtractor['eventizeWith' + extractType](feedObject.description, 'text/html');
+  return entityExtractor['eventizeWith' +
+    extractType](feedObject.description,
+      { date: feedObject.pubdate, mimeType: 'text/html' });
 }
 
 function markAsProcessed(feedObject) {
