@@ -9,14 +9,14 @@ module.exports = class TrackerFeedProcessor{
 
   constructor(textFeed){
     this.textFeed = textFeed;
-    this.setLastFeedTime();
+    this.setLastFeedTime(1);
 
   }
 
-  setLastFeedTime(){
-    lastFeedTime = moment().utc().format().toString();
+  setLastFeedTime(offset){
+    lastFeedTime = moment().utc();
+    lastFeedTime = lastFeedTime.subtract(offset, "days").format();
     lastFeedTime = lastFeedTime.substring(0,lastFeedTime.length-6);
-    lastFeedTime = "2016-03-22T12:00:00";
   }
 
   process(){
@@ -31,7 +31,7 @@ module.exports = class TrackerFeedProcessor{
       context.processFeedReadable(body);
     });
 
-    this.setLastFeedTime();
+    this.setLastFeedTime(0);
   }
 
   guid() {
