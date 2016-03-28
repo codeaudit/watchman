@@ -1,27 +1,37 @@
 'use strict';
 var request = require('request')
   , feedq = require('../../lib/feed-q')
-  , lastFeedTime = 0;
+  , moment = require('moment')
+  , lastFeedTime = "";
 
 
 module.exports = class TrackerFeedProcessor{
 
   constructor(textFeed){
     this.textFeed = textFeed;
+    this.setLastFeedTime();
+
+  }
+
+  setLastFeedTime(){
+    lastFeedTime = moment().utc().format().toString();
+    lastFeedTime = lastFeedTime.substring(0,lastFeedTime.length-6);
+    lastFeedTime = "2016-03-22T12:00:00";
   }
 
   process(){
     var context = this;
-    request.get(this.textFeed.url + "&last_request_time=" + lastFeedTime.toString())
-      .on('error', function(err) {
-        if (err) {
-          console.error('error processing feed', context.textFeed.url, err);
-        }
-      })
-      .on('response', function(response) {
-         context.processFeedReadable(response.body);
-      });
-    lastFeedTime = Date.now();
+    var url = this.textFeed.url + "&last_request_time=" + lastFeedTime.toString();
+
+    request(url, function (err, response, body) {
+      if (err) {
+        console.error('error processing feed', context.textFeed.url, err);
+        return;
+      }
+      context.processFeedReadable(body);
+    });
+
+    this.setLastFeedTime();
   }
 
   guid() {
@@ -38,13 +48,21 @@ module.exports = class TrackerFeedProcessor{
 
     try{
       var data = JSON.parse(jsonData);
-      data.forEach(tweet => {
-        var feedObj = {};
-        feedObj.description = tweet;
-        feedObj.guid=this.guid();
-        feedObj.extractType = this.textFeed.extractType;
-        feedq.add(feedObj);
-      });
+
+      for (var user in data) {
+        if (data.hasOwnProperty(user)) {
+          for (var tweet in data[user]) {
+            if (data[user].hasOwnProperty(tweet)) {
+              var feedObj = {};
+              feedObj.description = data[user][tweet].text;
+              feedObj.guid=this.guid();
+              feedObj.extractType = this.textFeed.extractType;
+              feedq.add(feedObj);
+            }
+          }
+        }
+      }
+
     }
     catch(err){
       console.log(err);
