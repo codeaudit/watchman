@@ -15,7 +15,7 @@ var worker = module.exports = {
 
     function run() {
       console.log('checking for new text feed sources');
-      TextFeed.find()
+      TextFeed.find( { where: { active: true } } )
       .then(process)
       .catch(console.error);
     }
@@ -35,8 +35,8 @@ function process(feeds) {
       .difference(feedIds)
       .tap(ids => console.log('stopping feed ids', ids))
       .each(id => {
-        _.omit(intervals, id);
         clearInterval(intervals[id]);
+        delete intervals[id];
       });
     return;
   // return if nothing changed or no feeds in db

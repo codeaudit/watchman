@@ -38,6 +38,11 @@
       "type": "number",
       "default": 60000,
       "required": true
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "required": true
     }
   },
   "validations": [],
