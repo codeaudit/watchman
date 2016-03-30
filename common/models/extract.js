@@ -21,6 +21,49 @@ module.exports = function(Extract) {
     }
   );
 
+  Extract.remoteMethod(
+    'neuraltalk2',
+    {
+      description: 'Run neuraltalk2 for image url',
+      accepts: {
+        arg: 'args',
+        type: 'object',
+        description: 'object with property "image_url"',
+        required: true,
+        http: { source: 'body' }
+      },
+      returns: {type: 'object', root: true},
+      http: {path: '/neuraltalk2', verb: 'post'}
+    }
+  );
+
+  Extract.neuraltalk2 = function(args, cb) {
+    var request = require('request-json-light');
+    var client = request.newClient('http://neuraltalk2:5000/');
+
+    var params = {
+      url: args.image_url
+    };
+
+    client.post('addURL/', params, function(err, res, body) {
+      if (err) return cb(err);
+
+      // artificial wait for neuraltalk2 to finish (2-step process).
+      // client should make calls until something returned.
+      setTimeout(getCaption(body), 10*1000);
+
+      function getCaption(imgObj) {
+        return function() {
+          client.get('caption/' + imgObj.sha256sum, function(err, res, body) {
+            if (err) return cb(err);
+
+            cb(null, body.caption);
+          });
+        };
+      }
+    });
+  };
+
   Extract.run = function(args, cb) {
     var mimeType = args.mime_type || 'text/html';
     var extractType = _.capitalize(args.extract_type || 'mitie');

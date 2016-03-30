@@ -24,6 +24,35 @@
     }
   },
   {
+    "name": "neuraltalk2",
+    "Image": "jacopofar\/neuraltalk2-web:latest",
+    "DockerFilePath": "",
+    "Hostname": "neuraltalk2",
+    "Env": [
+      "modelPath=/mounted/models/model_id1-501-1448236541.t7_cpu.t7"
+    ],
+    "HostConfig": {
+      "PortBindings": {
+        "5000\/tcp": [
+          {
+            "HostPort": "5000"
+          }
+        ]
+      },
+      "Binds": [
+          "/home/ubuntu/neuraltalk2:/mounted"
+      ]
+    },
+    "Mounts": [
+      {
+        "Source": "/home/ubuntu/neuraltalk2",
+        "Destination": "/mounted",
+        "Mode": "",
+        "RW": true
+      }
+    ]
+  },
+  {
     "name": "mitie",
     "Image": "lukewendling/mitie-server",
     "DockerFilePath": "",
@@ -49,7 +78,8 @@
     "HostConfig": {
       "Links": [
         "mongo:mongo",
-        "mitie:mitie"
+        "mitie:mitie",
+        "neuraltalk2:neuraltalk2"
       ],
       "PortBindings": {
         "3001/tcp": [
@@ -85,4 +115,3 @@
     ]
   }
 ]
-
