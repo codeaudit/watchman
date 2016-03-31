@@ -1,7 +1,9 @@
 'use strict';
 
 var _ = require('lodash'),
-  entityExtractor = require('../../lib/entity-extractor');
+  entityExtractor = require('../../lib/entity-extractor'),
+  request = require('request-json-light'),
+  neuralTalkClient = request.newClient('http://neuraltalk2:5000/');
 
 module.exports = function(Extract) {
 
@@ -22,46 +24,65 @@ module.exports = function(Extract) {
   );
 
   Extract.remoteMethod(
-    'neuraltalk2',
+    'addImageUrls',
     {
-      description: 'Run neuraltalk2 for image url',
+      description: 'Enqueue image urls for neuraltalk2 processing',
       accepts: {
-        arg: 'args',
-        type: 'object',
-        description: 'object with property "image_url"',
+        arg: 'image_urls',
+        type: 'array',
+        description: 'array of URLs to images',
         required: true,
         http: { source: 'body' }
       },
       returns: {type: 'object', root: true},
-      http: {path: '/neuraltalk2', verb: 'post'}
+      http: {path: '/addimageurls', verb: 'post'}
     }
   );
 
-  Extract.neuraltalk2 = function(args, cb) {
-    var request = require('request-json-light');
-    var client = request.newClient('http://neuraltalk2:5000/');
-
-    var params = {
-      url: args.image_url
-    };
-
-    client.post('addURL/', params, function(err, res, body) {
-      if (err) return cb(err);
-
-      // artificial wait for neuraltalk2 to finish (2-step process).
-      // client should make calls until something returned.
-      setTimeout(getCaption(body), 10*1000);
-
-      function getCaption(imgObj) {
-        return function() {
-          client.get('caption/' + imgObj.sha256sum, function(err, res, body) {
-            if (err) return cb(err);
-
-            cb(null, body.caption);
-          });
-        };
-      }
+  Extract.addImageUrls = function(image_urls, cb) {
+    var adds = image_urls.map(url => {
+      return new Promise((res, rej) => {
+        neuralTalkClient.post('addURL/', { url: url }, (err, _, body) => {
+          if (err) return rej(err);
+          return res(body);
+        });
+      });
     });
+
+    Promise.all(adds)
+    .then(imgObjs => cb(null, imgObjs))
+    .catch(cb);
+  };
+
+  Extract.remoteMethod(
+    'getCaptions',
+    {
+      description: 'Get captions for neuraltalk2 processed images',
+      accepts: {
+        arg: 'ids',
+        type: 'array',
+        description: 'array of sha id\'s from previous "addimageurls" response',
+        required: true,
+        http: { source: 'body' }
+      },
+      returns: {type: 'object', root: true},
+      http: {path: '/getcaptions', verb: 'post'}
+    }
+  );
+
+  Extract.getCaptions = function(ids, cb) {
+    var fetches = ids.map(id => {
+      return new Promise((res, rej) => {
+        neuralTalkClient.get('caption/' + id, (err, _, body) => {
+          if (err) return rej(err);
+          return res(body);
+        });
+      });
+    });
+
+    Promise.all(fetches)
+    .then(captions => cb(null, captions))
+    .catch(cb);
   };
 
   Extract.run = function(args, cb) {
