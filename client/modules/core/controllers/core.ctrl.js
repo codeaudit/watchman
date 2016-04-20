@@ -2,7 +2,7 @@ angular.module('com.module.core')
   .controller('CoreCtrl',['$scope','$http','ParsedEvent','TextFeed',
     function($scope,$http,ParsedEvent,TextFeed) {
     angular.extend($scope, {
-      markers: {}
+      markers: []
     });
 
     $scope.eventCount = 0;
@@ -22,7 +22,10 @@ angular.module('com.module.core')
     $scope.destroyData = function() {
       ParsedEvent.destroyData()
       .$promise
-      .then(function(data) { console.log(data); })
+      .then(function(data) {
+        console.log(data);
+        getExistingEvents();
+      })
       .catch(console.error);
     }
 
@@ -84,11 +87,29 @@ angular.module('com.module.core')
       });
     };
 
-    $scope.removeMarkers = function() {
-      $scope.markers = {};
+    $scope.addEvent = function(event) {
+      $scope.markers.push(event);
     };
 
-    setInterval(function(){
+    $scope.removeMarkers = function() {
+      $scope.markers = [];
+    };
+
+    (function watchChanges() {
+      var parsedEventsUrl = '/api/parsedEvents/change-stream?_format=event-stream';
+      var src = new EventSource(parsedEventsUrl);
+      src.addEventListener('data', function(msg) {
+        var data = JSON.parse(msg.data);
+        var event = data.data;
+        // console.info(data); // the change object
+        $scope.addEvent(event);
+      	$scope.$apply();
+      });
+    })();
+
+    getExistingEvents();
+
+    function getExistingEvents() {
       var filter={
         filter: {
           where: {
@@ -96,7 +117,6 @@ angular.module('com.module.core')
           }
         }
       };
-
       ParsedEvent.find(filter)
       .$promise
       .then(function(parsedEvents){
@@ -104,9 +124,9 @@ angular.module('com.module.core')
           $scope.removeMarkers();
           return;
         }
-        $scope.removeMarkers();
         $scope.addEvents(JSON.parse(JSON.stringify(parsedEvents)));
-      });
-    },5000);
+      })
+      .catch(console.error);
+    }
 
   }]);
