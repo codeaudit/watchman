@@ -109,6 +109,28 @@
               "install",
               "--config.interactive=false"
             ]
+          },
+          {
+            "RelativeWorkingDir": ".",
+            "Command": "slc",
+            "Args": [
+              "ctl",
+              "-C",
+              "http://localhost:8701",
+              "create",
+              "eventParser"
+            ]
+          },,
+          {
+            "RelativeWorkingDir": ".",
+            "Command": "slc",
+            "Args": [
+              "ctl",
+              "env-set",
+              "eventParser",
+              "FLICKR_API_KEY=TODO",
+              "NODE_ENV=production"
+            ]
           }
         ]
       }
