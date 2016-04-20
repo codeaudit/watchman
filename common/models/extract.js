@@ -23,6 +23,17 @@ module.exports = function(Extract) {
     }
   );
 
+  Extract.run = function(args, cb) {
+    var mimeType = args.mime_type || 'text/html';
+    var extractType = _.capitalize(args.extract_type || 'mitie');
+    var method = 'extractWith' + extractType;
+    var extract = entityExtractor[method](args.text, mimeType);
+
+    extract
+    .then(entities => cb(null, entities))
+    .catch(err => cb(err));
+  };
+
   Extract.remoteMethod(
     'addImageUrls',
     {
@@ -83,17 +94,6 @@ module.exports = function(Extract) {
     Promise.all(fetches)
     .then(captions => cb(null, captions))
     .catch(cb);
-  };
-
-  Extract.run = function(args, cb) {
-    var mimeType = args.mime_type || 'text/html';
-    var extractType = _.capitalize(args.extract_type || 'mitie');
-    var method = 'extractWith' + extractType;
-    var extract = entityExtractor[method](args.text, mimeType);
-
-    extract
-    .then(entities => cb(null, entities))
-    .catch(err => cb(err));
   };
 
   Extract.remoteMethod(

@@ -12,6 +12,7 @@ lb-ng server/server.js client/js/lb-services.js
 ## Dev boostrap
 
 ```
+# get working copy of .env
 ./script/setup.js
 npm run dev # open localhost:3001
 docker run -d -p 8888:8888 --name mitie lukewendling/mitie-server

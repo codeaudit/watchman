@@ -36,13 +36,17 @@ function extract(feedObject) {
 }
 
 function eventize(feedObject) {
+  // TODO: abstract flickr specifics
   var extractType = _.capitalize(feedObject.extractType);
   if (extractType === 'Neuraltalk2') { // images
+    // photo id is part of guid 
+    var photoId = /[0-9]+$/.exec(feedObject.guid)[0];
     return entityExtractor.eventizeWithNeuralTalk2(
       feedObject.enclosures[0].url,
       { text: feedObject.title,
         date: feedObject['flickr:date_taken']['#'],
-        link: feedObject.link
+        link: feedObject.link,
+        photoId
       }
     );
   } else { // text
