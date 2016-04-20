@@ -12,8 +12,8 @@ const request = require('request'),
 // recursively run, with a wait period
 (function run() {
   FeedObject.findOne({ where: { processed: false } })
+  .then(markAsProcessed) // even if we fail later lets continue with the next item
   .then(extract)
-  .then(markAsProcessed)
   .then(feedObject => {
     if (!feedObject) {
       // if no more items, lets take a break
@@ -23,7 +23,10 @@ const request = require('request'),
       run();
     }
   })
-  .catch(console.error);
+  .catch(err => {
+    console.error(err);
+    run(); // keep going
+  });
 })();
 
 function extract(feedObject) {
@@ -33,18 +36,28 @@ function extract(feedObject) {
 }
 
 function eventize(feedObject) {
-  // TODO: obj.description ok? is it truncated in some feeds? etc.
   var extractType = _.capitalize(feedObject.extractType);
-  return entityExtractor['eventizeWith' +
-    extractType](feedObject.description,
-      { date: feedObject.pubdate, mimeType: 'text/html' });
+  if (extractType === 'Neuraltalk2') { // images
+    return entityExtractor.eventizeWithNeuralTalk2(
+      feedObject.enclosures[0].url,
+      { text: feedObject.title,
+        date: feedObject['flickr:date_taken']['#'],
+        link: feedObject.link
+      }
+    );
+  } else { // text
+    // TODO: obj.description ok? is it truncated in some feeds? etc.
+    return entityExtractor['eventizeWith' +
+      extractType](feedObject.description,
+        { date: feedObject.pubdate, mimeType: 'text/html' });
+  }
 }
 
 function markAsProcessed(feedObject) {
   if (!feedObject) {
     return;
   } else {
-    console.log('Processing:', feedObject);
+    console.log('Processing:', feedObject.guid);
     return feedObject.updateAttributes({processed: true});
   }
 }
