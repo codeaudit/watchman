@@ -63,8 +63,9 @@ angular.module('com.module.core')
         if (data.type !== 'create') return; // only on create
         var event = data.data;
         // console.info(data); // the change object
-        addEvent(event);
-      	$scope.$apply();
+      	$scope.$apply(function() {
+          addEvent(event);
+        });
       });
       src.onerror = console.error;
     })();
