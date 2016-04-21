@@ -1,19 +1,13 @@
 angular.module('com.module.core')
   .controller('CoreCtrl',['$scope','$http','ParsedEvent','TextFeed',
     function($scope,$http,ParsedEvent,TextFeed) {
-    angular.extend($scope, {
-      markers: []
-    });
-
-    $scope.eventCount = 0;
 
     $scope.myModel = {
       'dataString':"North Korea leader Kim Jong Un ordered his country to be ready to use its nuclear weapons at any time"
     };
 
     $scope.submit = function(){
-
-      $http.post("/api/extract/process", $scope.myModel)
+      $http.post('/api/extract/process', $scope.myModel)
       .success(function(data, status) {
         console.log(data);
       })
@@ -24,7 +18,7 @@ angular.module('com.module.core')
       .$promise
       .then(function(data) {
         console.log(data);
-        getExistingEvents();
+        resetMarkers();
       })
       .catch(console.error);
     }
@@ -43,73 +37,39 @@ angular.module('com.module.core')
       .$promise
       .then(function(data) { console.log(data); })
       .catch(console.error);
-
-      // dump the sections if we want to filter below
-      // $http.get('http://api.nytimes.com/svc/news/v3/content/section-list?api-key=238cd8a60d87d3b49ce118ef1d94850c:8:74624285')
-      // .then(console.log);
-
-      // TODO: get more pages once we stop killing the server
-      // for (var i=0; i<=1; i++) {
-      //   $http.get('http://api.nytimes.com/svc/news/v3/content/all/all/48?offset=' + i*20 +
-      //     '&api-key=238cd8a60d87d3b49ce118ef1d94850c:8:74624285')
-      //   .then(function(data) {
-      //     console.log(data);
-      //     var submissions = [];
-      //     var results = data.data.results;
-      //     results.forEach(function(res) {
-      //       if ( res.material_type_facet == 'News' ) {
-      //         // var news = {
-      //         //   title: res.title,
-      //         //   time: res.created_date,
-      //         //   locations: geo_facet.join('|'),
-      //         // };
-      //         var news = [res.abstract, res.title, res.created_date, res.geo_facet.toString()].join('|');
-      //         console.log(news);
-      //         submissions.push(news);
-      //       }
-      //     });
-
-      //     submissions.forEach(function(sub) {
-      //       $http.post("/api/extract/process", {dataString: sub})
-      //       .then(function(data, status) {
-      //         console.log(data);
-      //       })
-      //       .catch(console.error);
-      //     });
-      //   })
-      //   .catch(console.error);
-      // }
     };
 
-    $scope.addEvents = function(events) {
+    function addEvents(events) {
+      events.map(addEvent);
+    };
+
+    function addEvent(event) {
+      $scope.markers[event.id] = event;
+    };
+
+    function resetMarkers() {
       angular.extend($scope, {
-        markers: events
+        markers: {}
       });
     };
 
-    $scope.addEvent = function(event) {
-      $scope.markers.push(event);
-    };
-
-    $scope.removeMarkers = function() {
-      $scope.markers = [];
-    };
+    resetMarkers();
 
     (function watchChanges() {
       var parsedEventsUrl = '/api/parsedEvents/change-stream?_format=event-stream';
       var src = new EventSource(parsedEventsUrl);
       src.addEventListener('data', function(msg) {
         var data = JSON.parse(msg.data);
+        if (data.type !== 'create') return; // only on create
         var event = data.data;
         // console.info(data); // the change object
-        $scope.addEvent(event);
+        addEvent(event);
       	$scope.$apply();
       });
+      src.onerror = console.error;
     })();
 
-    getExistingEvents();
-
-    function getExistingEvents() {
+    (function getExistingEvents() {
       var filter={
         filter: {
           where: {
@@ -120,13 +80,49 @@ angular.module('com.module.core')
       ParsedEvent.find(filter)
       .$promise
       .then(function(parsedEvents){
-        if(!parsedEvents.length){
-          $scope.removeMarkers();
+        if(!parsedEvents.length) {
           return;
         }
-        $scope.addEvents(JSON.parse(JSON.stringify(parsedEvents)));
+        addEvents(_.invokeMap(parsedEvents, 'toJSON'));
       })
       .catch(console.error);
-    }
+    })();
 
   }]);
+
+
+    // dump the sections if we want to filter below
+    // $http.get('http://api.nytimes.com/svc/news/v3/content/section-list?api-key=238cd8a60d87d3b49ce118ef1d94850c:8:74624285')
+    // .then(console.log);
+
+    // TODO: get more pages once we stop killing the server
+    // for (var i=0; i<=1; i++) {
+    //   $http.get('http://api.nytimes.com/svc/news/v3/content/all/all/48?offset=' + i*20 +
+    //     '&api-key=238cd8a60d87d3b49ce118ef1d94850c:8:74624285')
+    //   .then(function(data) {
+    //     console.log(data);
+    //     var submissions = [];
+    //     var results = data.data.results;
+    //     results.forEach(function(res) {
+    //       if ( res.material_type_facet == 'News' ) {
+    //         // var news = {
+    //         //   title: res.title,
+    //         //   time: res.created_date,
+    //         //   locations: geo_facet.join('|'),
+    //         // };
+    //         var news = [res.abstract, res.title, res.created_date, res.geo_facet.toString()].join('|');
+    //         console.log(news);
+    //         submissions.push(news);
+    //       }
+    //     });
+
+    //     submissions.forEach(function(sub) {
+    //       $http.post("/api/extract/process", {dataString: sub})
+    //       .then(function(data, status) {
+    //         console.log(data);
+    //       })
+    //       .catch(console.error);
+    //     });
+    //   })
+    //   .catch(console.error);
+    // }

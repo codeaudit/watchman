@@ -3,17 +3,17 @@ block content
   .row
     .col-md-6.col-md-offset-3
       div(ng-controller='CoreCtrl')
-        form(role='form' )
+        form(role='form')
           .form-group
-            label(for='dataString') dataString
-            input#dataString.form-control(name='dataString', ng-model="myModel.dataString")
+            label(for='dataString') Enter text to parse
+            input#dataString.form-control(name='dataString' ng-model='myModel.dataString')
 
 
-        button.btn.btn-default(ng-click="submit()") Submit
+        button.btn.btn-default(ng-click='submit()') Submit
 
-        button.btn.btn-default(ng-click="processNewsFeed(true)") Start News Feed
-        //- button.btn.btn-default(ng-click="processNewsFeed(false)") Stop News Feed
+        button.btn.btn-default(ng-click='processNewsFeed(true)') Start News Feed
+        //- button.btn.btn-default(ng-click='processNewsFeed(false)') Stop News Feed
 
-        leaflet(style="height:512px", markers="markers")
-        button.btn.btn-default(ng-click="destroyData()") Destroy data
+        leaflet(style='height:512px' markers='markers')
+        button.btn.btn-default(ng-click='destroyData()') Destroy data
 
