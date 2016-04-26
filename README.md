@@ -1,4 +1,8 @@
-# Entity Extractor
+# Entity Extractor (codename: Watchman)
+
+## What is it?
+
+A core set of utilities frequently used in large data processing / ML projects, exposed as REST endpoints. Want to extract text from HTML?... we've got it. Caption a set of images scraped from the web?... this is your place. Extract entities with MITIE or Stanford NER. Yes please.
 
 ## Install
 
