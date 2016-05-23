@@ -2,9 +2,6 @@
   "name": "textFeed",
   "base": "PersistedModel",
   "idInjection": true,
-  "options": {
-    "validateUpsert": true
-  },
   "indexes": {
     "uniq_idx": {
       "keys": {
@@ -16,6 +13,9 @@
       }
     }
   },
+  "options": {
+    "validateUpsert": true
+  },
   "properties": {
     "url": {
       "type": "string",
@@ -23,26 +23,26 @@
     },
     "feedType": {
       "type": "string",
-      "default": "rss",
-      "required": true
+      "required": true,
+      "default": "rss"
     },
     "extractType": {
       "type": "string",
-      "default": "mitie",
-      "required": true
+      "required": true,
+      "default": "mitie"
     },
     "locale": {
       "type": "string"
     },
     "interval": {
       "type": "number",
-      "default": 60000,
-      "required": true
+      "required": true,
+      "default": 60000
     },
     "active": {
       "type": "boolean",
-      "default": true,
-      "required": true
+      "required": true,
+      "default": true
     }
   },
   "validations": [],

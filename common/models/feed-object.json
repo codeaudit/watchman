@@ -2,9 +2,6 @@
   "name": "feedObject",
   "base": "PersistedModel",
   "idInjection": true,
-  "options": {
-    "validateUpsert": true
-  },
   "indexes": {
     "uniq_idx": {
       "keys": {
@@ -16,20 +13,23 @@
       }
     }
   },
+  "options": {
+    "validateUpsert": true
+  },
   "properties": {
     "guid": {
-      "required": true,
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "processed": {
       "type": "boolean",
-      "default": false,
-      "required": true
+      "required": true,
+      "default": false
     },
     "extractType": {
       "type": "string",
-      "default": "mitie",
-      "required": true
+      "required": true,
+      "default": "mitie"
     },
     "description": {
       "type": "string",
