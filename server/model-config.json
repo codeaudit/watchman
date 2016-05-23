@@ -51,5 +51,9 @@
   "feedObject": {
     "dataSource": "db",
     "public": true
+  },
+  "translate": {
+    "dataSource": null,
+    "public": true
   }
 }
