@@ -68,10 +68,10 @@
     }
   },
   {
-    "name": "EventParser",
+    "name": "Watchman",
     "Image": "jreeme\/sljava",
     "DockerFilePath": "docker\/strong-pm-java8",
-    "Hostname": "EventParser",
+    "Hostname": "watchman",
     "ExposedPorts": {
       "3001/tcp": {}
     },
@@ -96,11 +96,11 @@
     },
     "ExpressApps": [
       {
-        "GitUrl": "https://github.com/justinlueders/entityExtractor.git",
+        "GitUrl": "https://github.com/Sotera/watchman.git",
         "GitSrcBranchName": "master",
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8701",
-        "ServiceName": "eventParser",
+        "ServiceName": "watchman",
         "Scripts":[
           {
             "RelativeWorkingDir":".",
@@ -118,7 +118,7 @@
               "-C",
               "http://localhost:8701",
               "create",
-              "eventParser"
+              "watchman"
             ]
           },,
           {
@@ -127,7 +127,7 @@
             "Args": [
               "ctl",
               "env-set",
-              "eventParser",
+              "watchman",
               "FLICKR_API_KEY=TODO",
               "NODE_ENV=production"
             ]
