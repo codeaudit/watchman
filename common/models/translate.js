@@ -15,7 +15,7 @@ module.exports = function(Translate) {
         required: true,
         http: { source: 'body' }
       },
-      returns: {type: 'object', root: true},
+      returns: {type: 'string', root: true},
       http: {path: '/en', verb: 'post'}
     }
   );
@@ -31,13 +31,13 @@ module.exports = function(Translate) {
         required: true,
         http: { source: 'body' }
       },
-      returns: {type: 'object', root: true},
+      returns: {type: 'string', root: true},
       http: {path: '/detect', verb: 'post'}
     }
   );
 
   Translate.detect = (args, cb) => {
-    translator.detect(args.text, (err, res) => {
+    translator.detect(args, (err, res) => {
       if (err) return cb(err);
       cb(null, res);
     });
