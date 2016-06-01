@@ -1,6 +1,6 @@
 {
-  "name": "entity-extractor",
-  "description": "parses events from plain text",
+  "name": "watchman",
+  "description": "Qute a few misc services for data extraction/transformation",
   "version": "1.0.0",
   "main": "server/server.js",
   "scripts": {
@@ -42,6 +42,6 @@
   },
   "repository": {
     "type": "",
-    "url": "https://github.com/justinlueders/entityExtractor"
+    "url": "https://github.com/Sotera/watchman"
   }
 }
