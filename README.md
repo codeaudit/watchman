@@ -1,4 +1,4 @@
-# Entity Extractor (codename: Watchman)
+# Watchman
 
 ## What is it?
 
