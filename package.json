@@ -1,6 +1,6 @@
 {
   "name": "watchman",
-  "description": "Qute a few misc services for data extraction/transformation",
+  "description": "A core set of utilities frequently used in large data processing / ML projects, exposed as REST endpoints",
   "version": "1.0.0",
   "main": "server/server.js",
   "scripts": {
