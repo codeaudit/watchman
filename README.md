@@ -15,6 +15,7 @@ A core set of utilities frequently used in large data processing / ML projects, 
 ## Install
 
 ```
+# get working copy of .env file from a friend
 npm i -g strongloop bower
 npm i
 # only if models change...
