@@ -1,5 +1,5 @@
 {
-  "name": "entity-extractor",
+  "name": "watchman",
   "version": "1.0.0",
   "dependencies": {
     "body-parser": {
