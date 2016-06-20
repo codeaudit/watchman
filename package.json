@@ -6,7 +6,7 @@
   "scripts": {
     "pretest": "jshint .",
     "predev": "npm install && bower install",
-    "dev": "nodemon . -w server -w common -i server/datasources.json --ext js,json"
+    "dev": "nodemon . -w server -w common -w lib --ext js,json"
   },
   "private": true,
   "engines": {
