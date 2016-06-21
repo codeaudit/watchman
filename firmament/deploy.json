@@ -83,7 +83,7 @@
     }
   },
   {
-    "name": "Watchman",
+    "name": "watchman",
     "Image": "jreeme/sljava",
     "DockerFilePath": "docker/strong-pm-java8",
     "Hostname": "watchman",
