@@ -1,21 +1,36 @@
 [
   {
     "name": "data-container",
-    "Image": "lukewendling\/data-container:1",
+    "Image": "lukewendling/data-container:2",
     "DockerFilePath": "",
     "Hostname": "data-container"
   },
   {
+    "name": "redis",
+    "Image": "redis:3.0",
+    "DockerFilePath": "",
+    "Hostname": "redis",
+    "HostConfig": {
+      "PortBindings": {
+        "6379/tcp": [
+          {
+            "HostPort": "6379"
+          }
+        ]
+      }
+    }
+  },
+  {
     "name": "mongo",
-    "Image": "jreeme\/mongo:2.6",
-    "DockerFilePath": "docker\/mongo\/2.6",
+    "Image": "jreeme/mongo:2.6",
+    "DockerFilePath": "docker/mongo/2.6",
     "Hostname": "mongo",
     "HostConfig": {
       "VolumesFrom": [
         "data-container"
       ],
       "PortBindings": {
-        "27017\/tcp": [
+        "27017/tcp": [
           {
             "HostPort": "27017"
           }
@@ -25,7 +40,7 @@
   },
   {
     "name": "neuraltalk2",
-    "Image": "jacopofar\/neuraltalk2-web:latest",
+    "Image": "jacopofar/neuraltalk2-web:latest",
     "DockerFilePath": "",
     "Hostname": "neuraltalk2",
     "Env": [
@@ -33,14 +48,14 @@
     ],
     "HostConfig": {
       "PortBindings": {
-        "5000\/tcp": [
+        "5000/tcp": [
           {
             "HostPort": "5000"
           }
         ]
       },
       "Binds": [
-          "/home/ubuntu/neuraltalk2:/mounted"
+        "/home/ubuntu/neuraltalk2:/mounted"
       ]
     },
     "Mounts": [
@@ -59,7 +74,7 @@
     "Hostname": "mitie",
     "HostConfig": {
       "PortBindings": {
-        "8888\/tcp": [
+        "8888/tcp": [
           {
             "HostPort": "8888"
           }
@@ -69,8 +84,8 @@
   },
   {
     "name": "Watchman",
-    "Image": "jreeme\/sljava",
-    "DockerFilePath": "docker\/strong-pm-java8",
+    "Image": "jreeme/sljava",
+    "DockerFilePath": "docker/strong-pm-java8",
     "Hostname": "watchman",
     "ExposedPorts": {
       "3001/tcp": {}
@@ -79,7 +94,8 @@
       "Links": [
         "mongo:mongo",
         "mitie:mitie",
-        "neuraltalk2:neuraltalk2"
+        "neuraltalk2:neuraltalk2",
+        "redis:redis"
       ],
       "PortBindings": {
         "3001/tcp": [
@@ -92,8 +108,19 @@
             "HostPort": "8701"
           }
         ]
-      }
+      },
+      "Binds": [
+        "/tmp/downloads:/downloads"
+      ]
     },
+    "Mounts": [
+      {
+        "Source": "/tmp/downloads",
+        "Destination": "/downloads",
+        "Mode": "",
+        "RW": true
+      }
+    ],
     "ExpressApps": [
       {
         "GitUrl": "https://github.com/Sotera/watchman.git",

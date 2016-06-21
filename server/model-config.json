@@ -55,5 +55,9 @@
   "translate": {
     "dataSource": null,
     "public": true
+  },
+  "job": {
+    "dataSource": null,
+    "public": true
   }
 }
