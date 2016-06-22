@@ -108,19 +108,8 @@
             "HostPort": "8701"
           }
         ]
-      },
-      "Binds": [
-        "/tmp/downloads:/downloads"
-      ]
-    },
-    "Mounts": [
-      {
-        "Source": "/tmp/downloads",
-        "Destination": "/downloads",
-        "Mode": "",
-        "RW": true
       }
-    ],
+    },
     "ExpressApps": [
       {
         "GitUrl": "https://github.com/Sotera/watchman.git",
