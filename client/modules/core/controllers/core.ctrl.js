@@ -1,10 +1,28 @@
 angular.module('com.module.core')
   .controller('CoreCtrl',['$scope','$http','ParsedEvent','TextFeed',
-    function($scope,$http,ParsedEvent,TextFeed) {
+    function($scope, $http, ParsedEvent, TextFeed) {
 
-    $scope.myModel = {
-      'dataString':"North Korea leader Kim Jong Un ordered his country to be ready to use its nuclear weapons at any time"
-    };
+    var osm = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      arcgis = 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+
+    angular.extend($scope, {
+      center: {
+        zoom: 2,
+        lng: 7.9,
+        lat: 1.0
+      },
+      tiles: {
+        url: arcgis
+      },
+      myModel: {
+        dataString: 'North Korea leader Kim Jong Un ordered his country \
+to be ready to use its nuclear weapons at any time'
+      }
+    });
+
+    $scope.$watch('center.zoom', function(zoom) {
+      $scope.tiles.url = (zoom > 3) ? osm : arcgis;
+    });
 
     $scope.submit = function(){
       $http.post('/api/extract/process', $scope.myModel)
@@ -60,9 +78,8 @@ angular.module('com.module.core')
       var src = new EventSource(parsedEventsUrl);
       src.addEventListener('data', function(msg) {
         var data = JSON.parse(msg.data);
-        if (data.type !== 'create') return; // only on create
+        if (!data.geocoded || data.type !== 'create') return; // only on create
         var event = data.data;
-        // console.info(data); // the change object
       	$scope.$apply(function() {
           addEvent(event);
         });
@@ -71,10 +88,10 @@ angular.module('com.module.core')
     })();
 
     (function getExistingEvents() {
-      var filter={
+      var filter = {
         filter: {
           where: {
-            geocoded:true
+            geocoded: true
           }
         }
       };

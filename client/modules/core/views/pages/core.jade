@@ -1,7 +1,7 @@
 extends /modules/core/views/layouts/layout
 block content
   .row
-    .col-md-6.col-md-offset-3
+    .col-md-12
       div(ng-controller='CoreCtrl')
         form(role='form')
           .form-group
@@ -14,6 +14,6 @@ block content
         button.btn.btn-default(ng-click='processNewsFeed(true)') Start News Feed
         //- button.btn.btn-default(ng-click='processNewsFeed(false)') Stop News Feed
 
-        leaflet(style='height:512px' markers='markers')
+        leaflet(style='height:512px' center='center' tiles='tiles' markers='markers')
         button.btn.btn-default(ng-click='destroyData()') Destroy data
 
