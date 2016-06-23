@@ -41,22 +41,6 @@ to be ready to use its nuclear weapons at any time'
       .catch(console.error);
     }
 
-    $scope.processNewsFeed = function(start) {
-
-      // if(!start){
-      //   TextFeed.stopFeeds()
-      //   .$promise
-      //   .then(function(data) { console.log(data); })
-      //   .catch(console.error);
-      //   return;
-      // }
-
-      TextFeed.startFeeds()
-      .$promise
-      .then(function(data) { console.log(data); })
-      .catch(console.error);
-    };
-
     function addEvents(events) {
       events.map(addEvent);
     };
