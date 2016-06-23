@@ -9,25 +9,34 @@ const request = require('request'),
   _ = require('lodash'),
   WAIT = 30; //seconds
 
-// recursively run, with a wait period
-(function run() {
-  FeedObject.findOne({ where: { processed: false } })
-  .then(markAsProcessed) // even if we fail later lets continue with the next item
-  .then(extract)
-  .then(feedObject => {
-    if (!feedObject) {
-      // if no more items, lets take a break
-      console.log('waiting for new feed data...');
-      setTimeout(run, WAIT * 1000);
-    } else {
-      run();
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    run(); // keep going
-  });
-})();
+const worker = module.exports = {
+  start() {
+    run();
+    // recursively run, with a wait period
+    function run() {
+      FeedObject.findOne({ where: { processed: false } })
+      .then(markAsProcessed) // even if we fail later lets continue with the next item
+      .then(extract)
+      .then(feedObject => {
+        if (!feedObject) {
+          // if no more items, lets take a break
+          console.log('waiting for new feed data...');
+          setTimeout(run, WAIT * 1000);
+        } else {
+          run();
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        run(); // keep going
+      });
+    };
+  }
+};
+
+// start if run as a worker process
+if (require.main === module)
+  worker.start();
 
 function extract(feedObject) {
   if (!feedObject) return;
@@ -39,7 +48,7 @@ function eventize(feedObject) {
   // TODO: abstract flickr specifics
   var extractType = _.capitalize(feedObject.extractType);
   if (extractType === 'Neuraltalk2') { // images
-    // photo id is part of guid 
+    // photo id is part of guid
     var photoId = /[0-9]+$/.exec(feedObject.guid)[0];
     return entityExtractor.eventizeWithNeuralTalk2(
       feedObject.enclosures[0].url,

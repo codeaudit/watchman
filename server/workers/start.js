@@ -2,5 +2,5 @@
 
 'use strict';
 
-require('./collector');
-require('./extractor');
+require('./collector').start();
+require('./extractor').start();

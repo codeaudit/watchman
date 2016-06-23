@@ -6,8 +6,8 @@ const INTERVAL = 15; // seconds
 const _ = require('lodash');
 let intervals = {}; // keep track of running intervals
 
-var worker = module.exports = {
-  start: function() {
+const worker = module.exports = {
+  start() {
     const TextFeed = app.models.TextFeed;
     run(); //first run
     // periodically check for new TextFeed sources
@@ -23,7 +23,7 @@ var worker = module.exports = {
 };
 
 // start if run as a worker process
-if (require.main === module || +process.env.START_WORKERS)
+if (require.main === module)
   worker.start();
 
 function process(feeds) {
