@@ -1,7 +1,7 @@
 [
   {
     "name": "data-container",
-    "Image": "lukewendling/data-container:1",
+    "Image": "lukewendling/data-container:2",
     "DockerFilePath": "",
     "Hostname": "data-container"
   },
@@ -91,6 +91,9 @@
       "3001/tcp": {}
     },
     "HostConfig": {
+      "VolumesFrom": [
+        "data-container"
+      ],
       "Links": [
         "mongo:mongo",
         "mitie:mitie",
@@ -159,6 +162,9 @@
     "ExposedPorts": {
     },
     "HostConfig": {
+      "VolumesFrom": [
+        "data-container"
+      ],
       "Links": [
         "mongo:mongo",
         "mitie:mitie",
