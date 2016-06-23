@@ -23,7 +23,7 @@ var worker = module.exports = {
 };
 
 // start if run as a worker process
-if (require.main === module)
+if (require.main === module || +process.env.START_WORKERS)
   worker.start();
 
 function process(feeds) {
