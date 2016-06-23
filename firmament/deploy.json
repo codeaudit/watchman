@@ -136,7 +136,7 @@
               "create",
               "watchman"
             ]
-          },,
+          },
           {
             "RelativeWorkingDir": ".",
             "Command": "slc",
@@ -144,8 +144,77 @@
               "ctl",
               "env-set",
               "watchman",
-              "FLICKR_API_KEY=TODO",
               "NODE_ENV=production"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "watchman-worker",
+    "Image": "lukewendling/strong-pm:1",
+    "DockerFilePath": "",
+    "Hostname": "watchman-worker",
+    "ExposedPorts": {
+    },
+    "HostConfig": {
+      "Links": [
+        "mongo:mongo",
+        "mitie:mitie",
+        "neuraltalk2:neuraltalk2",
+        "redis:redis"
+      ],
+      "PortBindings": {
+        "8701/tcp": [
+          {
+            "HostPort": "8702"
+          }
+        ]
+      }
+    },
+    "ExpressApps": [
+      {
+        "GitUrl": "https://github.com/Sotera/watchman.git",
+        "GitSrcBranchName": "master",
+        "StrongLoopBranchName": "deploy",
+        "StrongLoopServerUrl": "http://localhost:8702",
+        "ServiceName": "watchman1",
+        "Scripts":[
+          {
+            "RelativeWorkingDir": ".",
+            "Command": "slc",
+            "Args": [
+              "ctl",
+              "-C",
+              "http://localhost:8702",
+              "create",
+              "watchman1"
+            ]
+          },
+          {
+            "RelativeWorkingDir": ".",
+            "Command": "slc",
+            "Args": [
+              "ctl",
+              "-C",
+              "http://localhost:8702",
+              "set-size",
+              "watchman1",
+              "1"
+            ]
+          },
+          {
+            "RelativeWorkingDir": ".",
+            "Command": "slc",
+            "Args": [
+              "ctl",
+              "-C",
+              "http://localhost:8702",
+              "env-set",
+              "watchman1",
+              "NODE_ENV=production",
+              "START_WORKERS=1"
             ]
           }
         ]
