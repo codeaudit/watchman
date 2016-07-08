@@ -5,20 +5,12 @@ import argparse
 import numpy as np
 import json
 import pandas as pd
-import multiprocessing
 
 from functools import partial
-from pysparkling import Context
 from caffe_featurizer import CaffeFeaturizer
 
-parser = argparse.ArgumentParser(description='Featurize some images.')
-parser.add_argument('-caffeRootDir', dest='caffeRootDir', action='store', help='root directory for caffe.')
-args = parser.parse_args()
-CAFFE_ROOT = args.caffeRootDir
-
-sys.path.insert(0, CAFFE_ROOT + 'python')
-featurizer = CaffeFeaturizer(CAFFE_ROOT)
-
+CAFFE_ROOT = ''
+featurizer = None
 
 def create_dictionary(subdir, file_i):
     file_full_path = os.path.join(subdir, file_i)
@@ -30,14 +22,8 @@ def create_dictionary(subdir, file_i):
 
 def convert_files_to_dictionary(image_dir_path):
     for subdir, dirs, files in os.walk(image_dir_path):
-        try:
-            cpus = multiprocessing.cpu_count()
-        except NotImplementedError:
-            cpus = 2
-        pool = multiprocessing.Pool(processes=cpus)
-        # print pool.map(serialize, files)
         func = partial(create_dictionary, subdir)
-        data = pool.map(func, files)
+        data = map(func, files)
         return data
 
 
@@ -52,10 +38,8 @@ def get_caffe_features(file_path):
         featurizer.load_files()
         featurizer.forward()
 
-        features = pd.DataFrame(featurizer.featurize())
-        features = features.drop(featurizer.errs)[0]
-
-        return features
+        raw = featurizer.featurize()
+        return raw.tolist()
 
     except Exception as e:
         print e
@@ -87,25 +71,25 @@ def remove_file(file):
     os.remove(file)
 
 
-def get_all_features_in_path(image_dir_path, output_path, start_time):
+def get_all_features_in_path(caffe_root_path, image_dir_path, start_time):
     if not os.path.isdir(image_dir_path):
         return None
+
+    global CAFFE_ROOT
+    CAFFE_ROOT = caffe_root_path
+
+    global featurizer
+    featurizer = CaffeFeaturizer(CAFFE_ROOT)
+
     data_arr = convert_files_to_dictionary(image_dir_path)
-    # pysparkling:
-    sc = Context()
-    # pyspark:
-    # conf = SparkConf().setAppName("HOG and GIST ETL")
-    # sc = SparkContext(conf=conf)
-    num_parts = 4
-    rdd = sc.parallelize(data_arr, num_parts)
     # submit image rdd to processing
-    rdd_features = rdd.map(get_features).coalesce(1)
+    rdd_features = map(get_features, data_arr)
     # save as txt file:
-    rdd_features.map(dump).saveAsTextFile(output_path)
+    output = map(dump, rdd_features)
+
     print "------------------ %f minutes elapsed ------------------------" % ((time.time() - start_time)/60.0)
-    results_str = file_to_string(output_path)
-    remove_file(output_path)
-    return results_str
+
+    return output
 
 
 # For each image file submitted for processing,
@@ -115,7 +99,7 @@ def get_all_features_in_path(image_dir_path, output_path, start_time):
 # If equals -1, then method was unable to extract features from the image
 def run_feature_extraction():
     start_time = time.time()
-    desc='Feature Extraction for Images'
+    desc = 'Feature Extraction for Images'
     parser = argparse.ArgumentParser(
         description=desc,
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -124,7 +108,9 @@ def run_feature_extraction():
     default_path = 'target_images'
     parser.add_argument("--input_dir", help="input directory", default=default_path)
     parser.add_argument("--output", help="output file", default='image_features')
+    parser.add_argument('--caffeRootDir', dest='caffeRootDir', action='store', help='root directory for caffe.')
     args = parser.parse_args()
+
     # serialize and put all images in rdd:
     # use json schema:
     #     "name": "",
@@ -133,19 +119,20 @@ def run_feature_extraction():
     image_dir_path = args.input_dir
     data_arr = convert_files_to_dictionary(image_dir_path)
 
-    # pysparkling:
-    sc = Context()
+    global CAFFE_ROOT
+    CAFFE_ROOT = args.caffeRootDir
 
-    # pyspark:
-    # conf = SparkConf().setAppName("HOG and GIST ETL")
-    # sc = SparkContext(conf=conf)
+    sys.path.insert(0, CAFFE_ROOT + 'python')
 
-    num_parts = 4
-    rdd = sc.parallelize(data_arr, num_parts)
+    global featurizer
+    featurizer = CaffeFeaturizer(CAFFE_ROOT)
+
     # submit image rdd to processing
-    rdd_features = rdd.map(get_features).coalesce(1)
+    rdd_features = map(get_features, data_arr)
     # save as txt file:
-    rdd_features.map(dump).saveAsTextFile(args.output)
+    output = map(dump, rdd_features)
+    with open(args.output, 'w') as outfile:
+      json.dump(output, outfile)
     print "------------------ %f minutes elapsed ------------------------" % ((time.time() - start_time)/60.0)
 
     # helper fct to encapsulate:

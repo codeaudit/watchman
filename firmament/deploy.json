@@ -97,6 +97,20 @@
     }
   },
   {
+    "name": "caffe",
+    "Image": "lukewendling/caffedata:1",
+    "DockerFilePath": "",
+    "Hostname": "caffe",
+    "HostConfig": {
+      "VolumesFrom": [
+        "data-container"
+      ],
+      "Links": [
+        "redis:redis"
+      ]
+    }
+  },
+  {
     "name": "watchman",
     "Image": "jreeme/sljava",
     "DockerFilePath": "docker/strong-pm-java8",

@@ -1,6 +1,6 @@
 import redis
 import threading
-import caffe_feature_extraction.py
+import caffe_feature_extraction
 import json
 import time
 
@@ -42,7 +42,7 @@ class Listener(threading.Thread):
 
        # get features:
        print 'GETTING FEATURES'
-       features = caffe_feature_extraction.get_all_features_in_path(image_dir_path, output_path, start_time)
+       features = caffe_feature_extraction.get_all_features_in_path('/home/strong-pm/caffe/', image_dir_path, start_time)
        if features == None:
            print 'INVALID IMAGE DIRECTORY PATH'
            self.redis_2.hmset(key, {'state': 'error', 'error': 'invalid image directory path'})
