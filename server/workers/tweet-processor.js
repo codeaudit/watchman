@@ -1,45 +1,50 @@
-#!/usr/bin/env node
-
 // def: parses newline-delimited twitter json files, saves images to disk,
 // saves tweets to ES.
 
 'use strict';
 
+require('dotenv').config({silent: true});
+
 const es = require('elasticsearch'),
   request = require('request'),
   destClient = new es.Client({
-    host: 'elasticsearch:9200',
+    host: process.env.ES_HOST || 'elasticsearch',
     requestTimeout: 60000,
     log: 'error'
   }),
   destIndex = 'stream',
-  destType = 'tweet'
-  ;
-
-const fs = require('fs'),
+  destType = 'tweet',
+  fs = require('fs'),
   url = require('url'),
   path = require('path'),
   mkdirp = require('mkdirp'),
-  dataMapping = require('./data-mapping'),
+  dataMapping = require('../../lib/data-mapping'),
   readline = require('readline'),
   _ = require('lodash'),
   dir = require('node-dir'),
-  queuedFilesPath = '/tmp/processing',
-  imagesDir = path.join('/tmp', destIndex, destType),
-  POLL_WAIT = 60 // seconds
+  queuedFilesDir = path.join('/downloads', destType, 'files'),
+  processedFilesDir = path.join(queuedFilesDir, 'done'),
+  imagesDir = path.join('/downloads', destType, 'images'),
+  POLL_WAIT = 30 // seconds
 ;
 
-let images = [] // cached while processing
-;
+let images = []; // cached while processing
 
-console.log('Waiting for files in %s', queuedFilesPath);
-console.log('Saving images to %s', imagesDir);
+const worker = module.exports = {
+  start() {
+    console.log('Waiting for files in %s', queuedFilesDir);
+    console.log('Saving images to %s', imagesDir);
+    run();
+  }
+};
 
-run();
+// start if run as a worker process
+if (require.main === module)
+  worker.start();
 
 function run() {
   prep()
-  .then(getFiles)
+  .then(processFiles)
   .then(bulkIndex)
   .then(() => saveImages(images))
   .then(() => {
@@ -50,6 +55,10 @@ function run() {
 }
 
 function prep() {
+  mkdirp.sync(queuedFilesDir);
+  mkdirp.sync(processedFilesDir);
+  mkdirp.sync(imagesDir);
+
   images = [];
 
   return dataMapping.createIndexWithMapping({
@@ -57,15 +66,17 @@ function prep() {
   });
 }
 
-function getFiles() {
+function processFiles() {
   let bulkLines = [];
-  mkdirp.sync(queuedFilesPath);
 
   return new Promise((res, rej) => {
-    dir.readFilesStream(queuedFilesPath,
-      { match: /\.json$/ },
+    dir.readFilesStream(queuedFilesDir,
+      { match: /\.json$/,
+        recursive: false
+      },
       (err, stream, next) => {
         if (err) return rej(err);
+        console.log('found file to process: %s', stream.path);
         const lineReader = readline.createInterface({
           input: stream,
           terminal: false
@@ -75,7 +86,6 @@ function getFiles() {
         .on('line', line => {
           let altered = alterTweet(line);
           if (altered) {
-            console.log(altered);
             // TODO: would be better to stream
             bulkLines.push(JSON.stringify({ create: { _id: altered.id } }));
             bulkLines.push(JSON.stringify(altered));
@@ -87,13 +97,17 @@ function getFiles() {
           }
         })
         .on('close', () => next())
-        .on('error', err => { throw err; })
+        .on('error', rej)
         ;
       },
       (err, files) => {
         if (err) return rej(err);
         if (process.env.NODE_ENV === 'production')
-          files.forEach(f => fs.renameSync(f, f + '~')); // mark completed
+          // mark complete
+          files.forEach(f => {
+            let renamed = path.join(processedFilesDir, path.basename(f));
+            fs.renameSync(f, renamed);
+          });
         return res(bulkLines);
       }
     );
@@ -126,8 +140,6 @@ function alterTweet(line) {
 }
 
 function saveImages(images) {
-  mkdirp.sync(imagesDir);
-
   // save each with arbitrary delay to bypass
   // file handler limits, request limits, etc.
   let promiseChain = Promise.resolve();
@@ -135,7 +147,7 @@ function saveImages(images) {
     promiseChain = promiseChain
       .then(() => saveImage(img))
       .then(() => console.log('saving image %s...', img.url))
-      .then(() => slowdown(500))
+      .then(() => slowdown(333))
       .catch(err => console.error('error saving %s', img.url));
   }
   return promiseChain;

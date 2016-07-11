@@ -29,7 +29,7 @@ lb-ng server/server.js client/js/lb-services.js
 ./script/setup.js
 npm run dev # open localhost:3001
 docker run -d -p 8888:8888 --name mitie lukewendling/mitie-server
-./server/workers/start.js # start workers
+./server/workers/start-extractor.js # start workers
 ```
 
 ## Misc

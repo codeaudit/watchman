@@ -1,38 +1,48 @@
-#!/usr/bin/env node
-
 // def: trigger featurizer jobs and get results from redis
 
 'use strict';
 
+require('dotenv').config({silent: true});
+
 const es = require('elasticsearch'),
-  request = require('request'),
   destClient = new es.Client({
-    host: 'elasticsearch:9200',
+    host: process.env.ES_HOST || 'elasticsearch',
     requestTimeout: 60000,
     log: 'error'
   }),
   destIndex = 'stream',
-  destType = 'tweet'
-  ;
-
-const fs = require('fs'),
+  destType = 'tweet',
+  fs = require('fs'),
   path = require('path'),
-  redis = require('./redis'),
+  mkdirp = require('mkdirp'),
+  redis = require('../../lib/redis'),
   _ = require('lodash'),
   dir = require('node-dir'),
-  imagesDir = path.join('/tmp', destIndex, destType),
-  POLL_WAIT = 20 // seconds
+  queuedImagesDir = path.join('/downloads', destType, 'images'),
+  processedImagesDir = path.join(queuedImagesDir, 'done'),
+  channelName = 'features',
+  POLL_WAIT = 30 // seconds
 ;
 
-let queue = new Set();
+let queue = new Set(); // jobs in-process
 
-console.log('Polling for images in %s', imagesDir);
+const worker = module.exports = {
+  start() {
+    console.log('Polling for images in %s', queuedImagesDir);
+    run();
 
-run();
+    // kickoff secondary process to save featurizer results
+    setInterval(pollResults, POLL_WAIT * 1000);
+  }
+};
+
+// start if run as a worker process
+if (require.main === module)
+  worker.start();
 
 function run() {
   prep()
-  .then(getFiles)
+  .then(getImages)
   .then(() => {
     setTimeout(run, POLL_WAIT * 1000);  // poll for new files
     console.log('Pausing featurizer for %d sec ...', POLL_WAIT);
@@ -40,19 +50,21 @@ function run() {
   .catch(console.error);
 }
 
-// kickoff secondary process to save featurizer results
-setInterval(pollResults, POLL_WAIT * 1000);
-
 function prep() {
+  mkdirp.sync(queuedImagesDir); // just in case not exists
+  mkdirp.sync(processedImagesDir);
   return Promise.resolve();
 }
 
-function getFiles() {
+function getImages() {
   return new Promise((res, rej) => {
-    dir.readFilesStream(imagesDir,
-      { match: /\.jpg$/ },
+    dir.readFilesStream(queuedImagesDir,
+      { match: /\.(jpg|jpeg|png)$/,
+        recursive: false
+      },
       (err, stream, next) => {
         if (err) return rej(err);
+        console.log('found image to featurize: %s', stream.path);
         triggerFeaturizer(stream.path)
         .then(key => queue.add(key))
         .then(() => next())
@@ -64,24 +76,34 @@ function getFiles() {
       (err, files) => {
         if (err) return rej(err);
         if (process.env.NODE_ENV === 'production')
-          files.forEach(f => fs.renameSync(f, f + '~')); // mark completed
+          // mark complete
+          files.forEach(f => {
+            let renamed = path.join(processedImagesDir, path.basename(f));
+            fs.renameSync(f, renamed);
+          });
         return res();
       }
     );
   });
 }
 
+// for redis, add channel prefix
 function getFeaturizerKey(id) {
-  return 'features:' + id;
+  return channelName + ':' + id;
+}
+
+// for ES, remove channel prefix
+function getRecordId(key) {
+  return key.replace(channelName + ':', '');
 }
 
 function triggerFeaturizer(filePath) {
   const key = getFeaturizerKey(getBasename(filePath));
   return Promise.all([
     redis.hmset(key, { path: filePath, state: 'downloaded' }),
-    redis.publish('features', key)
+    redis.publish(channelName, key)
   ])
-  .then(() => key); // return key
+  .then(() => key); // return key for later polling
 }
 
 function pollResults() {
@@ -93,11 +115,16 @@ function pollResults() {
         console.log('%s not found', key);
         queue.delete(key);
       } else if (data.state === 'processed') {
-        saveFeatures(data);
+        if (_.isEmpty(data.features))
+          console.error('%s is missing features data', key);
+        else
+          saveFeatures(getRecordId(key), data.features);
         queue.delete(key);
+        redis.del(key); //good citizen cleanup
       } else if (data.state === 'error') {
-        console.log('%s reported an error: %s', key, data.error);
+        console.error('%s reported an error: %s', key, data.error);
         queue.delete(key);
+        redis.del(key); //good citizen cleanup
       } else {
         console.log('%s state: %s', key, data.state);
       }
@@ -109,13 +136,15 @@ function pollResults() {
   });
 }
 
-function saveFeatures(data) {
+function saveFeatures(recordId, features) {
   return destClient.update({
+    id: recordId,
     index: destIndex,
     type: destType,
-    body: { features: data.data }
+    body: { doc: features }
   })
-  .then(() => console.log('features saved for %s', data.path));
+  .then(() => console.log('features saved for %s', recordId))
+  .catch(console.error);
 }
 
 // file basename less file ext.

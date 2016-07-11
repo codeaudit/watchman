@@ -34,8 +34,16 @@ boot(app, __dirname, function(err) {
 
   // start the server if `$ node server.js`
   if (require.main === module) {
-    if (+process.env.START_WORKERS) {
-      require('./workers/start');
+    var worker = process.env.WORKER_SCRIPT;
+    if (worker) {
+      console.log('Attempting to start a worker process...');
+      try {
+        worker = require(worker);
+      } catch(e) {
+        console.error('script path \'%s\' is invalid. \
+Must be relative to %s', worker, __dirname);
+      }
+      worker.start();
       return;
     } else {
       app.start();

@@ -4,3 +4,4 @@ temp
 .idea
 *.log
 .env
+firmament/docker/**/*.conf

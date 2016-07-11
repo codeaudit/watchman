@@ -7,7 +7,7 @@
   },
   {
     "name": "redis",
-    "Image": "redis:3.0",
+    "Image": "lukewendlng/redis-watchman:1",
     "DockerFilePath": "",
     "Hostname": "redis",
     "HostConfig": {
