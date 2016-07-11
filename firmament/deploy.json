@@ -7,7 +7,7 @@
   },
   {
     "name": "redis",
-    "Image": "lukewendlng/redis-watchman:1",
+    "Image": "lukewendling/redis-watchman:1",
     "DockerFilePath": "",
     "Hostname": "redis",
     "HostConfig": {
@@ -169,10 +169,10 @@
     ]
   },
   {
-    "name": "watchman-worker",
+    "name": "watchman-extractor",
     "Image": "lukewendling/strong-pm:1",
     "DockerFilePath": "",
-    "Hostname": "watchman-worker",
+    "Hostname": "watchman-extractor",
     "ExposedPorts": {
     },
     "HostConfig": {
@@ -199,7 +199,7 @@
         "GitSrcBranchName": "master",
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8702",
-        "ServiceName": "watchman1",
+        "ServiceName": "watchman-extractor",
         "Scripts":[
           {
             "RelativeWorkingDir": ".",
@@ -209,7 +209,7 @@
               "-C",
               "http://localhost:8702",
               "create",
-              "watchman1"
+              "watchman-extractor"
             ]
           },
           {
@@ -220,7 +220,7 @@
               "-C",
               "http://localhost:8702",
               "set-size",
-              "watchman1",
+              "watchman-extractor",
               "1"
             ]
           },
@@ -232,9 +232,153 @@
               "-C",
               "http://localhost:8702",
               "env-set",
-              "watchman1",
+              "watchman-extractor",
               "NODE_ENV=production",
-              "START_WORKERS=1"
+              "WORKER_SCRIPT=./workers/start-extractor"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "watchman-tweet-processor",
+    "Image": "lukewendling/strong-pm:1",
+    "DockerFilePath": "",
+    "Hostname": "watchman-tweet-processor",
+    "ExposedPorts": {
+    },
+    "HostConfig": {
+      "VolumesFrom": [
+        "data-container"
+      ],
+      "Links": [
+        "mongo:mongo",
+        "redis:redis"
+      ],
+      "PortBindings": {
+        "8701/tcp": [
+          {
+            "HostPort": "8703"
+          }
+        ]
+      }
+    },
+    "ExpressApps": [
+      {
+        "GitUrl": "https://github.com/Sotera/watchman.git",
+        "GitSrcBranchName": "master",
+        "StrongLoopBranchName": "deploy",
+        "StrongLoopServerUrl": "http://localhost:8703",
+        "ServiceName": "watchman-tweet-processor",
+        "Scripts":[
+          {
+            "RelativeWorkingDir": ".",
+            "Command": "slc",
+            "Args": [
+              "ctl",
+              "-C",
+              "http://localhost:8703",
+              "create",
+              "watchman-tweet-processor"
+            ]
+          },
+          {
+            "RelativeWorkingDir": ".",
+            "Command": "slc",
+            "Args": [
+              "ctl",
+              "-C",
+              "http://localhost:8703",
+              "set-size",
+              "watchman-tweet-processor",
+              "1"
+            ]
+          },
+          {
+            "RelativeWorkingDir": ".",
+            "Command": "slc",
+            "Args": [
+              "ctl",
+              "-C",
+              "http://localhost:8703",
+              "env-set",
+              "watchman-tweet-processor",
+              "NODE_ENV=production",
+              "WORKER_SCRIPT=./workers/tweet-processor",
+              "ES_HOST=elasticsearch:9200"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "watchman-featurizer",
+    "Image": "lukewendling/strong-pm:1",
+    "DockerFilePath": "",
+    "Hostname": "watchman-featurizer",
+    "ExposedPorts": {
+    },
+    "HostConfig": {
+      "VolumesFrom": [
+        "data-container"
+      ],
+      "Links": [
+        "mongo:mongo",
+        "redis:redis"
+      ],
+      "PortBindings": {
+        "8701/tcp": [
+          {
+            "HostPort": "8704"
+          }
+        ]
+      }
+    },
+    "ExpressApps": [
+      {
+        "GitUrl": "https://github.com/Sotera/watchman.git",
+        "GitSrcBranchName": "master",
+        "StrongLoopBranchName": "deploy",
+        "StrongLoopServerUrl": "http://localhost:8704",
+        "ServiceName": "watchman-featurizer",
+        "Scripts":[
+          {
+            "RelativeWorkingDir": ".",
+            "Command": "slc",
+            "Args": [
+              "ctl",
+              "-C",
+              "http://localhost:8704",
+              "create",
+              "watchman-featurizer"
+            ]
+          },
+          {
+            "RelativeWorkingDir": ".",
+            "Command": "slc",
+            "Args": [
+              "ctl",
+              "-C",
+              "http://localhost:8704",
+              "set-size",
+              "watchman-featurizer",
+              "1"
+            ]
+          },
+          {
+            "RelativeWorkingDir": ".",
+            "Command": "slc",
+            "Args": [
+              "ctl",
+              "-C",
+              "http://localhost:8704",
+              "env-set",
+              "watchman-featurizer",
+              "NODE_ENV=production",
+              "WORKER_SCRIPT=./workers/featurizer",
+              "ES_HOST=elasticsearch:9200"
             ]
           }
         ]
