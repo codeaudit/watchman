@@ -34,16 +34,11 @@ RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
     rm Anaconda2-2.4.1-Linux-x86_64.sh
 
 ENV PATH /opt/conda/bin:$PATH
-
+RUN export PYTHONPATH=/home/caffe-user/caffe/python/:$PYTHONPATH
 RUN conda install -c https://conda.anaconda.org/memex elasticsearch-py && \
-conda install -c https://conda.anaconda.org/anaconda protobuf && \
-conda install -c pandas && \
-conda install -c redis && \
-conda install -c numpy && \
-conda install -c h5py && \
-conda install -c hdf5 && \
+conda install -c https://conda.anaconda.org/anaconda protobuf
 
-RUN useradd -ms /bin/bash caffe-user
+RUN useradd -ms /bin/bash caffe-user && echo "caffe-user:caffe-user" | chpasswd && adduser caffe-user sudo
 RUN chown -R caffe-user:caffe-user /usr/local
 
 # Clone Caffe repo and move into it
@@ -63,10 +58,18 @@ RUN cd /home/caffe-user/caffe && \
 
 RUN chown -R caffe-user:caffe-user /home/caffe-user/caffe
 
-USER caffe-user
-
-RUN wget --quiet https://raw.githubusercontent.com/Sotera/watchman/caffe_featurization/python/caffe-image-featurizer/caffe_feature_extraction.py && \
+RUN cd /home/caffe-user/caffe/python/caffe && \
+wget --quiet https://raw.githubusercontent.com/Sotera/watchman/caffe_featurization/python/caffe-image-featurizer/caffe_feature_extraction.py && \
 wget --quiet https://raw.githubusercontent.com/Sotera/watchman/caffe_featurization/python/caffe-image-featurizer/caffe_featurizer.py && \
 wget --quiet https://raw.githubusercontent.com/Sotera/watchman/caffe_featurization/python/caffe-image-featurizer/caffe_redis_client.py
 
-entrypoint ["python", "caffe_redis_client.py"]
+RUN chown -R caffe-user:caffe-user /home/caffe-user
+
+USER caffe-user
+
+RUN cd /home/caffe-user/caffe/python/caffe
+
+RUN export CAFFE_ROOT=/home/caffe-user/caffe
+RUN export PYTHONPATH=/home/caffe-user/caffe/python:$PYTHONPATH
+
+#entrypoint ["python", "/home/caffe-user/caffe/python/caffe/caffe_redis_client.py"]
