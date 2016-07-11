@@ -11,6 +11,7 @@ class Listener(threading.Thread):
        self.redis_2 = r2
        self.pubsub_receive = self.redis_1.pubsub()
        self.pubsub_receive.subscribe(channels)
+       self.caffe_root = '/home/caffe-user/caffe/'
 
    def work(self, item):
        #import pdb; pdb.set_trace()
@@ -42,7 +43,7 @@ class Listener(threading.Thread):
 
        # get features:
        print 'GETTING FEATURES'
-       features = caffe_feature_extraction.get_all_features_in_path('/home/strong-pm/caffe/', image_dir_path, start_time)
+       features = caffe_feature_extraction.get_all_features_in_path(self.caffe_root, image_dir_path, start_time)
        if features == None:
            print 'INVALID IMAGE DIRECTORY PATH'
            self.redis_2.hmset(key, {'state': 'error', 'error': 'invalid image directory path'})
@@ -75,7 +76,7 @@ class Listener(threading.Thread):
             self.work(item)
 
 if __name__ == "__main__":
-   pool = redis.ConnectionPool(host='redis', port=6379)
+   pool = redis.ConnectionPool(host='localhost', port=6379)
    r1 = redis.Redis(connection_pool=pool)
    r2 = redis.Redis(connection_pool=pool)
    client = Listener(r1, r2, ['features'])

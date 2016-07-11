@@ -83,20 +83,6 @@
     }
   },
   {
-    "name": "fee",
-    "Image": "cschulze/fee_redis",
-    "DockerFilePath": "",
-    "Hostname": "fee",
-    "HostConfig": {
-      "VolumesFrom": [
-        "data-container"
-      ],
-      "Links": [
-        "redis:redis"
-      ]
-    }
-  },
-  {
     "name": "caffe",
     "Image": "lukewendling/caffedata:1",
     "DockerFilePath": "",
