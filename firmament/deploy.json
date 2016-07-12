@@ -23,7 +23,7 @@
   {
     "name": "mongo",
     "Image": "jreeme/mongo:2.6",
-    "DockerFilePath": "docker/mongo/2.6",
+    "DockerFilePath": "",
     "Hostname": "mongo",
     "HostConfig": {
       "VolumesFrom": [
@@ -97,9 +97,23 @@
     }
   },
   {
+    "name": "caffe",
+    "Image": "sotera/caffe_redis_client:1",
+    "DockerFilePath": "",
+    "Hostname": "caffe",
+    "HostConfig": {
+      "VolumesFrom": [
+        "data-container"
+      ],
+      "Links": [
+        "redis:redis"
+      ]
+    }
+  },
+  {
     "name": "watchman",
-    "Image": "jreeme/sljava",
-    "DockerFilePath": "docker/strong-pm-java8",
+    "Image": "lukewendling/sljava:1",
+    "DockerFilePath": "",
     "Hostname": "watchman",
     "ExposedPorts": {
       "3001/tcp": {}
@@ -134,36 +148,13 @@
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8701",
         "ServiceName": "watchman",
+        "DoBowerInstall": true,
+        "EnvironmentVariables": {
+          "PORT": 3001,
+          "NODE_ENV": "production"
+        },
         "Scripts":[
-          {
-            "RelativeWorkingDir":".",
-            "Command": "bower",
-            "Args":[
-              "install",
-              "--config.interactive=false"
-            ]
-          },
-          {
-            "RelativeWorkingDir": ".",
-            "Command": "slc",
-            "Args": [
-              "ctl",
-              "-C",
-              "http://localhost:8701",
-              "create",
-              "watchman"
-            ]
-          },
-          {
-            "RelativeWorkingDir": ".",
-            "Command": "slc",
-            "Args": [
-              "ctl",
-              "env-set",
-              "watchman",
-              "NODE_ENV=production"
-            ]
-          }
+
         ]
       }
     ]
@@ -200,43 +191,13 @@
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8702",
         "ServiceName": "watchman-extractor",
+        "ClusterSize": 1,
+        "EnvironmentVariables": {
+          "NODE_ENV": "production",
+          "WORKER_SCRIPT": "./workers/start-extractor"
+        },
         "Scripts":[
-          {
-            "RelativeWorkingDir": ".",
-            "Command": "slc",
-            "Args": [
-              "ctl",
-              "-C",
-              "http://localhost:8702",
-              "create",
-              "watchman-extractor"
-            ]
-          },
-          {
-            "RelativeWorkingDir": ".",
-            "Command": "slc",
-            "Args": [
-              "ctl",
-              "-C",
-              "http://localhost:8702",
-              "set-size",
-              "watchman-extractor",
-              "1"
-            ]
-          },
-          {
-            "RelativeWorkingDir": ".",
-            "Command": "slc",
-            "Args": [
-              "ctl",
-              "-C",
-              "http://localhost:8702",
-              "env-set",
-              "watchman-extractor",
-              "NODE_ENV=production",
-              "WORKER_SCRIPT=./workers/start-extractor"
-            ]
-          }
+
         ]
       }
     ]
@@ -271,44 +232,14 @@
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8703",
         "ServiceName": "watchman-tweet-processor",
+        "ClusterSize": 1,
+        "EnvironmentVariables": {
+          "NODE_ENV": "production",
+          "WORKER_SCRIPT": "./workers/tweet-processor",
+          "ES_HOST": "elasticsearch:9200"
+        },
         "Scripts":[
-          {
-            "RelativeWorkingDir": ".",
-            "Command": "slc",
-            "Args": [
-              "ctl",
-              "-C",
-              "http://localhost:8703",
-              "create",
-              "watchman-tweet-processor"
-            ]
-          },
-          {
-            "RelativeWorkingDir": ".",
-            "Command": "slc",
-            "Args": [
-              "ctl",
-              "-C",
-              "http://localhost:8703",
-              "set-size",
-              "watchman-tweet-processor",
-              "1"
-            ]
-          },
-          {
-            "RelativeWorkingDir": ".",
-            "Command": "slc",
-            "Args": [
-              "ctl",
-              "-C",
-              "http://localhost:8703",
-              "env-set",
-              "watchman-tweet-processor",
-              "NODE_ENV=production",
-              "WORKER_SCRIPT=./workers/tweet-processor",
-              "ES_HOST=elasticsearch:9200"
-            ]
-          }
+
         ]
       }
     ]
@@ -343,44 +274,14 @@
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8704",
         "ServiceName": "watchman-featurizer",
+        "ClusterSize": 1,
+        "EnvironmentVariables": {
+          "NODE_ENV": "production",
+          "WORKER_SCRIPT": "./workers/featurizer",
+          "ES_HOST": "elasticsearch:9200"
+        },
         "Scripts":[
-          {
-            "RelativeWorkingDir": ".",
-            "Command": "slc",
-            "Args": [
-              "ctl",
-              "-C",
-              "http://localhost:8704",
-              "create",
-              "watchman-featurizer"
-            ]
-          },
-          {
-            "RelativeWorkingDir": ".",
-            "Command": "slc",
-            "Args": [
-              "ctl",
-              "-C",
-              "http://localhost:8704",
-              "set-size",
-              "watchman-featurizer",
-              "1"
-            ]
-          },
-          {
-            "RelativeWorkingDir": ".",
-            "Command": "slc",
-            "Args": [
-              "ctl",
-              "-C",
-              "http://localhost:8704",
-              "env-set",
-              "watchman-featurizer",
-              "NODE_ENV=production",
-              "WORKER_SCRIPT=./workers/featurizer",
-              "ES_HOST=elasticsearch:9200"
-            ]
-          }
+
         ]
       }
     ]
