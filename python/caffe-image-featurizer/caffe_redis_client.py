@@ -76,7 +76,7 @@ class Listener(threading.Thread):
             self.work(item)
 
 if __name__ == "__main__":
-   pool = redis.ConnectionPool(host='localhost', port=6379)
+   pool = redis.ConnectionPool(host='redis', port=6379)
    r1 = redis.Redis(connection_pool=pool)
    r2 = redis.Redis(connection_pool=pool)
    client = Listener(r1, r2, ['features'])

@@ -53,24 +53,22 @@ RUN cd /home/caffe-user/caffe && \
   make pycaffe && \
   make distribute
 
-#RUN cd /home/caffe-user/caffe/models/bvlc_reference_caffenet && \
-#  wget --quiet http://dl.caffe.berkeleyvision.org/bvlc_reference_caffenet.caffemodel
+RUN cd /home/caffe-user/caffe/models/bvlc_reference_caffenet && \
+wget --quiet http://dl.caffe.berkeleyvision.org/bvlc_reference_caffenet.caffemodel
 
-RUN wget http://www.yahoo.com
-
-RUN cd /home/caffe-user/ && \
-wget --quiet https://raw.githubusercontent.com/Sotera/watchman/caffe_featurization/python/caffe-image-featurizer/caffe_feature_extraction.py && \
-wget --quiet https://raw.githubusercontent.com/Sotera/watchman/caffe_featurization/python/caffe-image-featurizer/caffe_featurizer.py && \
-wget --quiet https://raw.githubusercontent.com/Sotera/watchman/caffe_featurization/python/caffe-image-featurizer/caffe_redis_client.py
+WORKDIR /home/caffe-user/
+RUN wget --quiet https://raw.githubusercontent.com/Sotera/watchman/caffe_featurization/python/caffe-image-featurizer/caffe_feature_extraction.py
+RUN wget --quiet https://raw.githubusercontent.com/Sotera/watchman/caffe_featurization/python/caffe-image-featurizer/caffe_featurizer.py
+RUN wget --quiet https://raw.githubusercontent.com/Sotera/watchman/caffe_featurization/python/caffe-image-featurizer/caffe_redis_client.py
 
 RUN chown -R caffe-user:caffe-user /home/caffe-user
 
 USER caffe-user
 
-RUN cd /home/caffe-user/
-
 RUN export CAFFE_ROOT=/home/caffe-user/caffe/
 
 RUN export PYTHONPATH=/home/caffe-user/caffe/python:$PYTHONPATH
 
-#entrypoint ["python", "/home/caffe-user/caffe/python/caffe/caffe_redis_client.py"]
+CMD ["/usr/bin/top"]
+
+#entrypoint ["python", "/home/caffe-user/caffe_redis_client.py"]
