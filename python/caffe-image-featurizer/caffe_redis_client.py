@@ -1,7 +1,3 @@
-import sys
-sys.path
-sys.path.append('/home/caffe-user/caffe/python')
-
 import redis
 import threading
 import caffe_feature_extraction

@@ -1,5 +1,10 @@
 import sys
 import numpy as np
+
+import sys
+sys.path
+sys.path.append('/home/caffe-user/caffe/python')
+
 import caffe
 
 class CaffeFeaturizer:
