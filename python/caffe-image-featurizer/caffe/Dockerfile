@@ -56,7 +56,7 @@ RUN cd /home/caffe-user/caffe && \
 #RUN cd /home/caffe-user/caffe/models/bvlc_reference_caffenet && \
 #  wget --quiet http://dl.caffe.berkeleyvision.org/bvlc_reference_caffenet.caffemodel
 
-RUN chown -R caffe-user:caffe-user /home/caffe-user/caffe/
+RUN wget http://www.yahoo.com
 
 RUN cd /home/caffe-user/ && \
 wget --quiet https://raw.githubusercontent.com/Sotera/watchman/caffe_featurization/python/caffe-image-featurizer/caffe_feature_extraction.py && \
@@ -69,7 +69,8 @@ USER caffe-user
 
 RUN cd /home/caffe-user/
 
-RUN export CAFFE_ROOT=/home/caffe-user/caffe
+RUN export CAFFE_ROOT=/home/caffe-user/caffe/
+
 RUN export PYTHONPATH=/home/caffe-user/caffe/python:$PYTHONPATH
 
 #entrypoint ["python", "/home/caffe-user/caffe/python/caffe/caffe_redis_client.py"]
