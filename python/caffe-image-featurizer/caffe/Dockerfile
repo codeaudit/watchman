@@ -56,7 +56,7 @@ RUN cd /home/caffe-user/caffe && \
 #RUN cd /home/caffe-user/caffe/models/bvlc_reference_caffenet && \
 #  wget --quiet http://dl.caffe.berkeleyvision.org/bvlc_reference_caffenet.caffemodel
 
-RUN chown -R caffe-user:caffe-user /home/caffe-user/caffe
+RUN chown -R caffe-user:caffe-user /home/caffe-user/caffe/
 
 RUN cd /home/caffe-user/ && \
 wget --quiet https://raw.githubusercontent.com/Sotera/watchman/caffe_featurization/python/caffe-image-featurizer/caffe_feature_extraction.py && \
