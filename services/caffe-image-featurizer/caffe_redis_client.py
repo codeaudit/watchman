@@ -45,8 +45,8 @@ class Listener(threading.Thread):
        print 'GETTING FEATURES'
        features = caffe_feature_extraction.get_all_features_in_path(self.caffe_root, image_dir_path, start_time)
        if features == None:
-           print 'INVALID IMAGE DIRECTORY PATH'
-           self.redis_2.hmset(key, {'state': 'error', 'error': 'invalid image directory path'})
+           print 'INVALID IMAGE OR DIRECTORY PATH'
+           self.redis_2.hmset(key, {'state': 'error', 'error': 'invalid image or directory path'})
            return
        print 'FINISHED FEATURE PROCESSING'
        obj_dict['data'] = features

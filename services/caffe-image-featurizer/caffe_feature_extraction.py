@@ -14,17 +14,29 @@ featurizer = None
 
 def create_dictionary(subdir, file_i):
     file_full_path = os.path.join(subdir, file_i)
-    dict = {}
-    dict["name"] = file_full_path
+    file_dictionary = {"name": file_full_path}
     print '----SERIALIZING----'
-    return json.dumps(dict)
+    return json.dumps(file_dictionary)
 
 
 def convert_files_to_dictionary(image_dir_path):
-    for subdir, dirs, files in os.walk(image_dir_path):
-        func = partial(create_dictionary, subdir)
-        data = map(func, files)
-        return data
+    try:
+
+        if os.path.isfile(image_dir_path):
+            file_dictionary = {"name": image_dir_path}
+            return [json.dumps(file_dictionary)]
+
+        elif os.path.isdir(image_dir_path):
+            for subdir, dirs, files in os.walk(image_dir_path):
+                func = partial(create_dictionary, subdir)
+                data = map(func, files)
+                return data
+
+    except Exception as e:
+        print e
+        return []
+
+    return []
 
 
 def dump(x):
@@ -72,7 +84,7 @@ def remove_file(file):
 
 
 def get_all_features_in_path(caffe_root_path, image_dir_path, start_time):
-    if not os.path.isdir(image_dir_path):
+    if not (os.path.isdir(image_dir_path)) and not (os.path.isfile(image_dir_path)):
         return None
 
     global CAFFE_ROOT
