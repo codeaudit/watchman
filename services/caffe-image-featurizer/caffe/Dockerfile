@@ -69,4 +69,4 @@ RUN export CAFFE_ROOT=/home/caffe-user/caffe/
 
 RUN export PYTHONPATH=/home/caffe-user/caffe/python:$PYTHONPATH
 
-#entrypoint ["python", "/home/caffe-user/caffe_redis_client.py"]
+entrypoint ["python", "/home/caffe-user/caffe_redis_client.py"]
