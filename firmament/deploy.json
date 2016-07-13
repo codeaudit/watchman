@@ -6,6 +6,12 @@
     "Hostname": "data-container"
   },
   {
+    "name": "training-models",
+    "Image": "lukewendling/training-models:1",
+    "DockerFilePath": "",
+    "Hostname": "training-models"
+  },
+  {
     "name": "redis",
     "Image": "lukewendling/redis-watchman:1",
     "DockerFilePath": "",
@@ -44,28 +50,20 @@
     "DockerFilePath": "",
     "Hostname": "neuraltalk2",
     "Env": [
-      "modelPath=/mounted/models/model_id1-501-1448236541.t7_cpu.t7"
+      "modelPath=/models/neuraltalk2/model_id1-501-1448236541.t7_cpu.t7"
     ],
     "HostConfig": {
+      "VolumesFrom": [
+        "training-models"
+      ],
       "PortBindings": {
         "5000/tcp": [
           {
             "HostPort": "5000"
           }
         ]
-      },
-      "Binds": [
-        "/home/ubuntu/neuraltalk2:/mounted"
-      ]
-    },
-    "Mounts": [
-      {
-        "Source": "/home/ubuntu/neuraltalk2",
-        "Destination": "/mounted",
-        "Mode": "",
-        "RW": true
       }
-    ]
+    }
   },
   {
     "name": "mitie",
@@ -98,7 +96,7 @@
   },
   {
     "name": "caffe",
-    "Image": "sotera/caffe_redis_client:1",
+    "Image": "sotera/caffe_redis_client:2",
     "DockerFilePath": "",
     "Hostname": "caffe",
     "HostConfig": {
