@@ -64,8 +64,15 @@ function getImages() {
       },
       (err, stream, next) => {
         if (err) return rej(err);
-        console.log('found image to featurize: %s', stream.path);
-        triggerFeaturizer(stream.path)
+        let f = stream.path,
+          renamed = f;
+        console.log('found image to featurize: %s', f);
+        // mark complete
+        if (process.env.NODE_ENV === 'production') {
+          renamed = path.join(processedImagesDir, path.basename(f));
+          fs.renameSync(f, renamed);
+        }
+        triggerFeaturizer(renamed)
         .then(key => queue.add(key))
         .then(() => next())
         .catch(err => {
@@ -75,12 +82,7 @@ function getImages() {
       },
       (err, files) => {
         if (err) return rej(err);
-        if (process.env.NODE_ENV === 'production')
-          // mark complete
-          files.forEach(f => {
-            let renamed = path.join(processedImagesDir, path.basename(f));
-            fs.renameSync(f, renamed);
-          });
+
         return res();
       }
     );
@@ -115,10 +117,10 @@ function pollResults() {
         console.log('%s not found', key);
         queue.delete(key);
       } else if (data.state === 'processed') {
-        if (_.isEmpty(data.features))
+        if (_.isEmpty(data.data))
           console.error('%s is missing features data', key);
         else
-          saveFeatures(getRecordId(key), data.features);
+          saveFeatures(getRecordId(key), data.data);
         queue.delete(key);
         redis.del(key); //good citizen cleanup
       } else if (data.state === 'error') {
