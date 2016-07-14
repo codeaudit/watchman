@@ -6,14 +6,14 @@
     "Hostname": "data-container"
   },
   {
-    "name": "training-models",
-    "Image": "lukewendling/training-models:1",
+    "name": "trained-models",
+    "Image": "sotera/trained-models:1",
     "DockerFilePath": "",
-    "Hostname": "training-models"
+    "Hostname": "trained-models"
   },
   {
     "name": "redis",
-    "Image": "lukewendling/redis-watchman:1",
+    "Image": "sotera/redis-watchman:1",
     "DockerFilePath": "",
     "Hostname": "redis",
     "HostConfig": {
@@ -54,7 +54,7 @@
     ],
     "HostConfig": {
       "VolumesFrom": [
-        "training-models"
+        "trained-models"
       ],
       "PortBindings": {
         "5000/tcp": [
@@ -81,22 +81,8 @@
     }
   },
   {
-    "name": "fee",
-    "Image": "cschulze/fee_redis",
-    "DockerFilePath": "",
-    "Hostname": "fee",
-    "HostConfig": {
-      "VolumesFrom": [
-        "data-container"
-      ],
-      "Links": [
-        "redis:redis"
-      ]
-    }
-  },
-  {
     "name": "caffe",
-    "Image": "sotera/caffe_redis_client:2",
+    "Image": "sotera/caffe_redis_client:4",
     "DockerFilePath": "",
     "Hostname": "caffe",
     "HostConfig": {
