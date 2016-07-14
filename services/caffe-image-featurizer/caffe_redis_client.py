@@ -16,7 +16,7 @@ class Worker(threading.Thread):
         threading.Thread.__init__(self)
         self.send = redis_send
         self.item = message
-        self.caffe_root = os.getenv('CAFFE_HOME', '/home/caffe_user/caffe/')
+        self.caffe_root = os.getenv('CAFFE_HOME', '/home/caffe-user/caffe/')
 
     def run(self):
         # import pdb; pdb.set_trace()
