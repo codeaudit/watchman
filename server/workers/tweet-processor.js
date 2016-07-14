@@ -30,6 +30,15 @@ const es = require('elasticsearch'),
 
 let images = []; // cached while processing
 
+// ES mapping
+const mapping = {
+  properties: {
+    features: {
+      type: 'double'
+    }
+  }
+};
+
 const worker = module.exports = {
   start() {
     console.log('Waiting for files in %s', queuedFilesDir);
@@ -62,8 +71,8 @@ function prep() {
   images = [];
 
   return dataMapping.createIndexWithMapping({
-    client: destClient, index: destIndex, type: destType, mapping: {}
-  });
+    client: destClient, index: destIndex, type: destType, mapping })
+  .catch(console.error);
 }
 
 function processFiles() {

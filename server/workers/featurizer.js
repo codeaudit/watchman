@@ -117,10 +117,13 @@ function pollResults() {
         console.log('%s not found', key);
         queue.delete(key);
       } else if (data.state === 'processed') {
-        if (_.isEmpty(data.data))
+        if (_.isEmpty(data.data)) {
           console.error('%s is missing features data', key);
-        else
-          saveFeatures(getRecordId(key), data.data);
+        } else {
+          //HACK
+          let features = JSON.parse(data.data.replace(/\['/,'').replace(/'\]/,'')).features;
+          saveFeatures(getRecordId(key), features);
+        }
         queue.delete(key);
         redis.del(key); //good citizen cleanup
       } else if (data.state === 'error') {
@@ -143,7 +146,7 @@ function saveFeatures(recordId, features) {
     id: recordId,
     index: destIndex,
     type: destType,
-    body: { doc: features }
+    body: { doc: {features: features} }
   })
   .then(() => console.log('features saved for %s', recordId))
   .catch(console.error);
