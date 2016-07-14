@@ -1,3 +1,9 @@
+#ENV vars that should be set and what they default to if they are not
+#CAFFE_HOME = '/home/caffe_user/caffe/'
+#CAFFE_MODEL_PATH = '/home/caffe-user/caffe/models/bvlc_reference_caffenet/'
+#CAFFE_MODEL = bvlc_reference_caffenet.caffemodel
+#CAFFE_PYTHON_PATH = /home/caffe-user/caffe/python/
+
 import redis
 import threading
 import caffe_feature_extraction
