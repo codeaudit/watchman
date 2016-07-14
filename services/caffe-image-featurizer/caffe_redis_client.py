@@ -2,6 +2,7 @@ import redis
 import threading
 import caffe_feature_extraction
 import time
+import os
 
 
 class Worker(threading.Thread):
@@ -9,7 +10,7 @@ class Worker(threading.Thread):
         threading.Thread.__init__(self)
         self.send = redis_send
         self.item = message
-        self.caffe_root = '/home/jlueders/caffe/'
+        self.caffe_root = os.getenv('CAFFE_HOME', '/home/caffe_user/caffe/')
 
     def run(self):
         # import pdb; pdb.set_trace()
