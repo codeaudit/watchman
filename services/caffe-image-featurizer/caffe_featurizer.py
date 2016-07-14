@@ -12,12 +12,14 @@ class CaffeFeaturizer:
     batch_size = None
     quiet = None
 
-    def __init__(self, caffe_root, quiet = False):
+    def __init__(self, caffe_root, quiet=False):
         self.caffe_root = caffe_root
         self.model_path = os.getenv('CAFFE_MODEL_PATH', self.caffe_root + 'models/bvlc_reference_caffenet/')
+        self.model = os.getenv('CAFFE_MODEL', 'bvlc_reference_caffenet.caffemodel')
+
         caffe.set_mode_cpu()
         self.net = caffe.Net(self.model_path + 'deploy.prototxt', self.model_path +
-                                'bvlc_reference_caffenet.caffemodel', caffe.TEST)
+                             self.model, caffe.TEST)
         transformer = caffe.io.Transformer({'data': self.net.blobs['data'].data.shape})
         transformer.set_transpose('data', (2, 0, 1))
         transformer.set_mean('data', np.load(self.caffe_root +
@@ -55,7 +57,7 @@ class CaffeFeaturizer:
     def forward(self):
         self.net.forward()
 
-    def featurize(self, layer = 'fc7'):
-        feat = [ self.net.blobs['fc7'].data[i] for i in range(self.batch_size) ]
+    def featurize(self, layer='fc7'):
+        feat = [ self.net.blobs[layer].data[i] for i in range(self.batch_size)]
         feat = np.array(feat)
         return feat
