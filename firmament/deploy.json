@@ -12,6 +12,31 @@
     "Hostname": "trained-models"
   },
   {
+    "name": "stream-twitter",
+    "Image": "sotera/stream-twitter:1",
+    "DockerFilePath": "",
+    "Hostname": "stream-twitter",
+    "Env": [
+      "TWITTER_KEYS=[]"
+    ],
+    "HostConfig": {
+      "VolumesFrom": [
+        "data-container"
+      ]
+    }
+  },
+  {
+    "name": "extract-twitter-images",
+    "Image": "sotera/extract-twitter-images:1",
+    "DockerFilePath": "",
+    "Hostname": "extract-twitter-images",
+    "HostConfig": {
+      "VolumesFrom": [
+        "data-container"
+      ]
+    }
+  },
+  {
     "name": "redis",
     "Image": "sotera/redis-watchman:1",
     "DockerFilePath": "",
