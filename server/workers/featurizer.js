@@ -47,7 +47,6 @@ function run() {
     setTimeout(run, POLL_WAIT * 1000);  // poll for new files
     console.log('Pausing featurizer for %d sec ...', POLL_WAIT);
   })
-  .catch(console.error);
 }
 
 function prep() {
@@ -86,7 +85,8 @@ function getImages() {
         return res();
       }
     );
-  });
+  })
+  .catch(console.error);
 }
 
 // for redis, add channel prefix
@@ -120,7 +120,7 @@ function pollResults() {
         if (_.isEmpty(data.data)) {
           console.error('%s is missing features data', key);
         } else {
-          //HACK
+          //HACK: data from featurizer is stringified json in an array
           let features = JSON.parse(data.data.replace(/\['/,'').replace(/'\]/,'')).features;
           saveFeatures(getRecordId(key), features);
         }
@@ -131,7 +131,7 @@ function pollResults() {
         queue.delete(key);
         redis.del(key); //good citizen cleanup
       } else {
-        console.log('%s state: %s', key, data.state);
+        console.log('not finished: %s state: %s', key, data.state);
       }
     })
     .catch(err => {
