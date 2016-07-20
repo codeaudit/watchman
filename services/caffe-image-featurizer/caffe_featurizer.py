@@ -1,9 +1,9 @@
 import numpy as np
 import os
 import sys
-sys.path
 sys.path.append(os.getenv('CAFFE_PYTHON_PATH', '/home/caffe-user/caffe/python/'))
 import caffe
+from scipy.sparse import coo_matrix
 
 class CaffeFeaturizer:
     net = None
@@ -59,5 +59,11 @@ class CaffeFeaturizer:
 
     def featurize(self, layer='fc7'):
         feat = [ self.net.blobs[layer].data[i] for i in range(self.batch_size)]
-        feat = np.array(feat)
-        return feat
+        sparse_array = coo_matrix(feat, shape=(1, len(feat)))
+
+        # return list of lists: [feature values, indices of non-zeros]
+        return np.array([
+            sparse_array.data.tolist(),
+            sparse_array.nonzero()[1].tolist()
+        ])
+

@@ -19,29 +19,23 @@ class Worker(threading.Thread):
         self.caffe_root = os.getenv('CAFFE_HOME', '/home/caffe-user/caffe/')
 
     def run(self):
-        # import pdb; pdb.set_trace()
         key = self.item['data']
         if key == 1:  # subscribe response
-            print 'SUBSCRIBED BEHAVIOR'
+            print 'SUBSCRIBED TO CHANNEL'
             return
-        # get object for corresponding item:
-        obj = self.send.hgetall(key)
-        if not obj:
+        # get object in db corresponding to pub msg:
+        job = self.send.hgetall(key)
+        if not job:
             self.send.hmset(key, {'state': 'error', 'error': 'could not find item in redis'})
             print 'COULD NOT FIND ITEM IN REDIS'
             return
-        print obj
-        print type(obj)
-        obj_dict = obj
-        if obj_dict['state'] != 'downloaded':  # not yet ready
+        if job['state'] != 'downloaded':  # not yet ready
             print 'NOT YET DOWNLOADED'
             return
-        path = obj_dict['path']
+        image_dir_path = job['path']
         start_time = time.time()
-        image_dir_path = path
-        # try:
-        obj_dict['state'] = 'processing'
-        self.send.hmset(key, obj_dict)
+        job['state'] = 'processing'
+        self.send.hmset(key, job)
 
         # get features:
         print 'GETTING FEATURES'
@@ -51,36 +45,34 @@ class Worker(threading.Thread):
             self.send.hmset(key, {'state': 'error', 'error': 'invalid image or directory path'})
             return
         print 'FINISHED FEATURE PROCESSING'
-        obj_dict['data'] = features
-        obj_dict['state'] = 'processed'
-        # report features to redis
-        self.send.hmset(key, obj_dict)
+        job['data'] = features
+        job['state'] = 'processed'
+        # save features to redis
+        self.send.hmset(key, job)
 
 
-class Listener(threading.Thread):
+class Listener():
     def __init__(self, redis_receive, redis_send, channels):
-        threading.Thread.__init__(self)
         self.redis_receive = redis_receive
         self.redis_send = redis_send
         self.pubsub_receive = self.redis_receive.pubsub()
         self.pubsub_receive.subscribe(channels)
 
-    def run(self):
+    def start(self):
         # listen for messages and do work:
         for item in self.pubsub_receive.listen():
             print 'MESSAGE HEARD'
-            if item['data'] == "KILL":
+            if item['data'] == 'KILL':
                 self.pubsub_receive.unsubscribe()
-                print self, "un-subscribed and finished"
+                print self, 'un-subscribed and finished'
                 break
             else:
                 worker = Worker(self.redis_send, item)
                 worker.start()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     pool = redis.ConnectionPool(host='redis', port=6379)
-    r1 = redis.Redis(connection_pool=pool)
-    r2 = redis.Redis(connection_pool=pool)
+    r1, r2 = redis.Redis(connection_pool=pool), redis.Redis(connection_pool=pool)
     client = Listener(r1, r2, ['features'])
     client.start()

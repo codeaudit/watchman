@@ -93,15 +93,13 @@ def get_all_features_in_path(caffe_root_path, image_dir_path, start_time):
     global featurizer
     featurizer = CaffeFeaturizer(CAFFE_ROOT)
 
-    data_arr = convert_files_to_dictionary(image_dir_path)
-    # submit image rdd to processing
-    rdd_features = map(get_features, data_arr)
-    # save as txt file:
-    output = map(dump, rdd_features)
+    file_paths = convert_files_to_dictionary(image_dir_path)
+    # submit images to processing
+    files_to_features = map(get_features, file_paths)
 
     print "------------------ %f minutes elapsed ------------------------" % ((time.time() - start_time)/60.0)
 
-    return output
+    return files_to_features
 
 
 # For each image file submitted for processing,
