@@ -60,9 +60,8 @@ wget --quiet http://dl.caffe.berkeleyvision.org/bvlc_reference_caffenet.caffemod
 
 WORKDIR /home/caffe-user/
 
-COPY caffe_redis_client.py .
-COPY caffe_feature_extraction.py .
-COPY caffe_featurizer.py .
+RUN mkdir app
+COPY *.py app/
 
 RUN chown -R caffe-user:caffe-user /home/caffe-user
 
@@ -72,4 +71,4 @@ RUN export CAFFE_ROOT=/home/caffe-user/caffe/
 
 RUN export PYTHONPATH=/home/caffe-user/caffe/python:$PYTHONPATH
 
-ENTRYPOINT ["python", "caffe_redis_client.py"]
+ENTRYPOINT ["python", "app/caffe_redis_client.py"]
