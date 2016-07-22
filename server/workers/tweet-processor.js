@@ -12,8 +12,8 @@ const es = require('elasticsearch'),
     requestTimeout: 60000,
     log: 'error'
   }),
-  destIndex = 'stream',
-  destType = 'tweet',
+  destIndex = process.env.ES_INDEX || 'stream',
+  destType = process.env.ES_TYPE || 'tweet',
   fs = require('fs'),
   url = require('url'),
   path = require('path'),
@@ -22,9 +22,10 @@ const es = require('elasticsearch'),
   readline = require('readline'),
   _ = require('lodash'),
   dir = require('node-dir'),
-  queuedFilesDir = path.join('/downloads', destType, 'files'),
+  downloadPath = process.env.DOWNLOAD_PATH || '/downloads',
+  queuedFilesDir = path.join(downloadPath, destType, 'files'),
   processedFilesDir = path.join(queuedFilesDir, 'done'),
-  imagesDir = path.join('/downloads', destType, 'images'),
+  imagesDir = path.join(downloadPath, destType, 'images'),
   POLL_WAIT = 30 // seconds
 ;
 
