@@ -11,14 +11,13 @@ import time
 import os
 
 
-class Worker(threading.Thread):
+class Worker():
     def __init__(self, redis_send, message):
-        threading.Thread.__init__(self)
         self.send = redis_send
         self.item = message
         self.caffe_root = os.getenv('CAFFE_HOME', '/home/caffe-user/caffe/')
 
-    def run(self):
+    def start(self):
         key = self.item['data']
         if key == 1:  # subscribe response
             print 'SUBSCRIBED TO CHANNEL'
@@ -33,13 +32,12 @@ class Worker(threading.Thread):
             print 'NOT YET DOWNLOADED'
             return
         image_dir_path = job['path']
-        start_time = time.time()
         job['state'] = 'processing'
         self.send.hmset(key, job)
 
         # get features:
         print 'GETTING FEATURES'
-        features = caffe_feature_extraction.get_all_features_in_path(self.caffe_root, image_dir_path, start_time)
+        features = caffe_feature_extraction.get_all_features_in_path(self.caffe_root, image_dir_path)
         if not features:
             print 'INVALID IMAGE OR DIRECTORY PATH'
             self.send.hmset(key, {'state': 'error', 'error': 'invalid image or directory path'})
