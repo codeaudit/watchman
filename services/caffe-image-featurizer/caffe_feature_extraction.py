@@ -92,7 +92,7 @@ def get_all_features_in_path(caffe_root_path, image_dir_path):
 
     print "------------------ %f minutes elapsed ------------------------" % ((time.time() - start_time)/60.0)
 
-    return files_to_features
+    return dump(files_to_features)
 
 
 # For each image file submitted for processing,
