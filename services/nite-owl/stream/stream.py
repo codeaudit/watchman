@@ -114,7 +114,7 @@ def main(args):
         print "Response open time: ", str(response_open_time)
 
     while True:
-        stream_data(response, response_open_time, outdir)
+        stream_data(response, response_open_time, outdir, debug)
         if debug:
             print "Exit stream_data"
         response.close()
