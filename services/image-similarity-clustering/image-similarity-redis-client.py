@@ -5,57 +5,47 @@
     #publish similarity 1
 
 import redis
-import threading
 import time
 import json
 from image_similarity import ImageSimilarity
 from elasticsearch import Elasticsearch
 
 
-class Worker(threading.Thread):
+class Worker():
     def __init__(self, redis_send, message):
-        threading.Thread.__init__(self)
         self.send = redis_send
         self.item = message
 
-    def run(self):
-        # import pdb; pdb.set_trace()
+    def start(self):
         key = self.item['data']
         if key == 1:  # subscribe response
-            print 'SUBSCRIBED BEHAVIOR'
+            print 'SUBSCRIBED TO CHANNEL'
             return
         # get object for corresponding item:
-        obj = self.send.hgetall(key)
-        if not obj:
+        job = self.send.hgetall(key)
+        if not job:
             self.send.hmset(key, {'state': 'error', 'error': 'could not find item in redis'})
             print 'COULD NOT FIND ITEM IN REDIS'
             return
-        print obj
-        print type(obj)
-        obj_dict = obj
-        if obj_dict['state'] != 'new':  # not yet ready
-            print 'NOT YET DOWNLOADED'
+        if job['state'] != 'new':  # not yet ready
+            print 'NOT YET FINISHED'
             return
 
         start_time = time.time()
-        # try:
-        obj_dict['state'] = 'processing'
-        self.send.hmset(key, obj_dict)
-        self.process_message(key, obj_dict)
+        job['state'] = 'processing'
+        self.send.hmset(key, job)
+        self.process_message(key, job)
 
-    def dump(obj):
-        return json.dumps(obj)
-
-    def process_message(self, key, obj_dict):
+    def process_message(self, key, job):
         # get features:
         print 'FINDING SIMILARITY'
         # do the work to find similarity
-        image_similarity = ImageSimilarity(float(obj_dict['similarity_threshold']))
-        es = Elasticsearch([{'host': obj_dict['es_host'], 'port': obj_dict['es_port']}])
-        query = json.loads(obj_dict['es_query'])
-        data = es.search(index=obj_dict['es_index'],
+        image_similarity = ImageSimilarity(float(job['similarity_threshold']))
+        es = Elasticsearch([{'host': job['es_host'], 'port': job['es_port']}])
+        query = json.loads(job['es_query'])
+        data = es.search(index=job['es_index'],
                          body=query,
-                         doc_type=obj_dict['es_doc_type'],
+                         doc_type=job['es_doc_type'],
                          size=100,
                          scroll='10m')
 
@@ -78,21 +68,20 @@ class Worker(threading.Thread):
                 image_similarity.process_vector(doc['fields']['id'][0], doc['fields']['features'])
 
         print 'FINISHED SIMILARITY PROCESSING'
-        obj_dict['data'] = image_similarity.to_json()
-        obj_dict['state'] = 'processed'
+        job['data'] = image_similarity.to_json()
+        job['state'] = 'processed'
         # report features to redis
-        self.send.hmset(key, obj_dict)
+        self.send.hmset(key, job)
 
 
-class Listener(threading.Thread):
+class Listener():
     def __init__(self, redis_receive, redis_send, channels):
-        threading.Thread.__init__(self)
         self.redis_receive = redis_receive
         self.redis_send = redis_send
         self.pubsub_receive = self.redis_receive.pubsub()
         self.pubsub_receive.subscribe(channels)
 
-    def run(self):
+    def start(self):
         # listen for messages and do work:
         for item in self.pubsub_receive.listen():
             print 'MESSAGE HEARD'
