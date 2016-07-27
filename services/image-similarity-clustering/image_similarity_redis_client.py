@@ -31,7 +31,6 @@ class Worker():
             print 'NOT YET FINISHED'
             return
 
-        start_time = time.time()
         job['state'] = 'processing'
         self.send.hmset(key, job)
         self.process_message(key, job)
