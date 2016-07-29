@@ -2,7 +2,7 @@
 1. Create redis pubsub client.
 2. Update redis hash when job completes.
 '''
-import redis
+import redis, sys
 
 '''
 Fetch job data and call processing function
@@ -69,7 +69,7 @@ class Dispatcher(object):
                 print 'SUBSCRIBED TO CHANNEL'
             elif item['data'] == 'KILL':
                 pubsub.unsubscribe()
-                print self, 'un-subscribed and finished'
+                print 'un-subscribed and finished'
                 break
             else:
                 worker = Worker(redis_store)
