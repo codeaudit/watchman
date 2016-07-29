@@ -6,4 +6,4 @@ RUN apt-get update && apt-get install -y \
 
 ENV TERM=xterm
 
-CMD ["python", "image_similarity_redis_client.py"]
+CMD ["python", "image_similarity_main.py"]
