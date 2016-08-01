@@ -1,11 +1,12 @@
 {
-  "name": "tweet",
+  "name": "socialMediaPost",
   "base": "PersistedModel",
   "idInjection": true,
   "indexes": {
-    "idx_id_str": {
+    "idx_uniq": {
       "keys": {
-        "id_str": 1
+        "post_id": 1,
+        "post_type": 1
       },
       "options": {
         "unique": true
@@ -30,13 +31,16 @@
   "options": {
     "validateUpsert": true
   },
-  "mixins": {
-    "Timestamp": {}
-  },
   "properties": {
-    "id_str": {
+    "post_id": {
       "type": "string",
-      "required": true
+      "required": true,
+      "description": "external id from social media service"
+    },
+    "post_type": {
+      "type": "string",
+      "required": true,
+      "description": "twitter, instagram, etc."
     },
     "text": {
       "type": "string"
@@ -64,7 +68,8 @@
     "features": {
       "type": [
         "number"
-      ]
+      ],
+      "default": []
     }
   },
   "validations": [],
