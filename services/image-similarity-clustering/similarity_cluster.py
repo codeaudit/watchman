@@ -1,5 +1,4 @@
 from running_stat import RunningStat
-import math
 import numpy as np
 
 
@@ -17,11 +16,14 @@ class SimilarityCluster:
         if are_similar:
             print "{} is similar to {}".format(vector_id, self.similar_image_ids[0])
             self.similar_image_ids.append(vector_id)
-            self.average_similarity_vector = [n * .5 for n in [x + y for x, y in
-                                                               zip(self.average_similarity_vector, vector)]]
+            self.apply_vector_to_average(vector)
             self.running_stat.push(similarity)
 
         return are_similar
+
+    def apply_vector_to_average(self, vector):
+        self.average_similarity_vector = [n * .5 for n in [x + y for x, y in
+                                                           zip(self.average_similarity_vector, vector)]]
 
     def to_serializable_object(self):
         return {
