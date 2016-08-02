@@ -7,7 +7,8 @@ var boot = require('loopback-boot');
 var bodyParser = require('body-parser');
 var app = module.exports = loopback();
 
-require('./basic-auth').auth(app, ['socialmediarecords']);
+// protect social media posts with basic auth
+require('./basic-auth').auth(app, ['socialmediaposts']);
 
 // to support JSON-encoded bodies
 app.middleware('parse', bodyParser.json());
