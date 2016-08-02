@@ -65,7 +65,13 @@
       "type": "string",
       "required": true
     },
-    "features": {
+    "image_features": {
+      "type": [
+        "number"
+      ],
+      "default": []
+    },
+    "text_features": {
       "type": [
         "number"
       ],
