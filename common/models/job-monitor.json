@@ -23,10 +23,12 @@
   "properties": {
     "start_time": {
       "type": "number",
+      "description": "start time of associated created (NOT job start time)",
       "required": true
     },
     "end_time": {
       "type": "number",
+      "description": "end time of associated created (NOT job end time)",
       "required": true
     },
     "featurizer": {
@@ -37,6 +39,9 @@
       "type": "string",
       "required": true,
       "default": "new"
+    },
+    "done_at": {
+      "type": "date"
     }
   },
   "validations": [],

@@ -24,11 +24,11 @@ if (require.main === module)
   worker.start();
 
 function run() {
-  const now = moment().unix();
+  const now = Date.now(); // ms
 
   JobMonitor.create({
     start_time: now,
-    end_time: now + QUERY_SPAN_MINS * 60,
+    end_time: now + QUERY_SPAN_MINS * 60 * 1000,
     featurizer: 'image',
     state: 'new'
   })
@@ -38,9 +38,13 @@ function run() {
 
     monit.start();
 
-    monit.on('done',
-      () => jobMonitor.updateAttribute('state', 'done').catch(console.error)
-    )
+    monit.on('done', onDone);
+
+    function onDone() {
+      jobMonitor
+      .updateAttributes({state: 'done', done_at: new Date()})
+      .catch(console.error);
+    }
   })
   .catch(console.error);
 }
