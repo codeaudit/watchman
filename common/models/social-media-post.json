@@ -42,10 +42,26 @@
       "required": true,
       "description": "twitter, instagram, etc."
     },
+    "post_url": {
+      "type": "string",
+      "required": true,
+      "description": "original page url"
+    },
     "text": {
-      "type": "string"
+      "type": "string",
+      "default": ""
+    },
+    "lang": {
+      "type": "string",
+      "default": ""
     },
     "hashtags": {
+      "type": [
+        "string"
+      ],
+      "default": []
+    },
+    "image_urls": {
       "type": [
         "string"
       ],
@@ -58,7 +74,7 @@
       "default": []
     },
     "timestamp_ms": {
-      "type": "number",
+      "type": "string",
       "required": true
     },
     "state": {

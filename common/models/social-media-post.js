@@ -16,9 +16,18 @@ module.exports = function(SocialMediaPost) {
 
     const instance = context.instance;
 
-    // TODO: update other attrs
-    instance.featurizers = ['image'];
+    instance.text = instance.text || '';
+    instance.featurizers = instance.featurizers || [];
+    instance.image_urls = instance.image_urls || [];
+
+    if (instance.text.length > 0)
+      instance.featurizers.push('text');
+    if (instance.image_urls.length > 0)
+      instance.featurizers.push('image');
+
     instance.state = 'new';
+    // convert any to epoch
+    instance.timestamp_ms = +(new Date(instance.timestamp_ms));
 
     next();
   }
