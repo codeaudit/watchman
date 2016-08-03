@@ -27,14 +27,13 @@ function run() {
   const now = Date.now(); // ms
 
   JobMonitor.create({
-    start_time: now,
-    end_time: now + QUERY_SPAN_MINS * 60 * 1000,
-    featurizer: 'image',
+    start_time: now - QUERY_SPAN_MINS * 60 * 1000,
+    end_time: now,
+    featurizer: 'text',
     state: 'new'
   })
   .then(jobMonitor => {
-    const args = _.extend(jobMonitor.toJSON(), {doc: jobMonitor}),
-      monit = new EventedMonitor(args);
+    const monit = new EventedMonitor(jobMonitor);
 
     monit.start();
 
