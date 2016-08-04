@@ -30,8 +30,14 @@ class Worker(object):
             return
 
         job['state'] = 'processing'
+
+        # reset results (if job was re-run)
+        for k in ('error', 'data'):
+            if job.has_key(k): job.pop(k)
+
         # update with new state
         self.send.hmset(key, job)
+
         try:
             process_func(key, job)
         except Exception as e:
