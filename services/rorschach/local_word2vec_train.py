@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 from gensim.models import Word2Vec
 sys.path.append(os.path.join(os.path.dirname(__file__), "./util"))
-from sentiment_filters import is_scoreable
+from sentiment_filters import SentimentFilter
 
 def vec_from_tweet(model, l_txt, dimensions, s_words, d_idf):
     v = np.zeros(dimensions)
@@ -35,6 +35,7 @@ def main(s_lng='en', test_words=None):
     _X = []
     raw_text = []
     t0 = time.time()
+    sent_filt = SentimentFilter()
 
     if test_words is not None and len(test_words)==2:
         print "Collecting keyword test data for :", test_words
@@ -54,7 +55,7 @@ def main(s_lng='en', test_words=None):
                 if d0['lang'] != s_lng:
                     continue
                 txt = d0['text']
-                if is_scoreable(txt) is False:
+                if sent_filt.is_scoreable(txt, s_lng) is False:
                     continue
                 txt = re.sub('[\s#]', ' ', txt.lower())
                 txt = re.sub('[^\w\s]', '', txt)
