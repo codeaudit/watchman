@@ -25,14 +25,17 @@ if (require.main === module)
 
 function run() {
   const now = Date.now(); // ms
-
-  JobMonitor.create({
-    start_time: now - QUERY_SPAN_MINS * 60 * 1000,
-    end_time: now,
+  const params = {
+    // start_time: now - QUERY_SPAN_MINS * 60 * 1000,
+    // end_time: now,
+    start_time: 1469695563000,
+    end_time: 1469702566000,
     featurizer: 'text',
-    state: 'new'
-  })
+  };
+
+  JobMonitor.findOrCreate({ where: params }, params)
   .then(jobMonitor => {
+    jobMonitor = jobMonitor[0]; //why array here?
     const monit = new EventedMonitor(jobMonitor);
 
     monit.start();
@@ -42,8 +45,8 @@ function run() {
     function onDone() {
       jobMonitor
       .updateAttributes({state: 'done', done_at: new Date()})
-      .catch(console.error);
+      .catch(err => console.error(err.stack));
     }
   })
-  .catch(console.error);
+  .catch(err => console.error(err.stack));
 }
