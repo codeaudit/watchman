@@ -17,4 +17,5 @@ class SyntaxVectorizer:
         for term in l_txt:
             if term in self.set_w2v_words and term in self.d_idf.keys():
                 v = v + self.d_idf[term]*self.model_w2v[term]
-        return v
+        return v.tolist()
+

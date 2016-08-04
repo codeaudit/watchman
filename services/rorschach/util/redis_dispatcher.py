@@ -32,7 +32,11 @@ class Worker(object):
         job['state'] = 'processing'
         # update with new state
         self.send.hmset(key, job)
-        process_func(key, job)
+        try:
+            process_func(key, job)
+        except Exception as e:
+            job['state'] = 'error'
+            job['error'] = e.message
         # when done, update job
         self.send.hmset(key, job)
 
@@ -66,7 +70,7 @@ class Dispatcher(object):
             print 'MESSAGE HEARD'
             key = item['data']
             if key == 1: # subscribe response
-                print 'SUBSCRIBED TO CHANNEL'
+                print 'SUBSCRIBED TO CHANNELS %s' % self.channels
             elif item['data'] == 'KILL':
                 pubsub.unsubscribe()
                 print 'un-subscribed and finished'
