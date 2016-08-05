@@ -7,7 +7,8 @@
       "keys": {
         "start_time": 1,
         "end_time": 1,
-        "featurizer": 1
+        "featurizer": 1,
+        "lang": 1
       },
       "options": {
         "unique": true
@@ -34,6 +35,9 @@
     "featurizer": {
       "type": "string",
       "required": true
+    },
+    "lang": {
+      "type": "string"
     },
     "state": {
       "type": "string",

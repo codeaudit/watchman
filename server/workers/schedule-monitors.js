@@ -31,7 +31,8 @@ function run() {
     // end_time: now,
     start_time: 1469695563000,
     end_time: 1469702566000,
-    featurizer: 'text',
+    lang: 'en',
+    featurizer: 'text'
   };
 
   JobMonitor.findOrCreate({ where: params }, params)
