@@ -22,7 +22,7 @@ def process_message(key, job):
     if 'lang' == 'en':
         try:
             if SentimentFilter.is_scoreable(job['txt']) is False:
-                job['data'] = None
+                job['data'] = []
                 job['state'] = 'processed'
         except:
             set_err(job, "Error checking if doc is 'scorable'")
@@ -33,7 +33,7 @@ def process_message(key, job):
         except:
             set_err(job, "Error making syntax vector:\n" + str(sys.exc_info()[0]))
     else:
-        job['data'] = None
+        job['data'] = []
         job['state'] = 'processed'
 
 if __name__ == '__main__':
