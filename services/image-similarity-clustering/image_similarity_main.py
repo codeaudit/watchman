@@ -7,8 +7,8 @@
 # hmset 1 "state" "new" "similarity_threshold" .5 "es_host" "54.234.139.42" "similarity_method" "custom" "es_port" "9200" "es_index" "stream" "es_doc_type" "jul2016-uk" "es_query" "{\"fields\":[\"timestamp_ms\",\"features\",\"id\"],\"query\":{\"bool\":{\"must\":{\"term\":{\"features\":0}},\"filter\":{\"range\":{\"timestamp_ms\":{\"gte\":\"1468617997000\",\"lt\":\"1468618897000\"}}}}}}"
 # publish similarity 1
 
-import sys, os
-import json
+import sys
+import os
 from image_similarity import ImageSimilarity
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../util"))
@@ -40,8 +40,7 @@ def process_message(key, job):
         job['error'] = "No data found to process."
         job['state'] = 'error'
         return
-
-
+    
     while True:
         print "Scrolling...{}".format(loopy.current_page)
         page = loopy.get_next_page()
