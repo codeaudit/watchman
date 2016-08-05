@@ -60,7 +60,7 @@ class Loopy:
         page = self.page_size
 
         if self.current_page == self.total_pages-1:
-            page = self.result_count%self.page_size
+            page = self.result_count % self.page_size
 
         if self.page_size > self.result_count:
             page = self.result_count
