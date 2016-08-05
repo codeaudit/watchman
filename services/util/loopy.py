@@ -1,19 +1,20 @@
-import urllib2
+import requests
 import json
 import math
 from switch import switch
 
+
 # pronounced Loo Py, not loopy.  Loopback Python Module
 class Loopy:
-    def __init__(self, base_url, params, page_size=100):
-        self.base_url = base_url
+    def __init__(self, query_url, params, page_size=100):
+        self.query_url = query_url
         self.params = params
         self.page_size = page_size
         self.current_page = 0
         self.total_returned = 0
         self.params = params
         self.result_count = self.get_count()
-        self.total_pages = int(math.ceil(self.result_count/page_size))
+        self.total_pages = int(math.ceil(float(self.result_count)/float(page_size)))
 
     def get_query_string(self, filter_prefix="filter"):
         query_string = "?"
@@ -48,7 +49,7 @@ class Loopy:
     def get_count(self):
         count_query_string = self.get_count_query_string()
         try:
-            result = json.load(urllib2.urlopen(self.base_url + count_query_string))
+            result = requests.get(self.query_url + count_query_string).json()
             return result['count']
         except:
             print "Woops! Loopy says: error getting count from Loopback endpoint"
@@ -69,7 +70,7 @@ class Loopy:
                        "filter[limit]={}&filter[skip]={}".format(page,
                                                                  self.current_page*self.page_size)
         try:
-            result = json.load(urllib2.urlopen(self.base_url + query_string))
+            result = requests.get(self.query_url + query_string).json()
         except:
             print "Woops! Loopy says: error getting page from Loopback endpoint"
             return None
@@ -77,4 +78,7 @@ class Loopy:
         self.current_page += 1
         self.total_returned += len(result)
         return result
+
+    def post_result(self, url, payload):
+        requests.post(url, json=payload)
 

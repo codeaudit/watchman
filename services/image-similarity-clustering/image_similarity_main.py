@@ -57,6 +57,14 @@ def process_message(key, job):
                 image_similarity.process_vector(doc['id'], doc['image_features'])
 
     print 'FINISHED SIMILARITY PROCESSING'
+    for cluster in image_similarity.similarity_clusters:
+        if len(cluster.similar_image_ids) < 4:
+            continue
+        cluster_data = cluster.to_serializable_object()
+        cluster_data['job_monitor_id'] = job['job_id']
+        cluster_data['start_time_ms'] = job['start_time_ms']
+        cluster_data['end_time_ms'] = job['end_time_ms']
+        loopy.post_result(job['result_url'], cluster_data)
     job['data'] = image_similarity.to_json()
     job['state'] = 'processed'
 
