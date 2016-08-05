@@ -74,9 +74,8 @@ class Dispatcher(object):
         # listen for messages and do work:
         for item in pubsub.listen():
             print 'MESSAGE HEARD'
-            key = item['data']
-            if key == 1: # subscribe response
-                print 'SUBSCRIBED TO CHANNELS %s' % self.channels
+            if item['type'] == 'subscribe': # subscribe response
+                print 'SUBSCRIBED TO CHANNEL %s' % item['channel']
             elif item['data'] == 'KILL':
                 pubsub.unsubscribe()
                 print 'un-subscribed and finished'
