@@ -24,13 +24,13 @@
   "properties": {
     "start_time": {
       "type": "number",
-      "description": "start time of associated created (NOT job start time)",
-      "required": true
+      "required": true,
+      "description": "start time of associated created (NOT job start time)"
     },
     "end_time": {
       "type": "number",
-      "description": "end time of associated created (NOT job end time)",
-      "required": true
+      "required": true,
+      "description": "end time of associated created (NOT job end time)"
     },
     "featurizer": {
       "type": "string",

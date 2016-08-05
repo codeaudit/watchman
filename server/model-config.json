@@ -71,5 +71,9 @@
   "jobMonitor": {
     "dataSource": "db",
     "public": true
+  },
+  "postsCluster": {
+    "dataSource": "db",
+    "public": true
   }
 }

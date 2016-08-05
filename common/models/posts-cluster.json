@@ -1,0 +1,31 @@
+{
+  "name": "postsCluster",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "indexes": {
+    "idx_job_monitor_id": {
+      "keys": {
+        "job_monitor_id": 1
+      }
+    }
+  },
+  "options": {
+    "validateUpsert": true
+  },
+  "mixins": {
+    "Timestamp": {}
+  },
+  "properties": {
+
+  },
+  "validations": [],
+  "relations": {
+    "jobMonitor": {
+      "type": "belongsTo",
+      "model": "jobMonitor",
+      "foreignKey": "job_monitor_id"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}
