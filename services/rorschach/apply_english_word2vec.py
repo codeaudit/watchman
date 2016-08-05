@@ -6,6 +6,7 @@ from sentiment_filters import SentimentFilter
 
 def set_err(job, msg):
     job['state'] = 'error'
+    job['data'] = None
     job['error'] = msg
 
 def process_message(key, job):
@@ -22,20 +23,17 @@ def process_message(key, job):
         try:
             if SentimentFilter.is_scoreable(job['txt']) is False:
                 job['data'] = None
-                job['txt_vec'] = None
                 job['state'] = 'processed'
         except:
             set_err(job, "Error checking if doc is 'scorable'")
 
         try:
             job['data'] = syntax_vectorizer['en'].vec_from_tweet(job['txt'])
-            job['txt_vec'] = 'en'
             job['state'] = 'processed'
         except:
             set_err(job, "Error making syntax vector:\n" + str(sys.exc_info()[0]))
     else:
         job['data'] = None
-        job['txt_vec'] = None
         job['state'] = 'processed'
 
 if __name__ == '__main__':
