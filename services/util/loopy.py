@@ -60,7 +60,7 @@ class Loopy:
         page = self.page_size
 
         if self.current_page == self.total_pages-1:
-            page = (self.result_count/self.page_size) * self.page_size
+            page = self.result_count%self.page_size
 
         query_string = self.get_query_string() + \
                        "filter[limit]={}&filter[skip]={}".format(page,
