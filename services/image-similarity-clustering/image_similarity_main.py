@@ -34,7 +34,7 @@ def process_message(key, job):
         }
     ])
 
-    if loopy.result_count == 0:
+    if loopy.reslt_count == 0:
         print "No data to process"
         job['data'] = []
         job['error'] = "No data found to process."

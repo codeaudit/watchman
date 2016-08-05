@@ -55,12 +55,15 @@ class Loopy:
             return 0
 
     def get_next_page(self):
-        if self.current_page == self.total_pages:
+        if self.current_page == self.total_pages or self.result_count == 0:
             return None
         page = self.page_size
 
         if self.current_page == self.total_pages-1:
             page = self.result_count%self.page_size
+
+        if self.page_size > self.result_count:
+            page = self.result_count
 
         query_string = self.get_query_string() + \
                        "filter[limit]={}&filter[skip]={}".format(page,
