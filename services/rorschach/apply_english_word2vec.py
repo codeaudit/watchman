@@ -6,7 +6,7 @@ from sentiment_filters import SentimentFilter
 
 def set_err(job, msg):
     job['state'] = 'error'
-    job['data'] = None
+    job['data'] = []
     job['error'] = msg
 
 def process_message(key, job):
