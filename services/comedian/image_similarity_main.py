@@ -5,7 +5,20 @@ from elasticsearch import Elasticsearch
 sys.path.append(os.path.join(os.path.dirname(__file__), "../util"))
 from redis_dispatcher import Dispatcher
 
+def set_err(job, msg):
+    job['state'] = 'error'
+    job['data'] = []
+    job['error'] = msg
+
 def process_message(key, job):
+    # check job for correct fields
+    if 'es_host' not in job.keys():
+        set_err(job, "No 'es_query' in job fields")
+    if 'es_port' not in job.keys():
+        set_err(job, "No 'es_port' in job fields")
+    if 'es_query' not in job.keys():
+        set_err(job, "No 'es_query' in job fields")
+
     # get features:
     print 'FINDING SIMILARITY'
     hash_clust = HashtagClusters(float(job['similarity_threshold']), job['similarity_method'])
@@ -43,6 +56,6 @@ def process_message(key, job):
 if __name__ == '__main__':
     dispatcher = Dispatcher(redis_host='redis',
         process_func=process_message,
-        channels=['similarity'])
+        channels=['genie:clust_hash'])
     dispatcher.start()
 
