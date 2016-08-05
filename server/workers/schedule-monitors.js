@@ -8,7 +8,8 @@ const app = require('../server'),
   _ = require('lodash'),
   moment = require('moment'),
   JobMonitor = app.models.JobMonitor,
-  EventedMonitor = require('../../lib/job-monitors/evented-monitor'),
+  FeaturizeMonitor = require('../../lib/job-monitors/featurize-monitor'),
+  ClusterizeMonitor = require('../../lib/job-monitors/clusterize-monitor'),
   QUERY_SPAN_MINS = 10
 ;
 
@@ -36,15 +37,26 @@ function run() {
   JobMonitor.findOrCreate({ where: params }, params)
   .then(jobMonitor => {
     jobMonitor = jobMonitor[0]; //why array here?
-    const monit = new EventedMonitor(jobMonitor);
+    const fMonitor = new FeaturizeMonitor(jobMonitor);
+    const cMonitor = new ClusterizeMonitor(jobMonitor);
 
-    monit.start();
+    fMonitor.start();
 
-    monit.on('done', onDone);
+    fMonitor.on('featurized', onFeaturized);
+    cMonitor.on('done', onDone);
+
+    function onFeaturized() {
+      updateAttributes({state: 'featurized'});
+      cMonitor.start();
+    }
 
     function onDone() {
+      updateAttributes({state: 'done', done_at: new Date()});
+    }
+
+    function updateAttributes(attrs) {
       jobMonitor
-      .updateAttributes({state: 'done', done_at: new Date()})
+      .updateAttributes(attrs)
       .catch(err => console.error(err.stack));
     }
   })
