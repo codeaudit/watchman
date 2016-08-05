@@ -1,16 +1,19 @@
 import urllib2
 import json
+import math
 from switch import switch
 
-
+# pronounced Loo Py, not loopy.  Loopback Python Module
 class Loopy:
     def __init__(self, base_url, params, page_size=100):
         self.base_url = base_url
         self.params = params
         self.page_size = page_size
         self.current_page = 0
-        self.result_count = 0
+        self.total_returned = 0
         self.params = params
+        self.result_count = self.get_count()
+        self.total_pages = int(math.ceil(self.result_count/page_size))
 
     def get_query_string(self, filter_prefix="filter"):
         query_string = "?"
@@ -44,15 +47,31 @@ class Loopy:
 
     def get_count(self):
         count_query_string = self.get_count_query_string()
-        result = json.load(urllib2.urlopen(self.base_url + count_query_string))
-        return result['count']
+        try:
+            result = json.load(urllib2.urlopen(self.base_url + count_query_string))
+            return result['count']
+        except:
+            print "Woops! Loopy says: error getting count from Loopback endpoint"
+            return 0
 
     def get_next_page(self):
+        if self.current_page == self.total_pages:
+            return None
+        page = self.page_size
+
+        if self.current_page == self.total_pages-1:
+            page = (self.result_count/self.page_size) * self.page_size
 
         query_string = self.get_query_string() + \
-                       "filter[limit]={}&filter[skip]={}".format(self.page_size,
+                       "filter[limit]={}&filter[skip]={}".format(page,
                                                                  self.current_page*self.page_size)
-        result = json.load(urllib2.urlopen(self.base_url + query_string))
+        try:
+            result = json.load(urllib2.urlopen(self.base_url + query_string))
+        except:
+            print "Woops! Loopy says: error getting page from Loopback endpoint"
+            return None
+
         self.current_page += 1
+        self.total_returned += len(result)
         return result
 
