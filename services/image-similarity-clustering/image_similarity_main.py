@@ -24,7 +24,7 @@ def process_message(key, job):
             {
                 "query_type": "between",
                 "property_name": "timestamp_ms",
-                "query_value": [1469695563000, 1469702566000]
+                "query_value": [job['start_time_ms'], job['end_time_ms']]
             },
             {
                 "query_type": "where",
@@ -35,32 +35,28 @@ def process_message(key, job):
 
     total = loopy.get_count()
     print total
-    # process initial results
-    # for doc in data['hits']['hits']:
-    #     image_similarity.process_vector(doc['fields']['id'][0], doc['fields']['features'])
+    while True:
+        print "Scrolling...{}".format(loopy.current_page)
+        page = loopy.get_next_page()
+        if len(page) == 0:
+            break
+        # Do something with the obtained page
+        for doc in page:
+            if job['data_type'] == "text" and 'text_features' in doc and 'id' in doc and len(doc['text_features']) > 0:
+                image_similarity.process_vector(doc['id'], doc['text_features'])
+                continue
+            if job['data_type'] == "image" and 'image_features' in doc and 'id' in doc and \
+                    len(doc['image_features']) > 0:
+                image_similarity.process_vector(doc['id'], doc['image_features'])
 
-    # sid = data['_scroll_id']
-    # scroll_size = data['hits']['total']
-    # while scroll_size > 0:
-    #     print "Scrolling..."
-    #     data = es.scroll(scroll_id=sid, scroll='2m')
-    #     # Update the scroll ID
-    #     sid = data['_scroll_id']
-    #     # Get the number of results that we returned in the last scroll
-    #     scroll_size = len(data['hits']['hits'])
-    #     print "scroll size: " + str(scroll_size)
-    #     # Do something with the obtained page
-    #     for doc in data['hits']['hits']:
-    #         image_similarity.process_vector(doc['fields']['id'][0], doc['fields']['features'])
 
-    # print 'FINISHED SIMILARITY PROCESSING'
-    # job['data'] = image_similarity.to_json()
-    # job['state'] = 'processed'
+    print 'FINISHED SIMILARITY PROCESSING'
+    job['data'] = image_similarity.to_json()
+    job['state'] = 'processed'
 
 
 if __name__ == '__main__':
-    dispatcher = Dispatcher(redis_host='redis',
-                            process_func=process_message,
-                            channels=['genie::clust_txt', 'genie::clust_img'])
+    dispatcher = Dispatcher(process_func=process_message,
+                            channels=['genie:clust_txt', 'genie:clust_img'])
     dispatcher.start()
 
