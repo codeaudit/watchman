@@ -19,9 +19,9 @@ def process_message(key, job):
         return
 
     # Check if the text language can be featurized
-    if job['lang'] == 'en':
+    if 'lang' == 'en':
         try:
-            if sent_filt.is_scoreable(job['txt'], job['lang']) is False:
+            if SentimentFilter.is_scoreable(job['txt']) is False:
                 job['data'] = []
                 job['state'] = 'processed'
         except:
