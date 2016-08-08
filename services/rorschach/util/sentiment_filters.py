@@ -8,7 +8,7 @@ class SentimentFilter:
     def which_languages(self):
         return self.good_langs
 
-    def is_scoreable(self, caption, lang):
+    def is_scoreable(self, caption, lang='en'):
         if lang == 'en':
             # replace all white space charactes (tabs newlines,etc) and the hashtag with a space
             caption = re.sub('[\s#]', ' ', caption.lower(), flags=re.UNICODE)
