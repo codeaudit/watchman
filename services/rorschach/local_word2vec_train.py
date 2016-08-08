@@ -33,6 +33,7 @@ def main(s_lng='en', test_words=None):
 
     l_files = os.listdir(s_path)
     _X = []
+    d_df = {}
     raw_text = []
     t0 = time.time()
     sent_filt = SentimentFilter()
@@ -67,6 +68,11 @@ def main(s_lng='en', test_words=None):
                 if test_words[1] in l_txt:
                     p_soc.append(len(_X))
                 _X.append(l_txt)
+                for w in list(set(l_txt)):
+                    if w in d_df.keys():
+                        d_df[w] += 1
+                    else:
+                        d_df[w] = 1
     else:
         print "Not collecting keyword test data"
         for l_num, s_file in enumerate(l_files):
@@ -83,7 +89,7 @@ def main(s_lng='en', test_words=None):
                 if d0['lang'] != s_lng:
                     continue
                 txt = d0['text']
-                if is_scoreable(txt) is False:
+                if sent_filt.is_scoreable(txt, s_lng) is False:
                     continue
                 txt = re.sub('[\s#]', ' ', txt.lower())
                 txt = re.sub('[^\w\s]', '', txt)
@@ -91,15 +97,25 @@ def main(s_lng='en', test_words=None):
                 l_txt = txt.split(' ')
                 l_txt = filter(lambda x: x != '', l_txt)
                 _X.append(l_txt)
+                for w in list(set(l_txt)):
+                    if w in d_df.keys():
+                        d_df[w] += 1
+                    else:
+                        d_df[w] = 1
 
 
     diff = time.time()-t0
     print "\nTime to read in", l_num, "files", diff
     if l_test is not None:
         print "Number of " + l_test[0] + " tweets:", len(p_docs), ", number of " + l_test[1] + " tweets:", len(p_soc)
-    tfidf_vec = TfidfVectorizer(max_df=0.95, min_df=100, stop_words='english')
-    tfidf_vec.fit_transform(raw_text)
-    d_idf = dict(zip(tfidf_vec.get_feature_names(), tfidf_vec.idf_))
+    #tfidf_vec = TfidfVectorizer(max_df=0.95, min_df=100, stop_words='english')
+    #tfidf_vec.fit_transform(raw_text)
+    #d_idf = dict(zip(tfidf_vec.get_feature_names(), tfidf_vec.idf_))
+    d_idf ={}
+    for k, v in d_df:
+        df = float(v)/float(l_num)
+        if v > 100 and df < 0.95:
+            d_idf[k] = 1./df
     with open('models/'+ s_save +'tfidf', 'w') as outfile:
         outfile.write(json.dumps(d_idf))
 
@@ -114,33 +130,32 @@ def main(s_lng='en', test_words=None):
     print "Time to train model:", diff
     print "Number of tweets:", len(_X)
 
-    print "TEST cosine diff of test phrases on 100! combination of sentances"
-    t0 = time.time()
-    l_blm_cos, l_blmi_cos, l_blmif_cos = [], [], []
-    l_soc_cos, l_soci_cos, l_socif_cos = [], [], []
-    s_words = set(model.index2word)
-    max_t1 = 100 if len(p_docs) > 100 else len(p_docs)
-    max_t2 = 100 if len(p_soc) > 100 else len(p_soc)
-    for i in range(max_t1):
-        (v1, vi1, vif1) = vec_from_tweet(model, _X[p_docs[i]], dimensions, s_words, d_idf)
-        for j in range(i+1, max_t1):
-            (v2, vi2, vif2) = vec_from_tweet(model, _X[p_docs[j]], dimensions, s_words, d_idf)
-            cos = get_cos(v1, v2)
-            cosi = get_cos(vi1, vi2)
-            cosif = get_cos(vif1, vif2)
-            l_blm_cos.append(cos)
-            l_blmi_cos.append(cosi)
-            l_blmif_cos.append(cosif)
-        for k in range(max_t2):
-            (v3, vi3, vif3) = vec_from_tweet(model, _X[p_soc[k]], dimensions, s_words, d_idf)
-            cos = get_cos(v1, v3)
-            cosi = get_cos(vi1, vi3)
-            cosif = get_cos(vif1, vif3)
-            l_soc_cos.append(cos)
-            l_soci_cos.append(cosi)
-            l_socif_cos.append(cosif)
-
     if test_words is not None and len(test_words)==2:
+        print "TEST cosine diff of test phrases on 100! combination of sentances"
+        t0 = time.time()
+        l_blm_cos, l_blmi_cos, l_blmif_cos = [], [], []
+        l_soc_cos, l_soci_cos, l_socif_cos = [], [], []
+        s_words = set(model.index2word)
+        max_t1 = 100 if len(p_docs) > 100 else len(p_docs)
+        max_t2 = 100 if len(p_soc) > 100 else len(p_soc)
+        for i in range(max_t1):
+            (v1, vi1, vif1) = vec_from_tweet(model, _X[p_docs[i]], dimensions, s_words, d_idf)
+            for j in range(i+1, max_t1):
+                (v2, vi2, vif2) = vec_from_tweet(model, _X[p_docs[j]], dimensions, s_words, d_idf)
+                cos = get_cos(v1, v2)
+                cosi = get_cos(vi1, vi2)
+                cosif = get_cos(vif1, vif2)
+                l_blm_cos.append(cos)
+                l_blmi_cos.append(cosi)
+                l_blmif_cos.append(cosif)
+            for k in range(max_t2):
+                (v3, vi3, vif3) = vec_from_tweet(model, _X[p_soc[k]], dimensions, s_words, d_idf)
+                cos = get_cos(v1, v3)
+                cosi = get_cos(vi1, vi3)
+                cosif = get_cos(vif1, vif3)
+                l_soc_cos.append(cos)
+                l_soci_cos.append(cosi)
+                l_socif_cos.append(cosif)
         diff = time.time()-t0
         print "Time to test model:", diff
         bins = map(lambda x: x*0.01, range(101))
@@ -187,7 +202,7 @@ def main(s_lng='en', test_words=None):
 if __name__ == "__main__":
     par = argparse.ArgumentParser()
     par.add_argument("lang_code", help="Languae Code for tweets to train model (e.g. 'en')")
-    par.add_argument("test_words", help="Two words, separated by a comma, for testing cosine similarity (example 'tory,football')", default=None)
+    par.add_argument("--test_words", help="Two words, separated by a comma, for testing cosine similarity (example 'tory,football')", default=None)
     args = par.parse_args()
     s_lng = args.lang_code
     l_test = args.test_words.split(',') if type(args.test_words)==type('') else None
