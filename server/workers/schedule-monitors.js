@@ -50,7 +50,7 @@ function startMonitors(jobMonitor) {
 
   function onFeaturized() {
     updateJobMonitor({state: 'featurized'})
-    .then(() => {
+    .then(jobMonitor => {
       const cMonitor = new ClusterizeMonitor(jobMonitor);
       cMonitor.on('done', onDone);
       cMonitor.start();
