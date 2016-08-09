@@ -49,7 +49,8 @@ def process_message(key, job):
             break
         # Do something with the obtained page
         for doc in page:
-            if job['data_type'] == "text" and 'text_features' in doc and 'id' in doc and len(doc['text_features']) > 0:
+            if job['data_type'] == "text" and 'text_features' in doc and 'id' in doc and \
+                    len(doc['text_features']) > 0:
                 image_similarity.process_vector(doc['id'], doc['text_features'])
                 continue
             if job['data_type'] == "image" and 'image_features' in doc and 'id' in doc and \
