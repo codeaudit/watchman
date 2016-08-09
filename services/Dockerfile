@@ -15,8 +15,9 @@ RUN pip install numpy
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY $SERVICE .
+# create consistent top-level filename
 COPY $SERVICE/$MAIN docker_main.py
-# match project dir structure to match imports
+# match project dir structure to satisfy imports
 COPY util /usr/src/util
 
 RUN apt-get update && apt-get install -y \
