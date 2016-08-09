@@ -7,7 +7,7 @@ class SentimentFilter:
     def which_languages(self):
         return self.good_langs
 
-    def is_scoreable(caption, lang):
+    def is_scoreable(caption, lang='en'):
         if lang=='en':
             caption = re.sub('[\s#]',' ',caption.lower(),flags=re.UNICODE)  # replace all white space charactes (tabs newlines,etc) and the hashtag with a space
             caption = re.sub('[^\w\s@]','',caption,flags=re.UNICODE) #remove non aplhpa numeric except for '@' (so we can filter out emails and usernames)

@@ -19,26 +19,26 @@ def process_message(key, job):
         return
 
     # Check if the text language can be featurized
-    if 'lang' == 'en':
+    if job['lang'] == 'en':
         try:
-            if SentimentFilter.is_scoreable(job['txt']) is False:
+            if sent_filt.is_scoreable(job['txt']) is False:
                 job['data'] = []
                 job['state'] = 'processed'
         except:
             set_err(job, "Error checking if doc is 'scorable'")
+            return
 
         try:
             job['data'] = syntax_vectorizer['en'].vec_from_tweet(job['txt'])
             job['state'] = 'processed'
         except:
             set_err(job, "Error making syntax vector:\n" + str(sys.exc_info()[0]))
+            return
     else:
         job['data'] = []
         job['state'] = 'processed'
 
 if __name__ == '__main__':
-    # ar = argparse.ArgumentParser()
-    # ar.add_argument("")
     global sent_filt
     sent_filt = SentimentFilter()
     global syntax_vectorizer
