@@ -11,7 +11,7 @@ import sys
 import os
 from image_similarity import ImageSimilarity
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "./util"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../util"))
 from redis_dispatcher import Dispatcher
 from loopy import Loopy
 
