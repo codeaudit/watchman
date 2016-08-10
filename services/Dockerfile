@@ -27,4 +27,4 @@ RUN apt-get update && apt-get install -y \
 
 ENV TERM=xterm
 
-CMD ["python", "docker_main.py"]
+CMD ["python", "-u", "docker_main.py"]
