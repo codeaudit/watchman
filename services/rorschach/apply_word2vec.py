@@ -10,6 +10,7 @@ def set_err(job, msg):
     job['data'] = []
     job['error'] = msg
 
+
 def process_message(key, job):
     # Examine job for correct fields
     if 'txt' not in job.keys():
@@ -20,31 +21,48 @@ def process_message(key, job):
         return
 
     # Check if the text language can be featurized
-    if job['lang'] == 'en':
+    lng = job['lang']
+    if lng in model_langs:
         try:
-            if sent_filt.is_scoreable(job['txt']) is False:
+            if sent_filt.is_scoreable(job['txt'], lng) is False:
                 job['data'] = []
                 job['state'] = 'processed'
+                return
         except:
-            set_err(job, "Error checking if doc is 'scorable'")
+            set_err(job, "Error checking if doc is 'scorable', language=" + str(lng))
             return
 
         try:
-            job['data'] = syntax_vectorizer['en'].vec_from_tweet(job['txt'])
+            job['data'] = syntax_vectorizer[lng].vec_from_tweet(sent_filt.tokenize(job['txt'], lng))
             job['state'] = 'processed'
+            return
         except:
-            set_err(job, "Error making syntax vector:\n" + str(sys.exc_info()[0]))
+            set_err(job, "Error making syntax vector (" + lng + "):\n" + str(sys.exc_info()[0]))
             return
     else:
         job['data'] = []
         job['state'] = 'processed'
+        return
 
 if __name__ == '__main__':
+    ar = argparse.ArgumentParser()
+    ar.add_argument("-modelPath", help="Path to model (e.g. ./models)")
+    ar.add_argument("-englishModel", help="Name of Engilsh model")
+    ar.add_argument("-arabicModel", help="Name of Arabic model")
+    args = ar.parse_args()
+    print "Parsed args"
+    global model_langs
+    model_langs = ['en', 'ar']
+    print "Making filter"
     global sent_filt
     sent_filt = SentimentFilter()
     global syntax_vectorizer
     syntax_vectorizer = {}
-    syntax_vectorizer['en'] = SyntaxVectorizer("july28_eng_")
+    
+    if args.englishModel != '':
+        syntax_vectorizer['en'] = SyntaxVectorizer(args.modelPath, args.englishModel)
+    if args.arabicModel != '':
+        syntax_vectorizer['ar'] = SyntaxVectorizer(args.modelPath, args.arabicModel)
     dispatcher = Dispatcher(redis_host='redis',
         process_func=process_message, channels=['genie:feature_txt'])
     dispatcher.start()
