@@ -12,6 +12,6 @@ class SyntaxVectorizer:
         v = self.dim*[0]
         for term in l_txt:
             if term in self.model_words:
-                v = v + self.model[term]
+                v = [x + y for x, y in zip(v, self.model[term])]
         return v
 
