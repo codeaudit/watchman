@@ -49,6 +49,12 @@
     },
     "error_msg": {
       "type": "string"
+    },
+    "start": {
+      "type": "boolean",
+      "default": true,
+      "required": true,
+      "description": "trigger the monitoring process"
     }
   },
   "validations": [],
