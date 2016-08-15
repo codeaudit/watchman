@@ -1,5 +1,5 @@
 angular.module('com.module.core')
-  .controller('CoreCtrl',['$scope','$http','ParsedEvent','TextFeed',
+  .controller('ParserCtrl',['$scope','$http','ParsedEvent','TextFeed',
     function($scope, $http, ParsedEvent, TextFeed) {
 
     var osm = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
