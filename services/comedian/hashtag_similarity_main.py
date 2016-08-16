@@ -1,8 +1,6 @@
 import sys, os
-import json
 from hashtag_similarity import HashtagClusters
-from elasticsearch import Elasticsearch
-sys.path.append(os.path.join(os.path.dirname(__file__), "./util"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../util"))
 from redis_dispatcher import Dispatcher
 from loopy import Loopy
 
@@ -11,7 +9,7 @@ def set_err(job, msg):
     job['data'] = []
     job['error'] = msg
 
-def process_message(key, job):
+def err_check(job):
     if 'query_url' not in job.keys():
         set_err(job, "No 'query_url' in job fields")
     if 'start_time_ms' not in job.keys():
@@ -23,21 +21,32 @@ def process_message(key, job):
     if 'job_id' not in job.keys():
         set_err(job, "No 'job_id' in job fields")
 
+def process_message(key, job):
+    print 'Checking Parameters'
+    err_check(job)
+    if job['state'] == 'error':
+        return
+
     print 'FINDING SIMILARITY'
     hash_clust = HashtagClusters(float(job['min_post']))
 
-    loopy = Loopy(job['query_url'], [
-        {
-            "query_type": "between",
-            "property_name": "timestamp_ms",
-            "query_value": [job['start_time_ms'], job['end_time_ms']]
-        },
-        {
+    query_params = [{
+        "query_type": "between",
+        "property_name": "timestamp_ms",
+        "query_value": [job['start_time_ms'], job['end_time_ms']]
+    }, {
+        "query_type": "neq",
+        "property_name": "hashtags",
+        "query_value": "null"
+    }]
+
+    if 'lang' in job.keys():
+        query_params.append({
             "query_type": "where",
             "property_name": "lang",
-            "query_value": "en"
-        }
-    ])
+            "query_value": job['lang']
+        })
+    loopy = Loopy(job['query_url'], query_params)
 
     if loopy.result_count == 0:
         print "No data to process"
@@ -53,7 +62,7 @@ def process_message(key, job):
             break
         # Do something with the obtained page
         for doc in page:
-            hash_clust.process_vector(doc['fields']['id'][0], doc['fields']['features'])
+            hash_clust.process_vector(doc['id'], doc['hashtags'])
 
     print 'FINISHED SIMILARITY PROCESSING'
     clusters = hash_clust.to_json()

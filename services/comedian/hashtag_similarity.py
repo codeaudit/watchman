@@ -14,7 +14,7 @@ class HashtagClusters:
 
     def get_clusters(self):
         d0 = {}
-        for k,v in self.hash_groups:
+        for k, v in self.hash_groups.iteritems():
             if len(v) > self.min_post:
                 d0[k] = v
         return d0
