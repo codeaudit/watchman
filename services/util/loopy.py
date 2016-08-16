@@ -38,6 +38,11 @@ class Loopy:
                                                             param['property_name'],
                                                             param['query_value'])
                     break
+                if case('neq'):
+                    query_string += "{}[where][{}][neq]={}&".format(filter_prefix,
+                                                            param['property_name'],
+                                                            param['query_value'])
+                    break
                 if case():  # default, could also just omit condition or 'if True'
                     print "huh?"
         return query_string
