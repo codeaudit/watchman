@@ -32,14 +32,15 @@ module.exports = function(JobMonitor) {
       return next();
 
     // update related posts
-    if (!context.isNewInstance)
+    if (!context.isNewInstance) {
       updatePosts(jobMonitor, app)
       .then(() => monitor(jobMonitor, app))
+      .then(() => next())
       .catch(err => console.error(err.stack));
-    else
+    } else {
       monitor(jobMonitor, app);
-
-    next();
+      next();
+    }
   }
 
   function updatePosts(jobMonitor, app) {
