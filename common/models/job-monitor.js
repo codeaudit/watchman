@@ -53,7 +53,7 @@ module.exports = function(JobMonitor) {
           jobMonitor.end_time.toString()
         ]
       }
-    }, {state: 'new'});
+    }, {state: 'new', image_features: [], text_features: []});
   }
 
   function monitor(jobMonitor, app) {
