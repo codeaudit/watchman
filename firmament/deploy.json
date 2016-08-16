@@ -124,7 +124,7 @@
   },
   {
     "name": "watchman",
-    "Image": "lukewendling/sljava:1",
+    "Image": "lukewendling/strong-pm:1",
     "DockerFilePath": "",
     "Hostname": "watchman",
     "ExposedPorts": {
