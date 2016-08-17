@@ -21,6 +21,10 @@ module.exports = function(Qcr) {
   );
 
   Qcr.insert = function(req, cb) {
+    // stop the deluge
+    if (+process.env.IGNORE_QCR) {
+      return cb(null, attrs); // send 200 code and stop
+    }
     const attrs = req.body;
     let qcrData = new Qcr(attrs);
 
@@ -44,7 +48,7 @@ module.exports = function(Qcr) {
 
     if (postAttrs.text.length > 0) {
       postAttrs.featurizer = 'text';
-      createActions.push(SocialMediaPost.create(postAttrs).then(console.log));
+      createActions.push(SocialMediaPost.create(postAttrs));
     }
     if (postAttrs.image_urls.length > 0) {
       postAttrs.featurizer = 'image';
