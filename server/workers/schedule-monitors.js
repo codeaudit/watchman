@@ -24,46 +24,46 @@ const worker = module.exports = {
 if (require.main === module)
   worker.start();
 
-function run() {
-  const now = Date.now(); // ms
-  const params = {
-    // start_time: now - QUERY_SPAN_MINS * 60 * 1000,
-    // end_time: now,
-    start_time: 1469695563000,
-    end_time: 1469702566000,
-    lang: 'en',
-    featurizer: 'text'
-  };
+// function run() {
+//   const now = Date.now(); // ms
+//   const params = {
+//     // start_time: now - QUERY_SPAN_MINS * 60 * 1000,
+//     // end_time: now,
+//     start_time: 1469695563000,
+//     end_time: 1469702566000,
+//     lang: 'en',
+//     featurizer: 'text'
+//   };
 
-  JobMonitor.findOrCreate({ where: params }, params)
-  .then(startMonitors)
-  .catch(err => console.error(err.stack));
-}
+//   JobMonitor.findOrCreate({ where: params }, params)
+//   .then(startMonitors)
+//   .catch(err => console.error(err.stack));
+// }
 
-function startMonitors(jobMonitor) {
-  jobMonitor = jobMonitor[0]; //why array here?
-  const fMonitor = new FeaturizeMonitor(jobMonitor);
+// function startMonitors(jobMonitor) {
+//   jobMonitor = jobMonitor[0]; //why array here?
+//   const fMonitor = new FeaturizeMonitor(jobMonitor);
 
-  fMonitor.start();
+//   fMonitor.start();
 
-  fMonitor.on('featurized', onFeaturized);
+//   fMonitor.on('featurized', onFeaturized);
 
-  function onFeaturized() {
-    updateJobMonitor({state: 'featurized'})
-    .then(jobMonitor => {
-      const cMonitor = new ClusterizeMonitor(jobMonitor);
-      cMonitor.on('done', onDone);
-      cMonitor.start();
-    });
-  }
+//   function onFeaturized() {
+//     updateJobMonitor({state: 'featurized'})
+//     .then(jobMonitor => {
+//       const cMonitor = new ClusterizeMonitor(jobMonitor);
+//       cMonitor.on('done', onDone);
+//       cMonitor.start();
+//     });
+//   }
 
-  function onDone() {
-    updateJobMonitor({state: 'done', done_at: new Date()});
-  }
+//   function onDone() {
+//     updateJobMonitor({state: 'done', done_at: new Date()});
+//   }
 
-  function updateJobMonitor(attrs) {
-    return jobMonitor
-    .updateAttributes(attrs)
-    .catch(err => console.error(err.stack));
-  }
-}
+//   function updateJobMonitor(attrs) {
+//     return jobMonitor
+//     .updateAttributes(attrs)
+//     .catch(err => console.error(err.stack));
+//   }
+// }
