@@ -1,0 +1,51 @@
+{
+  "name": "qcr",
+  "plural": "qcr",
+  "base": "Model",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "required": true
+    },
+    "post_type": {
+      "type": "string",
+      "required": true
+    },
+    "post_url": {
+      "type": "string",
+      "required": true
+    },
+    "timestamp_ms": {
+      "type": "string",
+      "required": true
+    },
+    "lang": {
+      "type": "string",
+      "default": ""
+    },
+    "text": {
+      "type": "string",
+      "default": ""
+    },
+    "hashtags": {
+      "type": [
+        "string"
+      ],
+      "default": []
+    },
+    "image_urls": {
+      "type": [
+        "string"
+      ],
+      "default": []
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

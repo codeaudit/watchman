@@ -71,5 +71,9 @@
   "postsCluster": {
     "dataSource": "db",
     "public": true
+  },
+  "qcr": {
+    "dataSource": null,
+    "public": true
   }
 }

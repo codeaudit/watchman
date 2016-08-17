@@ -6,7 +6,7 @@
     "idx_uniq": {
       "keys": {
         "post_id": 1,
-        "post_type": 1
+        "featurizer": 1
       },
       "options": {
         "unique": true
@@ -22,9 +22,9 @@
         "state": 1
       }
     },
-    "idx_featurizers": {
+    "idx_lang": {
       "keys": {
-        "featurizers": 1
+        "lang": 1
       }
     }
   },
@@ -37,18 +37,15 @@
   "properties": {
     "post_id": {
       "type": "string",
-      "required": true,
-      "description": "external id from social media service"
+      "required": true
     },
     "post_type": {
       "type": "string",
-      "required": true,
-      "description": "twitter, instagram, etc."
+      "required": true
     },
     "post_url": {
       "type": "string",
-      "required": true,
-      "description": "original page url"
+      "required": true
     },
     "text": {
       "type": "string",
@@ -70,19 +67,19 @@
       ],
       "default": []
     },
-    "featurizers": {
-      "type": [
-        "string"
-      ],
-      "default": []
+    "featurizer": {
+      "type": "string",
+      "required": true,
+      "description": "processing type: image, text, hashtag"
     },
     "timestamp_ms": {
-      "type": "string",
+      "type": "number",
       "required": true
     },
     "state": {
       "type": "string",
-      "required": true
+      "required": true,
+      "default": "new"
     },
     "image_features": {
       "type": [
