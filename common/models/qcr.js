@@ -21,11 +21,11 @@ module.exports = function(Qcr) {
   );
 
   Qcr.insert = function(req, cb) {
+    const attrs = req.body;
     // stop the deluge
     if (+process.env.IGNORE_QCR) {
       return cb(null, attrs); // send 200 code and stop
     }
-    const attrs = req.body;
     let qcrData = new Qcr(attrs);
 
     qcrData.isValid(valid => {
