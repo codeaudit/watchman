@@ -46,12 +46,12 @@ module.exports = function(JobMonitor) {
   function updatePosts(jobMonitor, app) {
     return app.models.SocialMediaPost.updateAll({
       lang: jobMonitor.lang,
-      featurizers: jobMonitor.featurizer,
+      featurizer: jobMonitor.featurizer,
       state: {neq: 'new'},
       timestamp_ms: {
         between: [
-          jobMonitor.start_time.toString(),
-          jobMonitor.end_time.toString()
+          jobMonitor.start_time,
+          jobMonitor.end_time
         ]
       }
     }, {state: 'new', image_features: [], text_features: []});
