@@ -124,7 +124,7 @@
   },
   {
     "name": "watchman",
-    "Image": "lukewendling/strong-pm:1",
+    "Image": "lukewendling/strong-pm:2",
     "DockerFilePath": "",
     "Hostname": "watchman",
     "ExposedPorts": {
@@ -160,7 +160,7 @@
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8701",
         "ServiceName": "watchman",
-        "ClusterSize": 20,
+        "ClusterSize": 8,
         "DoBowerInstall": true,
         "EnvironmentVariables": {
           "PORT": 3001,
