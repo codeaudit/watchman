@@ -21,9 +21,14 @@ class RedisDispatcherTest(unittest.TestCase):
 
         worker = rd.Worker(self.redis)
 
-        pub_msg = dict(data=1)
+        self.assertIsNone(worker.run(dict(data=1)))
 
-        self.assertEqual(worker.run(pub_msg), 0)
+    def test_run_with_incomplete_job(self):
+        self.redis.hgetall.return_value = dict(state='new')
+
+        worker = rd.Worker(self.redis)
+
+        self.assertIsNone(worker.run(dict(data=1)))
 
 if __name__ == '__main__':
     unittest.main()

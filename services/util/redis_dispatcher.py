@@ -27,10 +27,10 @@ class Worker(object):
         if not job:
             self.send.hmset(key, {'state': 'error', 'error': 'could not find item in redis'})
             print 'COULD NOT FIND ITEM IN REDIS'
-            return 0
+            return
         if job['state'] != initial_state:  # not yet ready
             print 'NOT YET FINISHED'
-            return 0
+            return
 
         job['state'] = 'processing'
 
@@ -49,7 +49,6 @@ class Worker(object):
             print e
         # when done, update job
         self.send.hmset(key, job)
-        return 1
 
 '''
 Listen for messages and dispatch workers.
