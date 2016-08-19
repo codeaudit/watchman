@@ -4,7 +4,8 @@ angular.module('com.module.core')
 function ClustersCtrl($scope, $window, PostsCluster, SocialMediaPost) {
   $scope.clusters = PostsCluster.find({
     filter: {
-      include: 'jobMonitor'
+      include: 'jobMonitor',
+      limit: 100
     }
   });
 
