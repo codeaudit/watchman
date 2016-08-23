@@ -1,7 +1,8 @@
 'use strict';
 
 const FeaturizeMonitor = require('../../lib/job-monitors/featurize-monitor'),
-  ClusterizeMonitor = require('../../lib/job-monitors/clusterize-monitor')
+  ClusterizeMonitor = require('../../lib/job-monitors/clusterize-monitor'),
+  _ = require('lodash')
 ;
 
 module.exports = function(JobMonitor) {
@@ -34,6 +35,7 @@ module.exports = function(JobMonitor) {
     // update related posts
     if (!context.isNewInstance) {
       updatePosts(jobMonitor, app)
+      .then(() => removeClusters(jobMonitor))
       .then(() => monitor(jobMonitor, app))
       .then(() => next())
       .catch(err => console.error(err.stack));
@@ -43,9 +45,13 @@ module.exports = function(JobMonitor) {
     }
   }
 
+  function removeClusters(jobMonitor) {
+    return jobMonitor.postsClusters.destroyAll();
+  }
+
   function updatePosts(jobMonitor, app) {
-    return app.models.SocialMediaPost.updateAll({
-      lang: jobMonitor.lang,
+
+    let query = {
       featurizer: jobMonitor.featurizer,
       state: {neq: 'new'},
       timestamp_ms: {
@@ -54,7 +60,13 @@ module.exports = function(JobMonitor) {
           jobMonitor.end_time
         ]
       }
-    }, {state: 'new', image_features: [], text_features: []});
+    };
+
+    if (!_.isEmpty(jobMonitor.lang)) {
+      query.lang = jobMonitor.lang
+    }
+
+    return app.models.SocialMediaPost.updateAll(query, {state: 'new', image_features: [], text_features: []});
   }
 
   function monitor(jobMonitor, app) {
@@ -75,8 +87,11 @@ module.exports = function(JobMonitor) {
     }
 
     function onDone() {
+      // TODO: 'done' when there were errors or warnings?
       jobMonitor.updateAttributes({
-        state: 'done', done_at: new Date()
+        state: 'done',
+        done_at: new Date(),
+        error_msg: fMonitor.errors.join(',')
       })
       .catch(err => console.error(err.stack));
     }
