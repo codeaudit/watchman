@@ -1,10 +1,13 @@
 .row
-  .col-md-10
+  .col-md-8
     h3 {{jobMonitors.length}} Jobs
     h4 {{clustersCount}} clusters (out of {{totalClustersCount.count}} total)
   .col-md-2
     | Most recent:
-    select(ng-model='limit' class='form-control' ng-change='changeLimit()' ng-options='n for n in limitOptions')
+    select(ng-model='limit' class='form-control' ng-options='n for n in limitOptions')
+  .col-md-2
+    | Type:
+    select(ng-model='type' class='form-control' ng-options='t for t in typeOptions')
 .row.text-muted
   .col-md-1 # clusters
   .col-md-1 type

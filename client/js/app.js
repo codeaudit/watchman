@@ -16,7 +16,8 @@ angular.module('watchman', [
   })
   .when('/job-monitors', {
     templateUrl: '/app/job-monitors',
-    controller: 'JobMonitorsCtrl'
+    controller: 'JobMonitorsCtrl',
+    reloadOnSearch: false
   })
   .when('/job-monitors/:id/clusters', {
     templateUrl: '/app/clusters',
