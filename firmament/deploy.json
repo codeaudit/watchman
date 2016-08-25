@@ -136,10 +136,6 @@
         "EnvironmentVariables": {
           "PORT": 3001,
           "NODE_ENV": "production",
-          "FLICKR_API_KEY": "0393aca8dd1a303a84230f2e8c1fd0a5",
-          "TRANSLATE_CLIENT_ID": "watchman-translate",
-          "TRANSLATE_CLIENT_SECRET": "hnp1LE7qiLFVElmKkDsn5RbFv4Bo2bnZoG/COBfP6Q8=",
-          "API_ROOT": "http://172.17.0.1:3003/api",
           "IGNORE_QCR": 1
         },
         "Scripts": [
