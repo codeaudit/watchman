@@ -20,6 +20,8 @@ def err_check(job):
         set_err(job, "No 'result_url' in job fields")
     if 'job_id' not in job.keys():
         set_err(job, "No 'job_id' in job fields")
+    if 'min_post' not in job.keys():
+        set_err(job, "No 'min_post' in job fields")
 
 def process_message(key, job):
     if 'type' in job and job['type'] == 'featurizer':
@@ -69,10 +71,10 @@ def process_message(key, job):
             hash_clust.process_vector(doc['id'], doc['hashtags'])
 
     print 'FINISHED SIMILARITY PROCESSING'
-    for k, v in hash_clust.hash_groups.iteritems():
+    for k, v in hash_clust.get_clusters().iteritems():
         cluster = {}
         cluster['term'] = k
-        cluster['post_ids'] = v
+        cluster['similar_ids'] = v
         cluster['job_monitor_id'] = job['job_id']
         loopy.post_result(job['result_url'], cluster)
 
