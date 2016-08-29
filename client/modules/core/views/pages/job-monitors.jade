@@ -10,19 +10,23 @@
     select(ng-model='type' class='form-control' ng-options='t for t in typeOptions')
 .row.text-muted
   .col-md-1 # clusters
+  .col-md-2 id
   .col-md-1 type
   .col-md-1 lang
-  .col-md-3 args
-  .col-md-4 times
-  .col-md-2 created
+  .col-md-1 state
+  .col-md-2 args
+  .col-md-2 query
+  .col-md-2 run
 hr
 
 .row(ng-repeat='monitor in jobMonitors')
   .col-md-1
     a(ng-href='#job-monitors/{{ monitor.id }}/clusters') {{monitor.postsClusters.length}}
+  .col-md-2 {{monitor.id}}
   .col-md-1 {{monitor.featurizer}}
   .col-md-1 {{monitor.lang}}
-  .col-md-3 {{monitor.service_args}}
-  .col-md-4 {{monitor.start_time | date:'short'}} - {{monitor.end_time | date:'short'}}
-  .col-md-2 {{monitor.created | date:'short'}}
+  .col-md-1 {{monitor.state}}
+  .col-md-2 {{monitor.service_args}}
+  .col-md-2 {{monitor.start_time | date:'short'}} - {{monitor.end_time | date:'short'}}
+  .col-md-2 {{monitor.created | date:'short'}} - {{monitor.done_at | date:'short'}}
 
