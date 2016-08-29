@@ -9,7 +9,24 @@
         "/downloads:/downloads"
       ]
     }
-  },
+  },{
+  "name": "mongo",
+  "Image": "jreeme/mongo:2.6",
+  "DockerFilePath": "",
+  "Hostname": "mongo",
+  "HostConfig": {
+    "VolumesFrom": [
+      "data-container"
+    ],
+    "PortBindings": {
+      "27017/tcp": [
+        {
+          "HostPort": "27017"
+        }
+      ]
+    }
+  }
+},
   {
     "name": "trained-models",
     "Image": "sotera/trained-models:1",
@@ -62,24 +79,6 @@
       "Links": [
         "redis:redis"
       ]
-    }
-  },
-  {
-    "name": "mongo",
-    "Image": "jreeme/mongo:2.6",
-    "DockerFilePath": "",
-    "Hostname": "mongo",
-    "HostConfig": {
-      "VolumesFrom": [
-        "data-container"
-      ],
-      "PortBindings": {
-        "27017/tcp": [
-          {
-            "HostPort": "27017"
-          }
-        ]
-      }
     }
   },
   {
@@ -196,7 +195,7 @@
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8702",
         "ServiceName": "watchman",
-        "DoBowerInstall": true,
+        "DoBowerInstall": false,
         "EnvironmentVariables": {
           "PORT": 3002,
           "NODE_ENV": "production",
@@ -241,7 +240,9 @@
         "ClusterSize": 1,
         "DoBowerInstall": false,
         "EnvironmentVariables": {
+          "PORT": 3004,
           "NODE_ENV": "production",
+          "API_ROOT": "http://172.17.0.1:3003/api",
           "WORKER_SCRIPT": "./workers/job-queue"
         },
         "Scripts": [
