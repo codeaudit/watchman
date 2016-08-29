@@ -37,15 +37,19 @@ module.exports = function(JobMonitor) {
     if (!context.isNewInstance) {
       updatePosts(jobMonitor, app)
       .then(() => removeClusters(jobMonitor))
-      .then(() => monitor(jobMonitor, app))
+      .then(() => createJob(jobMonitor))
       .then(() => next())
       .catch(err => console.error(err.stack));
     } else {
-      jobs.create('job monitor', {
-        jobMonitorId: jobMonitor.id
-      });
+      createJob(jobMonitor);
       next();
     }
+  }
+
+  function createJob(jobMonitor) {
+    jobs.create('job monitor', {
+      jobMonitorId: jobMonitor.id
+    });
   }
 
   function removeClusters(jobMonitor) {
