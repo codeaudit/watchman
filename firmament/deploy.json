@@ -61,7 +61,7 @@
   },
   {
     "name": "hashtag-clusterer",
-    "Image": "sotera/comedian:5",
+    "Image": "sotera/comedian:6",
     "DockerFilePath": "",
     "Hostname": "hashtag-clusterer",
     "HostConfig": {
