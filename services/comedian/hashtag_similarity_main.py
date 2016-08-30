@@ -41,6 +41,10 @@ def process_message(key, job):
         "property_name": "timestamp_ms",
         "query_value": [job['start_time_ms'], job['end_time_ms']]
     }, {
+        "query_type": "where",
+        "property_name": "featurizer",
+        "query_value": "hashtag"
+    }, {
         "query_type": "neq",
         "property_name": "hashtags",
         "query_value": "null"
