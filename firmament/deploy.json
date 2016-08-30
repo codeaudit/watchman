@@ -9,7 +9,24 @@
         "/downloads:/downloads"
       ]
     }
-  },
+  },{
+  "name": "mongo",
+  "Image": "jreeme/mongo:2.6",
+  "DockerFilePath": "",
+  "Hostname": "mongo",
+  "HostConfig": {
+    "VolumesFrom": [
+      "data-container"
+    ],
+    "PortBindings": {
+      "27017/tcp": [
+        {
+          "HostPort": "27017"
+        }
+      ]
+    }
+  }
+},
   {
     "name": "trained-models",
     "Image": "sotera/trained-models:1",
@@ -44,7 +61,7 @@
   },
   {
     "name": "hashtag-clusterer",
-    "Image": "sotera/comedian:4",
+    "Image": "sotera/comedian:5",
     "DockerFilePath": "",
     "Hostname": "hashtag-clusterer",
     "HostConfig": {
@@ -65,18 +82,15 @@
     }
   },
   {
-    "name": "mongo",
-    "Image": "jreeme/mongo:2.6",
+    "name": "mitie",
+    "Image": "lukewendling/mitie-server",
     "DockerFilePath": "",
-    "Hostname": "mongo",
+    "Hostname": "mitie",
     "HostConfig": {
-      "VolumesFrom": [
-        "data-container"
-      ],
       "PortBindings": {
-        "27017/tcp": [
+        "8888/tcp": [
           {
-            "HostPort": "27017"
+            "HostPort": "8888"
           }
         ]
       }
@@ -136,11 +150,100 @@
         "EnvironmentVariables": {
           "PORT": 3001,
           "NODE_ENV": "production",
-          "FLICKR_API_KEY": "0393aca8dd1a303a84230f2e8c1fd0a5",
-          "TRANSLATE_CLIENT_ID": "watchman-translate",
-          "TRANSLATE_CLIENT_SECRET": "hnp1LE7qiLFVElmKkDsn5RbFv4Bo2bnZoG/COBfP6Q8=",
           "API_ROOT": "http://172.17.0.1:3003/api",
           "IGNORE_QCR": 1
+        },
+        "Scripts": [
+        ]
+      }
+    ]
+  },
+  {
+    "name": "watchman-feed",
+    "Image": "lukewendling/strong-pm:2",
+    "DockerFilePath": "",
+    "Hostname": "watchman",
+    "ExposedPorts": {
+      "3001/tcp": {}
+    },
+    "HostConfig": {
+      "VolumesFrom": [
+        "data-container"
+      ],
+      "Links": [
+        "mongo:mongo",
+        "mitie:mitie",
+        "redis:redis"
+      ],
+      "PortBindings": {
+        "3001/tcp": [
+          {
+            "HostPort": "3002"
+          }
+        ],
+        "8701/tcp": [
+          {
+            "HostPort": "8702"
+          }
+        ]
+      }
+    },
+    "ExpressApps": [
+      {
+        "GitUrl": "https://github.com/Sotera/watchman.git",
+        "GitSrcBranchName": "master",
+        "StrongLoopBranchName": "deploy",
+        "StrongLoopServerUrl": "http://localhost:8702",
+        "ServiceName": "watchman",
+        "DoBowerInstall": false,
+        "EnvironmentVariables": {
+          "PORT": 3002,
+          "NODE_ENV": "production",
+          "API_ROOT": "http://172.17.0.1:3003/api",
+          "WORKER_SCRIPT": "./workers/start-extractor.js"
+        },
+        "Scripts": [
+        ]
+      }
+    ]
+  },
+  {
+    "name": "watchman-queue",
+    "Image": "lukewendling/strong-pm:2",
+    "DockerFilePath": "",
+    "Hostname": "watchman-queue",
+    "ExposedPorts": {
+    },
+    "HostConfig": {
+      "VolumesFrom": [
+        "data-container"
+      ],
+      "Links": [
+        "mongo:mongo",
+        "redis:redis"
+      ],
+      "PortBindings": {
+        "8701/tcp": [
+          {
+            "HostPort": "8703"
+          }
+        ]
+      }
+    },
+    "ExpressApps": [
+      {
+        "GitUrl": "https://github.com/Sotera/watchman.git",
+        "GitSrcBranchName": "master",
+        "StrongLoopBranchName": "deploy",
+        "StrongLoopServerUrl": "http://localhost:8703",
+        "ServiceName": "watchman-queue",
+        "ClusterSize": 1,
+        "DoBowerInstall": false,
+        "EnvironmentVariables": {
+          "PORT": 3004,
+          "NODE_ENV": "production",
+          "API_ROOT": "http://172.17.0.1:3003/api",
+          "WORKER_SCRIPT": "./workers/job-queue"
         },
         "Scripts": [
         ]

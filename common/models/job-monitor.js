@@ -2,13 +2,14 @@
 
 const FeaturizeMonitor = require('../../lib/job-monitors/featurize-monitor'),
   ClusterizeMonitor = require('../../lib/job-monitors/clusterize-monitor'),
-  _ = require('lodash')
+  _ = require('lodash'),
+  jobs = require('../../lib/jobs')
 ;
 
 module.exports = function(JobMonitor) {
 
   JobMonitor.observe('before save', reset);
-  JobMonitor.observe('after save', startMonitoring);
+  JobMonitor.observe('after save', startMonitor);
 
   // reset for monitor re-runs
   function reset(context, next) {
@@ -25,7 +26,7 @@ module.exports = function(JobMonitor) {
     next();
   }
 
-  function startMonitoring(context, next) {
+  function startMonitor(context, next) {
     const app = context.Model.app,
       jobMonitor = context.instance;
 
@@ -36,13 +37,19 @@ module.exports = function(JobMonitor) {
     if (!context.isNewInstance) {
       updatePosts(jobMonitor, app)
       .then(() => removeClusters(jobMonitor))
-      .then(() => monitor(jobMonitor, app))
+      .then(() => createJob(jobMonitor))
       .then(() => next())
       .catch(err => console.error(err.stack));
     } else {
-      monitor(jobMonitor, app);
+      createJob(jobMonitor);
       next();
     }
+  }
+
+  function createJob(jobMonitor) {
+    jobs.create('job monitor', {
+      jobMonitorId: jobMonitor.id
+    });
   }
 
   function removeClusters(jobMonitor) {
@@ -50,7 +57,6 @@ module.exports = function(JobMonitor) {
   }
 
   function updatePosts(jobMonitor, app) {
-
     let query = {
       featurizer: jobMonitor.featurizer,
       state: {neq: 'new'},
@@ -67,33 +73,5 @@ module.exports = function(JobMonitor) {
     }
 
     return app.models.SocialMediaPost.updateAll(query, {state: 'new', image_features: [], text_features: []});
-  }
-
-  function monitor(jobMonitor, app) {
-    const fMonitor = new FeaturizeMonitor(jobMonitor, app);
-
-    fMonitor.start();
-
-    fMonitor.on('featurized', onFeaturized);
-
-    function onFeaturized() {
-      jobMonitor.updateAttributes({state: 'featurized'})
-      .then(jobMonitor => {
-        const cMonitor = new ClusterizeMonitor(jobMonitor, app);
-        cMonitor.on('done', onDone);
-        cMonitor.start();
-      })
-      .catch(err => console.error(err.stack));
-    }
-
-    function onDone() {
-      // TODO: 'done' when there were errors or warnings?
-      jobMonitor.updateAttributes({
-        state: 'done',
-        done_at: new Date(),
-        error_msg: fMonitor.errors.join(',')
-      })
-      .catch(err => console.error(err.stack));
-    }
   }
 };
