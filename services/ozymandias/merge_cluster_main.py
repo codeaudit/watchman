@@ -1,0 +1,64 @@
+import sys, os
+from cluster_linker import ClusterLinker
+sys.path.append(os.path.join(os.path.dirname(__file__), "../util"))
+from redis_dispatcher import Dispatcher
+from loopy import Loopy
+
+def set_err(job, msg):
+    job['state'] = 'error'
+    job['data'] = []
+    job['error'] = msg
+
+def err_check(job):
+    if 'query_url' not in job.keys():
+        set_err(job, "No 'query_url' in job fields")
+    if 'start_time_ms' not in job.keys():
+        set_err(job, "No 'start_time_ms' in job fields")
+    if 'end_time_ms' not in job.keys():
+        set_err(job, "No 'end_time_ms' in job fields")
+    if 'result_url' not in job.keys():
+        set_err(job, "No 'result_url' in job fields")
+    if 'job_id' not in job.keys():
+        set_err(job, "No 'job_id' in job fields")
+
+def process_message(key, job):
+    print 'Checking Parameters'
+
+    err_check(job)
+    if job['state'] == 'error':
+        return
+
+    query_params = [{
+        "query_type": "between",
+        "property_name": "end_time_ms",
+        "query_value": [job['start_time_ms'], job['end_time_ms']]
+    }]
+
+    print "BEGIN LINKING CLUSTERS"
+    linker = ClusterLinker()
+    loopy = Loopy(job['query_url'], query_params)
+
+    if loopy.result_count == 0:
+        print "No data to process"
+        job['data'] = []
+        job['error'] = "No data found to process."
+        job['state'] = 'error'
+        return
+
+    while True:
+        print "Scrolling...{}".format(loopy.current_page)
+        page = loopy.get_next_page()
+        if page is None:
+            break
+        # Do something with the obtained page
+        for doc in page:
+            linker.add_cluster(doc)
+
+    print 'FINISHED LINKING CLUSTERS'
+
+if __name__ == '__main__':
+    #dispatcher = Dispatcher(redis_host='redis',
+    #                        process_func=process_message,
+    #                        channels=['genie:group_clusters'])
+    #dispatcher.start()
+    process_message('abc', {'state':'new', 'job_id':'13', 'start_time_ms':1570916185000, 'end_time_ms':1570916187000, 'query_url':'http://172.17.0.1:3003/api/postsclusters/', 'result_url':'http://172.17.0.1:3003/clusterlinks/'})
