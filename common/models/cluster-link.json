@@ -1,11 +1,15 @@
 {
-  "name": "postsCluster",
+  "name": "clusterLink",
   "base": "PersistedModel",
   "idInjection": true,
   "indexes": {
-    "idx_job_monitor_id": {
+    "idx_uniq": {
       "keys": {
-        "job_monitor_id": 1
+        "source": 1,
+        "target": 1
+      },
+      "options": {
+        "unique": true
       }
     },
     "idx_end_time_ms": {
@@ -17,13 +21,23 @@
   "options": {
     "validateUpsert": true
   },
-  "mixins": {
-    "Timestamp": {}
-  },
   "properties": {
-    "start_time_ms": {
+    "source": {
+      "type": "string",
+      "required": true
+    },
+    "target": {
+      "type": "string",
+      "required": true
+    },
+    "weight": {
       "type": "number",
       "required": true
+    },
+    "common_ids": {
+      "type": [
+        "string"
+      ]
     },
     "end_time_ms": {
       "type": "number",
@@ -31,13 +45,7 @@
     }
   },
   "validations": [],
-  "relations": {
-    "jobMonitor": {
-      "type": "belongsTo",
-      "model": "jobMonitor",
-      "foreignKey": "job_monitor_id"
-    }
-  },
+  "relations": {},
   "acls": [],
   "methods": {}
 }
