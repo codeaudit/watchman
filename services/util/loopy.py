@@ -76,7 +76,8 @@ class Loopy:
                                                                  self.current_page*self.page_size)
         try:
             result = requests.get(self.query_url + query_string).json()
-        except:
+        except Exception as e:
+            print e
             print "Woops! Loopy says: error getting page from Loopback endpoint"
             return None
 
@@ -88,3 +89,4 @@ class Loopy:
         result = requests.post(url, json=payload)
         if result.status_code != 200:
             print result.content
+            raise Exception('POST to {} failed: {}'.format(url, result.content))

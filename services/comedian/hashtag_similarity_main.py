@@ -24,8 +24,11 @@ def err_check(job):
         set_err(job, "No 'min_post' in job fields")
 
 def process_message(key, job):
-    if 'type' in job and job['type'] == 'featurizer':
+    # if type == 'featurizer', immediately process and return b/c hashtags
+    # are not featurized. allows system to continue with clustering process.
+    if job.get('type') == 'featurizer':
         job['state'] = 'processed'
+        job['data'] = []
         return
 
     print 'Checking Parameters'
@@ -34,6 +37,7 @@ def process_message(key, job):
         return
 
     print 'FINDING SIMILARITY'
+    print 'min_post set to %s' % job['min_post']
     hash_clust = HashtagClusters(float(job['min_post']))
 
     query_params = [{
@@ -82,10 +86,17 @@ def process_message(key, job):
         cluster['job_monitor_id'] = job['job_id']
         cluster['start_time_ms'] = job['start_time_ms']
         cluster['end_time_ms'] = job['end_time_ms']
-        loopy.post_result(job['result_url'], cluster)
-
-    job['data'] = hash_clust.to_json()
-    job['state'] = 'processed'
+        try:
+            loopy.post_result(job['result_url'], cluster)
+        except Exception as e:
+            # TODO: we should set data = None when error.
+            job['data'] = []
+            job['state'] = 'error'
+            job['error'] = e
+            break
+    else: # no errors
+        job['data'] = hash_clust.to_json()
+        job['state'] = 'processed'
 
 if __name__ == '__main__':
     dispatcher = Dispatcher(redis_host='redis',
