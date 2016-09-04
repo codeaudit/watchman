@@ -22,7 +22,9 @@ hr
 
 .row(ng-repeat='monitor in jobMonitors')
   .col-md-1
-    a(ng-href='#job-monitors/{{ monitor.id }}/clusters') {{monitor.postsClusters.length}}
+    a(ng-href='#job-monitors/{{ monitor.id }}/clusters'
+      ng-show='monitor.featurizer !== "linker"').
+        {{monitor.postsClusters.length}}
   .col-md-2 {{monitor.id}}
   .col-md-1 {{monitor.featurizer}}
   .col-md-1 {{monitor.lang}}
