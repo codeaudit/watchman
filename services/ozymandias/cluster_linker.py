@@ -15,10 +15,7 @@ class ClusterLinker:
             small = c2
             big = set(c1['similar_ids'])
             big_id = c1['id']
-        l_common = []
-        for id in small['similar_ids']:
-            if id in big:
-                l_common.append(id)
+        l_common = [id for id in small['similar_ids'] if id in big]
         ratio = (1.*len(l_common))/(1.*len(small['similar_ids']))
         if ratio > self.thresh:
             d_clust = {
@@ -38,3 +35,6 @@ class ClusterLinker:
         for c in self.l_clusts:
             self.compare_clusters(c, clust_new)
         self.l_clusts.append(clust_new)
+
+    def add_clusters(self, *clusters):
+        map(self.add_cluster, clusters)
