@@ -44,3 +44,13 @@ docker build --no-cache --force-rm -t lukewendling/mitie-server .
 docker run -d -p 8888:8888 --name mitie lukewendling/mitie-server
 ./server/workers/start-extractor.js # start workers
 ```
+
+## Tests
+
+### Services
+
+```
+# u might need to install deps
+# TODO: commit a conda env file
+python services/run_tests.py
+```
