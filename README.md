@@ -12,6 +12,7 @@ A core set of utilities frequently used in large data processing / ML projects, 
 1. Docker 1.9+ / Firmament2
 1. Mongo 2.6
 1. Redis 3
+1. Python 2.7 / Conda
 
 ## Install
 
@@ -50,7 +51,7 @@ docker run -d -p 8888:8888 --name mitie lukewendling/mitie-server
 ### Services
 
 ```
-# u might need to install deps
-# TODO: commit a conda env file
+conda env create -f services/environment.yml
+source activate watchman
 python services/run_tests.py
 ```
