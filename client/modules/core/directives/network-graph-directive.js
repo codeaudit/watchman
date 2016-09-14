@@ -18,24 +18,39 @@ angular.module('com.module.core')
                 .catch(console.error);
             }
 
-            function graphEvents(links) {
+            var colors = {
+              "hashtag":"Goldenrod",
+              "text":"SteelBlue",
+              "image":"Maroon"
+            };
+            function getNetworkGraph(links){
               var graph = {};
               graph.links = links;
               graph.nodes=[];
-              var nodeSet = new Set();
               graph.links.forEach(function(link){
                 link.value = link.weight;
-                nodeSet.add(link.source);
-                nodeSet.add(link.target);
+                graph.nodes.push({"id":link.source, "group":link.source_data_type});
+                graph.nodes.push({"id":link.target, "group":link.target_data_type});
               });
 
-              nodeSet.forEach(function(node){
-                graph.nodes.push({"id":node});
-              });
+              graph.nodes = _.uniqWith(graph.nodes, _.isEqual);
 
-              var svg = d3.select("svg"),
-                width = +svg.attr("width"),
-                height = +svg.attr("height");
+              return graph;
+            }
+
+            function graphEvents(links) {
+              var $container = $('.chart-container'),
+                width = $container.width(),
+                height = $container.height(),
+                graph = getNetworkGraph(links),
+                svg = d3.select('.chart-container').append("svg");
+
+              svg.attr("width", '100%')
+                .attr("height", '100%')
+                .attr('viewBox','0 0 '+Math.min(width,height) +' '+Math.min(width,height) )
+                .attr('preserveAspectRatio','xMinYMin')
+                .append("g")
+                .attr("transform", "translate(" + Math.min(width,height) / 2 + "," + Math.min(width,height) / 2 + ")");
 
               var color = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -64,7 +79,10 @@ angular.module('com.module.core')
                 .enter().append("circle")
                 .attr("r", 5)
                 .attr("fill", function (d) {
-                  return color(d.group);
+                  return colors[d.group];
+                })
+                .on("click",function(d){
+                  $scope.showDetails(d);
                 })
                 .call(d3.drag()
                   .on("start", dragstarted)
@@ -73,7 +91,7 @@ angular.module('com.module.core')
 
               node.append("title")
                 .text(function (d) {
-                  return d.id;
+                  return d.group;
                 });
 
               svg.call(zoom);
