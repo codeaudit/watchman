@@ -61,7 +61,7 @@
   },
   {
     "name": "hashtag-clusterer",
-    "Image": "sotera/comedian:7",
+    "Image": "sotera/comedian:8",
     "DockerFilePath": "",
     "Hostname": "hashtag-clusterer",
     "HostConfig": {
@@ -83,7 +83,7 @@
   },
   {
     "name": "feature-sim",
-    "Image": "sotera/feature-sim:1",
+    "Image": "sotera/feature-sim:2",
     "DockerFilePath": "",
     "Hostname": "feature-sim",
     "HostConfig": {

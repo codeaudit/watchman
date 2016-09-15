@@ -34,7 +34,6 @@ class ClusterLinker:
             }
             self.l_clust_links.append(d_clust)
 
-
     def get_links(self):
         return self.l_clust_links
 
