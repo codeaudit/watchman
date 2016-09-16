@@ -75,19 +75,4 @@ module.exports = function(JobMonitor) {
     return app.models.SocialMediaPost.updateAll(query, {state: 'new', image_features: [], text_features: []});
   }
 
-  JobMonitor.destroyData = function(cb) {
-    JobMonitor.destroyAll()
-     .then(() => cb(null, {data: 'All data destroyed'}))
-     .catch(cb);
-   };
-
-  JobMonitor.remoteMethod(
-     'destroyData',
-     {
-       accepts: [
-       ],
-       returns: {arg: 'data', root: true},
-       http: {path: '/destroy', verb: 'get'}
-     }
-   );
 };

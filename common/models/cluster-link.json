@@ -21,6 +21,9 @@
   "options": {
     "validateUpsert": true
   },
+  "mixins": {
+    "DestroyAll": {}
+  },
   "properties": {
     "source": {
       "type": "string",
