@@ -12,14 +12,6 @@ var path = require('path');
 // protect qcr endpoint with basic auth
 require('./basic-auth').auth(app, ['qcr/insert']);
 
-// to support JSON-encoded bodies
-app.middleware('parse', bodyParser.json({limit: 524288000}));
-// to support URL-encoded bodies
-app.middleware('parse', bodyParser.urlencoded({
-  limit: 524288000,
-  extended: true
-}));
-
 app.start = function() {
   // mount kue jobs UI
   app.use('/kue', kue.app);
