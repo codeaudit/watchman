@@ -31,7 +31,8 @@
     },
     "data_type": {
       "type": "string",
-      "required": true
+      "required": true,
+      "description": "equal to jobMonitor.featurizer. added for convenience."
     }
   },
   "validations": [],
