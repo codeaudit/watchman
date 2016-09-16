@@ -1,4 +1,3 @@
 redis
 numpy
-falconn
 requests
