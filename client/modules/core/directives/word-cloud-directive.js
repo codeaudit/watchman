@@ -49,7 +49,9 @@ angular.module('com.module.core')
                 cloud
                   .transition()
                   .duration(600)
-                  .style("font-size", function(d) { return d.size + "px"; })
+                  .style("font-size", function(d) {
+                    return d.size + "px";
+                  })
                   .attr("transform", function(d) {
                     return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
                   })
@@ -86,7 +88,11 @@ angular.module('com.module.core')
                     .fontSize(function(d) {
                       return d.size;
                     })
-                    .on("end", draw)
+                    .on("end", function(words){
+                      draw(words);
+                      draw(words);
+
+                    })
                     .start();
                 }
               }
@@ -95,16 +101,52 @@ angular.module('com.module.core')
 
             function getWords(words) {
               var wordObjs = {};
-              words.replace(/[!\.,:;\?]/g, '')
+              var max = 1;
+              var min = 1;
+              words = words.toLowerCase();
+              words = words.replace(/#\S+/g, ' ');
+              words = words.replace(/@\S+/g, ' ');
+              words = words.replace(/http\S+/g, ' ');
+              words = words.replace(/ the /g, ' ');
+              words = words.replace(/ for /g, ' ');
+              words = words.replace(/ to /g, ' ');
+              words = words.replace(/ on /g, ' ');
+              words = words.replace(/ my /g, ' ');
+              words = words.replace(/ in /g, ' ');
+              words = words.replace(/ and /g, ' ');
+              words = words.replace(/ is /g, ' ');
+              words = words.replace(/ of /g, ' ');
+              words = words.replace(/\s+/g,' ').trim();
+
+              words.replace(/[!\.,:;\?]/g, ' ')
                 .split(' ')
                 .map(function(d) {
                   if(wordObjs[d]){
-                    wordObjs[d].size+=10;
+                    wordObjs[d].count++;
+                    if(wordObjs[d].count > max){
+                      max = wordObjs[d].count;
+                    }
                   }
                   else{
-                    wordObjs[d] = {text:d,size:20};
+                    wordObjs[d] = {text:d,count:1};
                   }
                 });
+
+              var vals = _.values(wordObjs);
+              var fontMin = 10;
+              var fontMax = 50;
+
+              for (var i in vals)
+              {
+                var tag = vals[i];
+
+                tag.size = Math.min(fontMax,tag.count/2 *(  tag.count <= min ? 0
+                  : (tag.count / max) * (fontMax - fontMin) + fontMin));
+                if(tag.size ===0)
+                  continue;
+                tag.size = Math.max(fontMin,tag.size);
+              }
+
               return _.values(wordObjs);
             }
 

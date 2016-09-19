@@ -40,7 +40,7 @@ function DiagramCtrl($scope, PostsCluster, SocialMediaPost) {
     $scope.showSpinner = true;
 
     $scope.clusterText = "";
-    var ids = cluster.similar_ids.slice(0,10);
+    var ids = cluster.similar_ids.slice(0,50);
     SocialMediaPost.find({
       filter: {
         where: {
