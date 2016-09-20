@@ -79,7 +79,8 @@ def process_message(key, job):
                 feature_similarity.process_vector(doc['id'], doc['post_id'], doc['text_features'])
                 continue
             if job['data_type'] == "image" and 'image_features' in doc and 'id' in doc and \
-                    len(doc['image_features']) > 0:
+                    len(doc['image_features']) > 0 and 'primary_image_url' in doc.keys() and \
+                    doc['primary_image_url'] is not None:
                 feature_similarity.process_vector(doc['id'], doc['post_id'], doc['image_features'],
                                                   doc['primary_image_url'])
 
