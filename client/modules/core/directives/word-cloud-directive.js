@@ -111,7 +111,7 @@ angular.module('com.module.core')
               var patt = '(';
               blackList.forEach(function(word, i){
                 if(i!=0){patt+='|'}
-                patt += '\\s' + word;
+                patt += '\\s' + word + '\\s';
               });
               patt += ')';
               var pattern = new RegExp(patt,'g');
