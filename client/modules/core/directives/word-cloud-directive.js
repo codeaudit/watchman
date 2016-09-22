@@ -101,21 +101,26 @@ angular.module('com.module.core')
 
             function getWords(words) {
               var wordObjs = {};
+              var blackList = ['the','for','to','on','my','in','and','is','of','are',
+                               'he','his',"he's",'im',"i'm",'got','not','from','a','at',
+                               "we're",'was','us','be','her',"her's",'them', 'they', 'rt',
+                               'you', "your", "you're", 'that','me','has','get','were','it',
+                               'me','or','so','no'];
               var max = 1;
               var min = 1;
+              var patt = '(';
+              blackList.forEach(function(word, i){
+                if(i!=0){patt+='|'}
+                patt += '\\s' + word;
+              });
+              patt += ')';
+              var pattern = new RegExp(patt,'g');
+
               words = words.toLowerCase();
               words = words.replace(/#\S+/g, ' ');
               words = words.replace(/@\S+/g, ' ');
               words = words.replace(/http\S+/g, ' ');
-              words = words.replace(/ the /g, ' ');
-              words = words.replace(/ for /g, ' ');
-              words = words.replace(/ to /g, ' ');
-              words = words.replace(/ on /g, ' ');
-              words = words.replace(/ my /g, ' ');
-              words = words.replace(/ in /g, ' ');
-              words = words.replace(/ and /g, ' ');
-              words = words.replace(/ is /g, ' ');
-              words = words.replace(/ of /g, ' ');
+              words = words.replace(pattern, ' ');
               words = words.replace(/\s+/g,' ').trim();
 
               words.replace(/[!\.,:;\?]/g, ' ')
