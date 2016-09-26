@@ -33,7 +33,7 @@ function hoverImageDirective() {
     function mouseOnImage(evt) {
       var css = { position: 'absolute', zIndex: 100 };
       if (hoverDir === 'top-left') {
-        angular.extend(css, { top: evt.clientY - 175, left: evt.clientX - 175 });
+        angular.extend(css, { top: evt.clientY - 400, left: evt.clientX - 100 });
       } else { // bottom-right
         angular.extend(css, { top: evt.clientY + 50, left: evt.clientX + 50 });
       }
