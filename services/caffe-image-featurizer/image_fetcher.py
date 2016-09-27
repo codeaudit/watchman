@@ -21,8 +21,10 @@ def fetch_image(url, download_path=''):
     Assumes image is jpeg format.
 
     download_path: local dir path, ex. /path/to/downloads/
+    returns: dict with keys: image_path, image_url
     '''
     image_path = None
+    image_url = None
 
     for domain in SOURCES:
         if domain in url:
@@ -31,7 +33,11 @@ def fetch_image(url, download_path=''):
                 image_path = download_image(image_url, path=download_path)
                 break
 
-    return image_path
+    if image_path and image_url:
+        return {
+            'image_path': image_path,
+            'image_url': image_url
+        }
 
 def get_jpeg_url_from_open_graph_tag(soup):
     '''

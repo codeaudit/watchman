@@ -34,16 +34,22 @@ def process_message(key, job):
         job['state'] = 'error'
         return
 
+    # local file path
     image_path = None
+    # parsed, orig image url from page url
+    image_url = None
 
     job_urls = job['urls'].split(',')
 
-    image_url = None
     for url in job_urls:
-        if url is None: continue
+        if not url: continue
 
-        image_path = fetch_image(url)
+        image_info = fetch_image(url)
+        if image_info:
+            image_path = image_info['image_path']
+            image_url = image_info['image_url']
 
+        # once found, break loop
         if image_path:
             break
 
@@ -74,3 +80,9 @@ if __name__ == '__main__':
     dispatcher = Dispatcher(redis_host='redis', process_func=process_message,
                             channels=['genie:feature_img'])
     dispatcher.start()
+
+    # job = {
+    #     'urls': 'https://twitter.com/SRuhle/status/780407143497367552'
+    # }
+    # process_message(1, job)
+    # print job
