@@ -13,12 +13,14 @@ req_headers = {
     'Connection': 'keep-alive'
 }
 
-def fetch_image(url):
+def fetch_image(url, download_path=''):
     '''
     Parse a social media page's content to find the user-submitted
     image and download it for processing.
 
     Assumes image is jpeg format.
+
+    download_path: local dir path, ex. /path/to/downloads/
     '''
     image_path = None
 
@@ -26,7 +28,7 @@ def fetch_image(url):
         if domain in url:
             image_url = get_image_url(url)
             if image_url:
-                image_path = download_image(image_url)
+                image_path = download_image(image_url, path=download_path)
                 break
 
     return image_path
@@ -71,13 +73,15 @@ def get_page_image_url(url, soup):
     domain = parsed.netloc.replace('www.', '')
     return SOURCES[domain](soup)
 
-def download_image(image_url):
+def download_image(image_url, path=''):
     if not image_url:
         return None
-    image_path = '{}.jpg'.format(uuid.uuid4())
+    image_path = create_file_name(path)
     urllib.urlretrieve(image_url, image_path)
     return image_path
 
+def create_file_name(path):
+    return '{}{}.jpg'.format(path, uuid.uuid4())
 
 if __name__ == '__main__':
     print fetch_image('https://www.instagram.com/p/BJsmWmLDiD3/')
