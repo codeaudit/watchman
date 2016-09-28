@@ -8,10 +8,7 @@ class ImageFetcherTest(unittest.TestCase):
 
     def test_fetch_image_succeeds(self):
         file_path = fetcher.fetch_image('https://www.instagram.com/p/BJsmWmLDiD3/', '/tmp/')
-        self.assertEqual(file_path, {
-            'image_url': 'https://scontent.cdninstagram.com/l/t51.2885-15/e35/14026599_1761633914048354_889821364_n.jpg?ig_cache_key=MTMyNzYwNDY2ODc1MTAyODQ3MQ%3D%3D.2',
-            'image_path': '/tmp/mockfilename'
-        })
+        self.assertEqual(file_path['image_path'], '/tmp/mockfilename')
 
     def test_fetch_image_404_response(self):
         file_path = fetcher.fetch_image('https://www.instagram.com/p/bogus/', '/tmp/')

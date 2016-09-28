@@ -1,6 +1,7 @@
 import urllib2
 import urllib
 import uuid
+import re
 from bs4 import BeautifulSoup
 from urlparse import urlparse
 
@@ -45,8 +46,11 @@ def get_jpeg_url_from_open_graph_tag(soup):
     '''
     meta_tags = soup.head.find_all('meta')
     matches = [tag for tag in meta_tags if tag.has_attr('property') and tag['property'] == 'og:image']
-    if matches:
-        return matches[0]['content']
+    if len(matches):
+        og_image = matches[0]['content']
+        # skip if looks like user profile images
+        if not re.search('/profile', og_image, re.IGNORECASE):
+            return og_image
 
 # map domains to html parser functions
 SOURCES = {
@@ -91,5 +95,5 @@ def create_file_name(path):
 
 if __name__ == '__main__':
     print fetch_image('https://www.instagram.com/p/BJsmWmLDiD3/')
-    print fetch_image('https://twitter.com/SRuhle/status/780407143497367552')
+    print fetch_image('https://twitter.com/Abizy_m/status/775762443817607170')
     print fetch_image('https://www.swarmapp.com/c/8Ez3xo3RtcP')
