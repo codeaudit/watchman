@@ -68,14 +68,14 @@ function navigationChartController($scope, ClusterLink, JobMonitor) {
               // a must be equal to b
               return 0;
             });
-            graphClusterCounts(data, new Date(minDate), new Date(maxDate), minCount, maxCount);
+            graphClusterLinkCounts(data, new Date(minDate), new Date(maxDate), minCount, maxCount);
           }
         })
         .catch(console.error);
     });
   }
 
-  function graphClusterCounts(data, minDate, maxDate, yMin, yMax) {
+  function graphClusterLinkCounts(data, minDate, maxDate, yMin, yMax) {
     var margin = {top: 30, right: 0, bottom: 20, left: 50};
 
     var $container = $('.nav-chart-container'),
@@ -148,7 +148,7 @@ function navigationChartController($scope, ClusterLink, JobMonitor) {
       .attr('y', 6)
       .attr('dy', '.71em')
       .style('text-anchor', 'end')
-      .text('clusters');
+      .text('linkages');
 
     function redrawChart() {
       if(!d3.event.selection){
