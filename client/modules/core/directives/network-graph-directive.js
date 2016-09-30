@@ -33,11 +33,11 @@ function networkGraphController($scope, ClusterLink) {
       .catch(console.error);
   }
 
-  $scope.loadNetworkGraph = function(start, end) {
+  $scope.loadNetworkGraph = function(start, end, callback) {
     if ($scope.graphSvg)
       $scope.graphSvg.remove();
 
-    createGraph(null, start, end, function(){});
+    createGraph(null, start, end, callback);
   };
 
   function getGraphData(links){
