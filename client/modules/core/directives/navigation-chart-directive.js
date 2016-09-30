@@ -83,14 +83,14 @@ function navigationChartController($scope, ClusterLink, JobMonitor) {
       width = $container.width(),
       height = $container.height();
 
-    var navWidth = width,
+    var navWidth = width - margin.left - margin.right,
       navHeight = height - margin.top - margin.bottom;
 
     var navChart = d3.select('.nav-chart-container')
       .classed('chart', true).append('svg')
       .classed('navigator', true)
-      .attr('width', navWidth + margin.left + margin.right)
-      .attr('height', navHeight + margin.top + margin.bottom)
+      .attr('width', width)
+      .attr('height', height)
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
