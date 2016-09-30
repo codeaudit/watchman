@@ -3,17 +3,14 @@ angular.module('com.module.core')
 
 function DiagramCtrl($scope, PostsCluster, SocialMediaPost) {
   $scope.cluster = undefined;
-  $scope.clusterText = "";
-  $scope.clusterTerm = "";
+  $scope.clusterText = '';
+  $scope.clusterTerm = '';
 
-  $scope.showDetails = function(evt) {
-    $scope.clusterText = "";
-    $scope.clusterTerm = "";
-
+  $scope.showDetails = function(cluster) {
     $scope.clusters = PostsCluster.findOne({
       filter: {
         where: {
-          id: evt.id
+          id: cluster.id
         }
       }
     }).$promise
@@ -23,11 +20,11 @@ function DiagramCtrl($scope, PostsCluster, SocialMediaPost) {
           unique.add(id);
         });
         cluster.similar_ids = [...unique];
-        if (cluster.data_type === "text"){
+        if (cluster.data_type === 'text'){
           $scope.getClusterText(cluster);
-        } else if (cluster.data_type === "hashtag"){
+        } else if (cluster.data_type === 'hashtag'){
           $scope.getClusterHashtags(cluster);
-        } else if (cluster.data_type === "image"){
+        } else if (cluster.data_type === 'image'){
           $scope.getClusterImages(cluster);
         }
 
@@ -44,7 +41,7 @@ function DiagramCtrl($scope, PostsCluster, SocialMediaPost) {
   $scope.getClusterText = function(cluster) {
     $scope.showSpinner = true;
 
-    $scope.clusterText = "";
+    $scope.clusterText = '';
     var ids = cluster.similar_ids.slice(0,50);
     SocialMediaPost.find({
       filter: {

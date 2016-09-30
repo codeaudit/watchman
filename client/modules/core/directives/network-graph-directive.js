@@ -100,11 +100,11 @@ function networkGraphController($scope, ClusterLink) {
       .selectAll('circle')
       .data(graph.nodes)
       .enter().append('circle')
-      .attr('r', 5)
+      .attr('r', 8)
       .attr('fill', function(d) {
         return colors[d.group];
       })
-      .on('click',function(d){
+      .on('click', function(d){
         $scope.showDetails(d);
       })
       .call(d3.drag()
