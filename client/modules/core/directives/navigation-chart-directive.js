@@ -51,7 +51,12 @@ function navigationChartController($scope, ClusterLink, JobMonitor) {
 
             minCount = result.count < minCount ? result.count : minCount;
             maxCount = result.count > maxCount ? result.count : maxCount;
+          }
 
+          if (result.count == 0 && !minDate){
+            // ignore leading data points with 0 count.
+            // should rarely occur but can.
+          } else {
             data.push({
               count: result.count,
               date: new Date(job.end_time)
