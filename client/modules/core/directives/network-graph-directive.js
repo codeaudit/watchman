@@ -131,7 +131,6 @@ function networkGraphController($scope, ClusterLink) {
     simulation.force('link')
       .links(graph.links);
 
-
     function ticked() {
       link
         .attr('x1', function(d) {
@@ -169,9 +168,24 @@ function networkGraphController($scope, ClusterLink) {
     }
 
     function dragended(d) {
-      if (!d3.event.active) simulation.alphaTarget(0);
+      if (!d3.event.active)
+        simulation.alphaTarget(0);
       d.fx = null;
       d.fy = null;
     }
+
+    // handle key events to manually control force
+    d3.select('body').on('keydown', function simulationControlHandler() {
+      console.log('keydown ::', d3.event.keyCode);
+
+      switch(d3.event.keyCode) {
+        case 88: // x
+          simulation.stop();
+          break;
+        case 90: // z
+          simulation.restart();
+          break;
+      }
+    });
   }
 }
