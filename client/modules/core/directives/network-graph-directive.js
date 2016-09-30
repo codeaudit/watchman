@@ -104,7 +104,8 @@ function networkGraphController($scope, ClusterLink) {
       .attr('fill', function(d) {
         return colors[d.group];
       })
-      .on('click', function(d){
+      .on('click', function(d) {
+        simulation.stop();
         $scope.showDetails(d);
       })
       .call(d3.drag()
