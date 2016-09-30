@@ -51,11 +51,12 @@ function navigationChartController($scope, ClusterLink, JobMonitor) {
 
             minCount = result.count < minCount ? result.count : minCount;
             maxCount = result.count > maxCount ? result.count : maxCount;
+
+            data.push({
+              count: result.count,
+              date: new Date(job.end_time)
+            });
           }
-          data.push({
-            count: result.count,
-            date: new Date(job.end_time)
-          });
 
           if (finishedCount == jobs.length){
             data.sort(function(a,b){
