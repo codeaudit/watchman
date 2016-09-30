@@ -91,42 +91,52 @@ function navigationChartController($scope, ClusterLink, JobMonitor) {
     var navWidth = width - margin.left - margin.right,
       navHeight = height - margin.top - margin.bottom;
 
+    var parseTime = d3.timeFormat('%I:%M %p');
+
+    var tooltip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-20, 20])
+      .html(function(d) {
+        return d.count + ' at ' + parseTime(d.date);
+      });
+
     var navChart = d3.select('.nav-chart-container')
       .classed('chart', true).append('svg')
       .classed('navigator', true)
       .attr('width', width)
       .attr('height', height)
       .append('g')
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      .attr('transform', 'translate(' + [margin.left, margin.top] + ')')
+      .call(tooltip);
 
-    var navXScale = d3.scaleTime()
+    var xScale = d3.scaleTime()
         .domain([minDate, maxDate])
         .range([0, navWidth]);
 
-    var navYScale = d3.scaleLinear()
+    var yScale = d3.scaleLinear()
         .domain([yMin, yMax])
         .range([navHeight, 0]);
 
-    var navData = d3.area()
+    var navArea = d3.area()
       .x(function(d) {
-        return navXScale(d.date);
+        return xScale(d.date);
       })
       .y0(navHeight)
       .y1(function(d) {
-        return navYScale(d.count);
+        return yScale(d.count);
       });
 
     var navLine = d3.line()
       .x(function(d) {
-        return navXScale(d.date);
+        return xScale(d.date);
       })
       .y(function(d) {
-        return navYScale(d.count);
+        return yScale(d.count);
       });
 
     navChart.append('path')
       .attr('class', 'data')
-      .attr('d', navData(data));
+      .attr('d', navArea(data));
 
     navChart.append('path')
       .attr('class', 'line')
@@ -137,19 +147,19 @@ function navigationChartController($scope, ClusterLink, JobMonitor) {
         redrawChart();
       });
 
-    var navXAxis = d3.axisBottom(navXScale);
+    var xAxis = d3.axisBottom(xScale);
 
     navChart.append('g')
       .attr('class', 'x axis')
       .attr('transform', 'translate(0,' + navHeight + ')')
-      .call(navXAxis);
+      .call(xAxis);
 
-    var navYAxis = d3.axisLeft(navYScale);
+    var yAxis = d3.axisLeft(yScale);
 
     navChart.append('g')
       .attr('class', 'y axis')
-      .call(navYAxis)
-    .append('text')
+      .call(yAxis)
+      .append('text')
       .attr('transform', 'rotate(-90)')
       .attr('y', 6)
       .attr('dy', '.71em')
@@ -161,8 +171,8 @@ function navigationChartController($scope, ClusterLink, JobMonitor) {
         $scope.dateRangeSelected(0,0);
         return;
       }
-      var start = navXScale.invert( d3.event.selection[0] );
-      var end = navXScale.invert( d3.event.selection[1] );
+      var start = xScale.invert( d3.event.selection[0] );
+      var end = xScale.invert( d3.event.selection[1] );
       $scope.dateRangeSelected(start.getTime(),end.getTime());
     }
 
@@ -171,5 +181,21 @@ function navigationChartController($scope, ClusterLink, JobMonitor) {
       .call(viewport)
       .selectAll('rect')
       .attr('height', navHeight);
+
+    // add tooltips
+    navChart.selectAll('circle')
+      .data(data)
+      .enter()
+      .append('circle')
+      .attr('class', 'circle')
+      .attr('cx', function(d) {
+        return xScale(d.date);
+      })
+      .attr('cy', function(d) {
+        return yScale(d.count);
+      })
+      .attr('r', 4)
+      .on('mouseover', tooltip.show)
+      .on('mouseout', tooltip.hide)
   }
 }

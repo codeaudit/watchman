@@ -14,6 +14,12 @@ h2 {
   color: #07582B;
 }
 
+.navigator .circle {
+  fill: white;
+  stroke: cornflowerblue;
+  stroke-width: 1.5px;
+}
+
 .navigator .data {
   fill: cornflowerblue;
   stroke-width: 0px;
