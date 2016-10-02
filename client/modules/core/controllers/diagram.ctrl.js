@@ -21,11 +21,11 @@ function DiagramCtrl($scope, PostsCluster, SocialMediaPost) {
         });
         cluster.similar_ids = [...unique];
         if (cluster.data_type === 'text'){
-          $scope.getClusterText(cluster);
+          getClusterText(cluster);
         } else if (cluster.data_type === 'hashtag'){
-          $scope.getClusterHashtags(cluster);
+          getClusterHashtags(cluster);
         } else if (cluster.data_type === 'image'){
-          $scope.getClusterImages(cluster);
+          getClusterImages(cluster);
         }
 
         $scope.cluster = cluster;
@@ -38,8 +38,7 @@ function DiagramCtrl($scope, PostsCluster, SocialMediaPost) {
     $scope.loadNetworkGraph(start, end, function() {$scope.showSpinner = false;});
   };
 
-
-  $scope.getClusterText = function(cluster) {
+  function getClusterText(cluster) {
     $scope.showSpinner = true;
 
     $scope.clusterText = '';
@@ -60,11 +59,11 @@ function DiagramCtrl($scope, PostsCluster, SocialMediaPost) {
   };
 
   //cheat a bit here just to show the hashtag in the cloud
-  $scope.getClusterHashtags = function(cluster) {
+  function getClusterHashtags(cluster) {
     $scope.clusterTerm = cluster.term;
   };
 
-  $scope.getClusterImages = function(cluster) {
+  function getClusterImages(cluster) {
     if (cluster.similar_image_urls) {
       $scope.imageUrls = cluster.similar_image_urls;
     } else {// TODO: should only get here if bad/missing data?
