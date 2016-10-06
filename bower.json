@@ -19,7 +19,6 @@
     "spin.js": "2.3.2",
     "moment": "*",
     "moment-range": "*",
-    "jstat": "*",
     "d3-tip": "0.7.1"
   },
   "resolutions": {
