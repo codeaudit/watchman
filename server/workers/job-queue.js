@@ -11,8 +11,11 @@ const app = require('../server'),
   FeaturizeMonitor = require('../../lib/job-monitors/featurize-monitor'),
   ClusterizeMonitor = require('../../lib/job-monitors/clusterize-monitor'),
   LinkerMonitor = require('../../lib/job-monitors/linker-monitor'),
-  createLinkerMonitor = require('../../lib/job-monitors/create-linker-monitor')
+  createLinkerMonitor = require('../../lib/job-monitors/create-linker-monitor'),
+  workerConcurrency = process.env.WORKER_CONCURRENCY || 4
 ;
+
+console.log('Worker concurrency: %s', workerConcurrency);
 
 module.exports = { start };
 
@@ -45,7 +48,7 @@ function start() {
   });
 
   // process jobs
-  queue.process('job monitor', (job, done) => {
+  queue.process('job monitor', workerConcurrency, (job, done) => {
     startMonitor(job.data.options, done);
   });
 }
