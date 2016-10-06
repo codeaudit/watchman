@@ -64,20 +64,28 @@ function networkGraphController($scope, ClusterLink) {
     var $container = $('.chart-container'),
       width = $container.width(),
       height = $container.height(),
-      svg = d3.select('.chart-container').append('svg');
+      svg = d3.select('.chart-container').append('svg'),
+      minDim = Math.min(width, height);
 
     $scope.networkGraphSvg = svg;
 
     svg.attr('width', '100%')
       .attr('height', '100%')
-      .attr('viewBox','0 0 '+Math.min(width,height) +' '+Math.min(width,height) )
+      .attr('viewBox', [0, 0, minDim, minDim])
       .attr('preserveAspectRatio','xMinYMin')
       .append('g')
-      .attr('transform', 'translate(' + Math.min(width,height) / 2 + ',' + Math.min(width,height) / 2 + ')');
+      .attr('transform', 'translate(' + [minDim/2, minDim/2] + ')');
 
     var zoom = d3.zoom()
       .scaleExtent([-40, 40])
       .on('zoom', zoomed);
+
+    svg.call(zoom);
+
+    function zoomed() {
+      node.attr('transform', d3.event.transform);
+      link.attr('transform', d3.event.transform);
+    }
 
     var simulation = d3.forceSimulation()
       .force('link', d3.forceLink().id(function(d) { return d.id; }))
@@ -115,13 +123,6 @@ function networkGraphController($scope, ClusterLink) {
       .text(function (d) {
         return d.group;
       });
-
-    svg.call(zoom);
-
-    function zoomed() {
-      node.attr('transform', d3.event.transform);
-      link.attr('transform', d3.event.transform);
-    }
 
     simulation
       .nodes(graphData.nodes)

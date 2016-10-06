@@ -44,13 +44,26 @@ function communitiesGraphController($scope, ClusterLink, PostsCluster) {
       $container = $('.communities-container'),
       width = $container.width(),
       height = $container.height(),
-      color = d3.scaleOrdinal().range(d3.schemeCategory20);
+      color = d3.scaleOrdinal().range(d3.schemeCategory20),
+      minDim = Math.min(width, height);
 
     var svg = d3.select('.communities-container').append('svg')
-      .attr('width', width)
-      .attr('height', height);
+      .attr('width', '100%')
+      .attr('height', '100%')
+      .attr('viewBox', [0, 0, minDim, minDim])
+      .attr('preserveAspectRatio','xMinYMin')
 
     $scope.communityGraphSvg = svg;
+
+    var zoom = d3.zoom()
+      .scaleExtent([-40, 40])
+      .on('zoom', zoomed);
+
+    svg.call(zoom);
+
+    function zoomed() {
+      node.attr('transform', d3.event.transform);
+    }
 
     var communities = createCommunities(nodes, edges);
 
