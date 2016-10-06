@@ -1,7 +1,7 @@
 angular.module('com.module.core')
   .controller('DiagramCtrl', DiagramCtrl);
 
-function DiagramCtrl($scope, PostsCluster, SocialMediaPost) {
+function DiagramCtrl($scope, PostsCluster, SocialMediaPost, $q) {
   $scope.cluster = undefined;
   $scope.clusterText = '';
   $scope.clusterTerm = '';
@@ -21,11 +21,11 @@ function DiagramCtrl($scope, PostsCluster, SocialMediaPost) {
         });
         cluster.similar_ids = [...unique];
         if (cluster.data_type === 'text'){
-          getClusterText(cluster);
+          $scope.getClusterText(cluster);
         } else if (cluster.data_type === 'hashtag'){
-          getClusterHashtags(cluster);
+          $scope.getClusterHashtags(cluster);
         } else if (cluster.data_type === 'image'){
-          getClusterImages(cluster);
+          $scope.getClusterImages(cluster);
         }
 
         $scope.cluster = cluster;
@@ -35,14 +35,34 @@ function DiagramCtrl($scope, PostsCluster, SocialMediaPost) {
 
   $scope.dateRangeSelected = function(start, end) {
     $scope.showSpinner = true;
-    $scope.loadNetworkGraph(start, end, function() {$scope.showSpinner = false;});
+    $q.all([
+      $scope.loadNetworkGraph(start, end),
+      $scope.loadCommunityGraph(start, end)
+    ])
+    .then(function() {
+      $scope.showSpinner = false;
+    })
+    .catch(console.error);
   };
 
-  function getClusterText(cluster) {
+  $scope.getClusterDetails = function(clusters) {
+    $scope.getClusterText(clusters);
+    $scope.getClusterHashtags(clusters);
+    $scope.getClusterImages(clusters);
+  };
+
+  $scope.getClusterText = function(clusters) {
+    if (!_.isArray(clusters)) clusters = [clusters];
+
     $scope.showSpinner = true;
 
     $scope.clusterText = '';
-    var ids = cluster.similar_ids.slice(0,50);
+
+    var similar_ids = _(clusters).map('similar_ids')
+      .flatten().compact().uniq().value();
+
+    var ids = _.sampleSize(similar_ids, 100);
+
     SocialMediaPost.find({
       filter: {
         where: {
@@ -59,16 +79,26 @@ function DiagramCtrl($scope, PostsCluster, SocialMediaPost) {
   };
 
   //cheat a bit here just to show the hashtag in the cloud
-  function getClusterHashtags(cluster) {
-    $scope.clusterTerm = cluster.term;
+  $scope.getClusterHashtags = function(clusters) {
+    if (!_.isArray(clusters)) clusters = [clusters];
+
+    var terms = _(clusters).map('term')
+      .flatten().compact().value().join(', ');
+
+    $scope.clusterTerm = terms;
   };
 
-  function getClusterImages(cluster) {
-    if (cluster.similar_image_urls) {
-      $scope.imageUrls = cluster.similar_image_urls;
+  $scope.getClusterImages = function(clusters) {
+    if (!_.isArray(clusters)) clusters = [clusters];
+
+    var imageUrls = _(clusters).map('similar_image_urls')
+      .flatten().compact().value();
+
+    if (imageUrls.length) {
+      $scope.imageUrls = imageUrls;
     } else {// TODO: should only get here if bad/missing data?
       $scope.imageUrls = null;
-      alert('similar_image_urls not provided');
+      console.info('no similar_image_urls');
     }
   };
 }

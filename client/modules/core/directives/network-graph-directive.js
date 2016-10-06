@@ -26,18 +26,19 @@ function networkGraphController($scope, ClusterLink) {
         }
       }
     };
-    ClusterLink.find(query)
+    return ClusterLink.find(query)
       .$promise
+      .then(getGraphData)
       .then(graphClusterLinks)
       .then(callback || angular.noop)
       .catch(console.error);
   }
 
   $scope.loadNetworkGraph = function(start, end, callback) {
-    if ($scope.graphSvg)
-      $scope.graphSvg.remove();
+    if ($scope.networkGraphSvg)
+      $scope.networkGraphSvg.remove();
 
-    createGraph(null, start, end, callback);
+    return createGraph(null, start, end, callback);
   };
 
   function getGraphData(links){
@@ -59,14 +60,13 @@ function networkGraphController($scope, ClusterLink) {
     return graph;
   }
 
-  function graphClusterLinks(links) {
+  function graphClusterLinks(graphData) {
     var $container = $('.chart-container'),
       width = $container.width(),
       height = $container.height(),
-      graph = getGraphData(links),
       svg = d3.select('.chart-container').append('svg');
 
-    $scope.graphSvg = svg;
+    $scope.networkGraphSvg = svg;
 
     svg.attr('width', '100%')
       .attr('height', '100%')
@@ -74,8 +74,6 @@ function networkGraphController($scope, ClusterLink) {
       .attr('preserveAspectRatio','xMinYMin')
       .append('g')
       .attr('transform', 'translate(' + Math.min(width,height) / 2 + ',' + Math.min(width,height) / 2 + ')');
-
-    var color = d3.scaleOrdinal(d3.schemeCategory20);
 
     var zoom = d3.zoom()
       .scaleExtent([-40, 40])
@@ -89,7 +87,7 @@ function networkGraphController($scope, ClusterLink) {
     var link = svg.append('g')
       .attr('class', 'links')
       .selectAll('line')
-      .data(graph.links)
+      .data(graphData.links)
       .enter().append('line')
       .attr('stroke-width', function(d) {
         return Math.sqrt(d.value);
@@ -98,7 +96,7 @@ function networkGraphController($scope, ClusterLink) {
     var node = svg.append('g')
       .attr('class', 'nodes')
       .selectAll('circle')
-      .data(graph.nodes)
+      .data(graphData.nodes)
       .enter().append('circle')
       .attr('r', 8)
       .attr('fill', function(d) {
@@ -126,11 +124,11 @@ function networkGraphController($scope, ClusterLink) {
     }
 
     simulation
-      .nodes(graph.nodes)
+      .nodes(graphData.nodes)
       .on('tick', ticked);
 
     simulation.force('link')
-      .links(graph.links);
+      .links(graphData.links);
 
     function ticked() {
       link
