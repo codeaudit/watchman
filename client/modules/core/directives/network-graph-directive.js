@@ -72,9 +72,7 @@ function networkGraphController($scope, ClusterLink) {
     svg.attr('width', '100%')
       .attr('height', '100%')
       .attr('viewBox', [0, 0, minDim, minDim])
-      .attr('preserveAspectRatio','xMinYMin')
-      .append('g')
-      .attr('transform', 'translate(' + [minDim/2, minDim/2] + ')');
+      .attr('preserveAspectRatio','xMinYMin');
 
     var zoom = d3.zoom()
       .scaleExtent([-40, 40])
