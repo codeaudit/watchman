@@ -80,7 +80,9 @@ function communitiesGraphController($scope, ClusterLink, PostsCluster) {
         return len < min ? min : len;
       })
       .on('click', function(d) {
-        showClustersDetails(d.member_ids);
+        var clusterIds = d.member_ids;
+        showClustersDetails(clusterIds);
+        highlightNetworkClusters(clusterIds, d3.select(this).attr('stroke'));
       })
 
     var simulation = d3.forceSimulation(communities)
@@ -93,7 +95,18 @@ function communitiesGraphController($scope, ClusterLink, PostsCluster) {
         .attr('cx', function(d) { return d.x; })
         .attr('cy', function(d) { return d.y; });
     }
+  }
 
+  function highlightNetworkClusters(ids, color) {
+    var networkGraph = $scope.networkGraphSvg;
+    if (networkGraph) {
+      networkGraph.selectAll('.nodes circle')
+        .filter(function(d) {
+          return _.includes(ids, d.id);
+        })
+        .style('stroke-width', 6)
+        .style('stroke', color || 'black');
+    }
   }
 
   function showClustersDetails(ids) {
