@@ -67,23 +67,11 @@ function communitiesGraphController($scope, ClusterLink, PostsCluster) {
 
     var communities = createCommunities(nodes, edges);
 
-    var node = svg.selectAll('.circle')
+    var node = svg.selectAll('circle')
       .data(communities)
       .enter()
       .append('circle')
-      .attr('class', 'circle')
-      .attr('fill', '#fff')
-      .attr('stroke', function(d, i) { return color(i); })
-      .attr('stroke-width', 8)
-      .attr('r', function(d) {
-        var min = 5, len = d.member_ids.length;
-        return len < min ? min : len;
-      })
-      .on('click', function(d) {
-        var clusterIds = d.member_ids;
-        showClustersDetails(clusterIds);
-        highlightNetworkClusters(clusterIds, d3.select(this).attr('stroke'));
-      })
+      .call(createCircles, color);
 
     var simulation = d3.forceSimulation(communities)
       .force('charge', d3.forceManyBody())
@@ -95,6 +83,23 @@ function communitiesGraphController($scope, ClusterLink, PostsCluster) {
         .attr('cx', function(d) { return d.x; })
         .attr('cy', function(d) { return d.y; });
     }
+  }
+
+  function createCircles(selection, colorize) {
+    selection
+      .attr('class', 'circle')
+      .attr('fill', '#fff')
+      .attr('stroke', function(d, i) { return colorize(i); })
+      .attr('stroke-width', 8)
+      .attr('r', function(d) {
+        var min = 5, len = d.member_ids.length;
+        return len < min ? min : len;
+      })
+      .on('click', function(d) {
+        var clusterIds = d.member_ids;
+        showClustersDetails(clusterIds);
+        highlightNetworkClusters(clusterIds, d3.select(this).attr('stroke'));
+      });
   }
 
   function highlightNetworkClusters(ids, color) {
