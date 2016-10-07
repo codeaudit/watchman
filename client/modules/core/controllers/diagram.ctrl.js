@@ -43,6 +43,7 @@ function DiagramCtrl($scope, PostsCluster, SocialMediaPost, $q) {
     .catch(console.error);
   };
 
+  // 'visualize': show me the details
   $scope.visualize = visualize;
 
   function visualize(clusters) {
