@@ -110,7 +110,7 @@ function networkGraphController($scope, ClusterLink) {
       })
       .on('click', function(d) {
         simulation.stop();
-        $scope.showDetails(d);
+        $scope.visualizeCluster(d);
       })
       .call(d3.drag()
         .on('start', dragstarted)

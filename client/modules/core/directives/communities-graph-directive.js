@@ -97,32 +97,33 @@ function communitiesGraphController($scope, ClusterLink, PostsCluster) {
       })
       .on('click', function(d) {
         var clusterIds = d.member_ids;
-        showClustersDetails(clusterIds);
+        visualizeAllClusters(clusterIds);
         highlightNetworkClusters(clusterIds, d3.select(this).attr('stroke'));
       });
   }
 
-  function highlightNetworkClusters(ids, color) {
+  function highlightNetworkClusters(clusterIds, color) {
     var networkGraph = $scope.networkGraphSvg;
     if (networkGraph) {
       networkGraph.selectAll('.nodes circle')
         .filter(function(d) {
-          return _.includes(ids, d.id);
+          return _.includes(clusterIds, d.id);
         })
         .style('stroke-width', 6)
         .style('stroke', color || 'black');
     }
   }
 
-  function showClustersDetails(ids) {
+  function visualizeAllClusters(clusterIds) {
     PostsCluster.find({
       filter: {
         where: {
-          id: {inq: ids}
+          id: {inq: clusterIds}
         }
       }
     }).$promise
-      .then($scope.getClusterDetails)
+      .then($scope.visualize)
+      .then(visual => visual.forAll())
       .catch(console.error);
   }
 }
