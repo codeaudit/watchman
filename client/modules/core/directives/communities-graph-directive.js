@@ -122,6 +122,10 @@ function communitiesGraphController($scope, ClusterLink, PostsCluster) {
         }
       }
     }).$promise
+      .then(clusters => {
+        $scope.communityClusters = clusters;
+        return clusters;
+      })
       .then($scope.visualize)
       .then(visual => visual.forAll())
       .catch(console.error);

@@ -21,3 +21,10 @@ h5 drag mouse over an area to select
     .row(style='width:100%; height:600px')
       .cloud-container(style='width:100%; height:600px')
         word-cloud(ng-model='clusterText')
+.row
+  .col-md-6
+    .vectors-container(style='width:100%; height:500px')
+      visualize-vectors(slider-min=0 slider-max=4096 clusters='communityClusters' vector-type='image' ng-show='communityClusters')
+  .col-md-6
+    .vectors-container(style='width:100%; height:500px')
+      visualize-vectors(slider-min=0 slider-max=100 clusters='communityClusters' vector-type='text' ng-show='communityClusters')
