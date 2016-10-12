@@ -135,7 +135,8 @@
       ],
       "Links": [
         "mongo:mongo",
-        "redis:redis"
+        "redis:redis",
+        "mitie:mitie"
       ],
       "PortBindings": {
         "3001/tcp": [
