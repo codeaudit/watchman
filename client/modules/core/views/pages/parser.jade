@@ -1,10 +1,21 @@
-form(role='form')
-  .form-group
-    label(for='dataString') Enter text to parse
-    input#dataString.form-control(name='dataString' ng-model='myModel.dataString')
+//- .row
+//-   .col-md-3
+//-   .col-md-6
+//-     form(role='form')
+//-       .form-group
+//-         label(for='dataString') Enter text to parse
+//-         input#dataString.form-control(name='dataString' ng-model='myModel.dataString')
+//-     button.btn.btn-default(ng-click='submit()') Submit
+//-   .col-md-3
 
-
-button.btn.btn-default(ng-click='submit()') Submit
-
-leaflet(style='height:512px' center='center' tiles='tiles' markers='markers')
-button.btn.btn-default(ng-click='destroyData()') Destroy data
+.row
+  .col-md-3
+  .col-md-6
+    .row
+      .col-md-12
+        h3 RSS feed extract-to-map + Neuraltalk2 image captioning
+    .row
+      .col-md-12
+        leaflet(style='height:512px' center='center' tiles='tiles' markers='markers')
+        button.btn.btn-default(ng-click='destroyData()') Destroy data
+  .col-md-3
