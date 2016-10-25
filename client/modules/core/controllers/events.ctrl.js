@@ -1,38 +1,38 @@
 angular.module('com.module.core')
-  .controller('DiagramCtrl', DiagramCtrl);
+  .controller('EventsCtrl', EventsCtrl);
 
-function DiagramCtrl($scope, AggregateCluster, SocialMediaPost, $q) {
+function EventsCtrl($scope, AggregateCluster, PostsCluster, SocialMediaPost, $q) {
   $scope.clusterText = '';
   $scope.clusterTerm = '';
-
+  $scope.events = null;
+  $scope.selectedEvents = null;
   // obj: represents a cluster but not a loopback model
-  $scope.visualizeCluster = function(obj) {
-    AggregateCluster.findOne({
+
+  $scope.eventSelected = function(evnt){
+    visualizeEvent(evnt);
+  };
+
+  function visualizeEvent(evnt) {
+    AggregateCluster.find({
       filter: {
         where: {
-          id: obj.id
+          id: { inq: evnt.aggregate_clusters }
         }
       }
     }).$promise
-      .then(function(cluster) {
-        let viz = visualize(cluster);
-
-        if (cluster.data_type === 'text'){
-          viz.forText();
-        } else if (cluster.data_type === 'hashtag'){
-          viz.forHashtags();
-        } else if (cluster.data_type === 'image'){
-          viz.forImages();
-        }
+      .then(clusters => {
+        $scope.communityClusters = clusters;
+        return clusters;
       })
+      .then($scope.visualize)
+      .then(visual => visual.forAll())
       .catch(console.error);
-  };
+  }
 
   $scope.dateRangeSelected = function(start, end) {
     $scope.showSpinner = true;
     $q.all([
-      $scope.loadNetworkGraph(start, end),
-      $scope.loadCommunityGraph(start, end)
+      getEvents(start,end)
     ])
     .then(function() {
       $scope.showSpinner = false;
@@ -40,7 +40,19 @@ function DiagramCtrl($scope, AggregateCluster, SocialMediaPost, $q) {
     .catch(console.error);
   };
 
-  // 'visualize': show me the details
+  function getEvents(start, end){
+    var events = [];
+    $scope.events.forEach(function(aggEvent){
+      if(aggEvent.end_time_ms >= start && aggEvent.end_time_ms<=end){
+        events.push(aggEvent);
+      }
+    });
+    $scope.selectedEvents = events;
+  }
+
+
+
+   // 'visualize': show me the details
   $scope.visualize = visualize;
 
   function visualize(clusters) {
@@ -69,12 +81,12 @@ function DiagramCtrl($scope, AggregateCluster, SocialMediaPost, $q) {
         $scope.clusterText = '';
 
         sampleSocialMediaPosts('text')
-        .then(posts => {
-          let allText = posts.map(p => p.text).join(' ');
-          $scope.clusterText = allText;
-          $scope.showSpinner = false;
-        })
-        .catch(console.error);
+          .then(posts => {
+            let allText = posts.map(p => p.text).join(' ');
+            $scope.clusterText = allText;
+            $scope.showSpinner = false;
+          })
+          .catch(console.error);
       },
 
       forHashtags() {
@@ -88,20 +100,20 @@ function DiagramCtrl($scope, AggregateCluster, SocialMediaPost, $q) {
         $scope.showSpinner = true;
 
         sampleSocialMediaPosts('image', 200)
-        .then(posts => {
-          let imageUrls = _(posts).map('primary_image_url')
-            .compact().uniq().value();
+          .then(posts => {
+            let imageUrls = _(posts).map('primary_image_url')
+              .compact().uniq().value();
 
-          if (imageUrls.length) {
-            $scope.imageUrls = imageUrls;
-          } else {
-            $scope.imageUrls = null;
-            console.info('no similar_image_urls');
-          }
+            if (imageUrls.length) {
+              $scope.imageUrls = imageUrls;
+            } else {
+              $scope.imageUrls = null;
+              console.info('no similar_image_urls');
+            }
 
-          $scope.showSpinner = false;
-        })
-        .catch(console.error);
+            $scope.showSpinner = false;
+          })
+          .catch(console.error);
       },
 
       forAll() {
@@ -114,3 +126,6 @@ function DiagramCtrl($scope, AggregateCluster, SocialMediaPost, $q) {
     return functions;
   }
 }
+
+
+

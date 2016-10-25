@@ -23,24 +23,30 @@ module.exports = runJob;
 // start if run as a worker process
 if (require.main === module) {
   const defaults = {
-    seedTime: 1476306311000,
-    runIntervalMins: 60,
-    querySpanMins: 20,
+    seedTime: 1477415383381,
+    runIntervalMins: 10,
+    querySpanMins: 10,
     minPostsCount: 0
   };
+
   //english
   runJob(Object.assign({
     lang: 'en',
     featurizer: 'text'
   }, defaults));
-  //images
+  //ar
   runJob(Object.assign({
-    featurizer: 'image',
-    service_args: {similarity_threshold: 0.39}
+    lang: 'ar',
+    featurizer: 'text'
   }, defaults));
-
+  //hashtags
   runJob(Object.assign({
     featurizer: 'hashtag'
+  }, defaults));
+  //images
+  runJob(Object.assign({
+    service_args: { similarity_threshold: 0.39 },
+    featurizer: 'image'
   }, defaults));
 }
 
@@ -68,8 +74,8 @@ function runJob(params) {
       span = 1000 * 60 * querySpanMins;
 
     if ((endTime + span) > Date.now()) {
-      console.log('endtime > now. wait til next run.');
-      return;
+      console.log('endtime > now. wait til next run in %s sec', Math.floor((endTime + span - Date.now()) / 1000));
+      return
     }
 
     endTime += span;
