@@ -14,7 +14,7 @@ h5 drag mouse over an area to select
       tbody(ng-repeat="selectedEvent in selectedEvents")
         tr
           td
-            p(ng-click="eventSelected(selectedEvent)") selectedEvent.start_time_ms
+            p(ng-click="eventSelected(selectedEvent)") {{selectedEvent.start_time_ms | date:'MMMM dd, yyyy h:mm'  }} - {{selectedEvent.end_time_ms | date:'MMMM dd, yyyy h:mm'  }}
   .col-md-4
     event-map(ng-model='eventPoints')
       iframe(src="http://localhost:3005/index.html", style="width:100%; height:600px;", scrolling="no", frameborder="1", id="map-frame")
