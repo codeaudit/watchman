@@ -44,7 +44,13 @@ function EventsCtrl($scope, AggregateCluster, Extract, Geocoder, SocialMediaPost
   function getEvents(start, end){
     var events = [];
     $scope.events.forEach(function(aggEvent){
-      if(aggEvent.end_time_ms >= start && aggEvent.end_time_ms<=end){
+      if(aggEvent.end_time_ms >= start || aggEvent.end_time_ms<=end){
+        events.push(aggEvent);
+      }
+      else if(aggEvent.start_time_ms >= start || aggEvent.start_time_ms<=end){
+        events.push(aggEvent);
+      }
+      else if(aggEvent.start_time_ms <= start && aggEvent.end_time_ms >= end){
         events.push(aggEvent);
       }
     });
