@@ -10,6 +10,7 @@
 import sys
 import os
 from feature_similarity import FeatureSimilarity
+from feature_similarity import ImageFeatureSimilarity
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../util"))
 from redis_dispatcher import Dispatcher
@@ -46,7 +47,10 @@ def process_message(key, job):
         job['state'] = 'error'
         return
 
-    feature_similarity = FeatureSimilarity(float(job['similarity_threshold']), job['start_time_ms'], job['end_time_ms'])
+    if job['data_type'] == "image":
+        feature_similarity = ImageFeatureSimilarity(float(job['similarity_threshold']), job['start_time_ms'], job['end_time_ms'])
+    else:
+        feature_similarity = FeatureSimilarity(float(job['similarity_threshold']), job['start_time_ms'], job['end_time_ms'])
     query_params = [{
         "query_type": "between",
         "property_name": "timestamp_ms",
