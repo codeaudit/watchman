@@ -41,9 +41,14 @@
         "/data/es:/data/es"
       ],
       "PortBindings": {
-        "27017/tcp": [
+        "9200/tcp": [
           {
-            "HostPort": "27017"
+            "HostPort": "9200"
+          }
+        ],
+        "9300/tcp": [
+          {
+            "HostPort": "9300"
           }
         ]
       }
