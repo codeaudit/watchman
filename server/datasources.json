@@ -6,5 +6,13 @@
     "name": "db",
     "connectionTimeout": 10000,
     "connector": "mongodb"
+  },
+  "es": {
+    "host": "localhost",
+    "port": 9200,
+    "database": "rancor",
+    "name": "es",
+    "connectionTimeout": 10000,
+    "connector": "elastic-search"
   }
 }

@@ -1,32 +1,54 @@
 [
   {
     "name": "data-container",
-    "Image": "lukewendling/data-container:2",
+    "Image": "sotera/watchman-data-container:2.1",
     "DockerFilePath": "",
     "Hostname": "data-container",
     "HostConfig": {
       "Binds": [
-        "/downloads:/downloads"
+        "/data/es:/data/es"
       ]
     }
-  },{
-  "name": "mongo",
-  "Image": "jreeme/mongo:2.6",
-  "DockerFilePath": "",
-  "Hostname": "mongo",
-  "HostConfig": {
-    "VolumesFrom": [
-      "data-container"
-    ],
-    "PortBindings": {
-      "27017/tcp": [
-        {
-          "HostPort": "27017"
-        }
-      ]
+  },
+  {
+    "name": "mongo",
+    "Image": "jreeme/mongo:2.6",
+    "DockerFilePath": "",
+    "Hostname": "mongo",
+    "HostConfig": {
+      "VolumesFrom": [
+        "data-container"
+      ],
+      "PortBindings": {
+        "27017/tcp": [
+          {
+            "HostPort": "27017"
+          }
+        ]
+      }
     }
-  }
-},
+  },
+  {
+    "name": "elasticsearch",
+    "Image": "sotera/watchman-elasticsearch:2.1",
+    "DockerFilePath": "",
+    "Hostname": "elasticsearch",
+    "HostConfig": {
+      "VolumesFrom": [
+        "data-container"
+      ],
+      "Binds": [
+        "/data/es:/data/es"
+      ],
+      "PortBindings": {
+        "27017/tcp": [
+          {
+            "HostPort": "27017"
+          }
+        ]
+      }
+    }
+  },
   {
     "name": "trained-models",
     "Image": "sotera/trained-models:1",
