@@ -1,0 +1,55 @@
+#
+# Elasticsearch Dockerfile
+#
+# Started with:
+#    https://github.com/dockerfile/elasticsearch
+# But hasn't been updated in 2 years and makes bad Java references
+#
+FROM ubuntu:14.04
+
+USER root
+ENV TERM xterm
+
+RUN apt-get -y -q update
+RUN apt-get -y -q upgrade
+RUN apt-get -y -q install software-properties-common htop
+RUN add-apt-repository ppa:webupd8team/java
+RUN apt-get -y -q update
+RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+RUN apt-get -y -q install oracle-java8-installer
+RUN update-java-alternatives -s java-8-oracle
+RUN  apt-get -y -q install libcurl3 curl
+
+ENV ES_PKG_NAME elasticsearch-1.5.0
+
+# Install Elasticsearch.
+RUN \
+  cd / && \
+  wget https://download.elasticsearch.org/elasticsearch/elasticsearch/$ES_PKG_NAME.tar.gz && \
+  tar xvzf $ES_PKG_NAME.tar.gz && \
+  rm -f $ES_PKG_NAME.tar.gz && \
+  mv /$ES_PKG_NAME /elasticsearch
+
+# Use the -v /data/es:/data/es flags to override the parts we want to externalize
+# Define mountable directories.
+VOLUME ["/data/es"]
+
+# Mount elasticsearch.yml config
+ADD elasticsearch.yml /elasticsearch/config/elasticsearch.yml
+
+# Make head available at localhost:9200/_plugin/head ... (plugin install only works if elasticsearch is running)
+RUN cd /data/es && /elasticsearch/bin/elasticsearch -d 
+RUN /elasticsearch/bin/plugin -install mobz/elasticsearch-head
+
+# Define working directory.
+WORKDIR /data/es
+
+# Define default command.
+CMD ["/elasticsearch/bin/elasticsearch"]
+
+# Expose ports.
+#   - 9200: HTTP
+#   - 9300: transport
+EXPOSE 9200
+EXPOSE 9300
+
