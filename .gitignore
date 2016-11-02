@@ -5,6 +5,7 @@ temp
 *.log
 .env
 firmament/docker/**/*.conf
+ignore
 *.pyc
 *.bak
 tmp
