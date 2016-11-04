@@ -53,7 +53,12 @@ RUN chown -R elasticsearch /usr/share/elasticsearch
 WORKDIR /data/es
 
 # Define default command.
-CMD [su - elasticsearch -c '/elasticsearch/bin/elasticsearch']
+RUN echo $'#/bin/bash\n\
+chmod -R a+rw /data/es\n\
+chown -R elasticsearch /data/es\n\
+su - elasticsearch -c "/elasticsearch/bin/elasticsearch"\n'\
+>> /usr/bin/elasticsearch_start.sh && chmod a+rwx /usr/bin/elasticsearch_start.sh
+CMD [/usr/bin/elasticsearch_start.sh]
 
 # Expose ports.
 #   - 9200: HTTP
