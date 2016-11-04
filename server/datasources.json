@@ -8,11 +8,18 @@
     "connector": "mongodb"
   },
   "db": {
-    "host": "localhost",
-    "port": 9200,
-    "database": "rancor",
+    "connector": "es",
     "name": "db",
-    "connectionTimeout": 10000,
-    "connector": "es"
+    "index": "rancor",
+    "hosts": [
+        {
+          "protocol": "http",
+          "host": "127.0.0.1",
+          "port": 9200
+        }
+    ],
+    "apiVersion": "2.4",
+    "log": "trace",
+    "requestTimeout": 30000
   }
 }
