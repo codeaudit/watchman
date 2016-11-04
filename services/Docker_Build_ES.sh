@@ -1,1 +1,1 @@
-docker build -t "sotera/watchman-elasticsearch:2.3" -f "Dockerfile-ElasticSearch" .
+docker build -t "sotera/watchman-elasticsearch:2.4" -f "Dockerfile-ElasticSearch" .

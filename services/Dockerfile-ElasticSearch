@@ -20,6 +20,8 @@ RUN apt-get -y -q install oracle-java8-installer
 RUN update-java-alternatives -s java-8-oracle
 RUN  apt-get -y -q install libcurl3 curl
 
+RUN useradd -m -p 'papAq5PwY/QQM' -s /bin/bash elasticsearch
+
 ENV ES_PKG_NAME elasticsearch-2.3.5
 
 # Install Elasticsearch.
@@ -38,16 +40,20 @@ VOLUME ["/data/es"]
 ADD elasticsearch.yml /elasticsearch/config/elasticsearch.yml
 
 # Make head available at localhost:9200/_plugin/head ... (plugin install only works if elasticsearch is running)
-RUN cd /data/es && /elasticsearch/bin/elasticsearch -d 
 RUN mkdir /usr/share/elasticsearch
 RUN mkdir /usr/share/elasticsearch/plugins
 RUN /elasticsearch/bin/plugin install mobz/elasticsearch-head
+
+# Make sure ES running as 'elasticsearch' can access the needed directories
+RUN chown elasticsearch /data/es
+RUN chown -R elasticsearch /elasticsearch
+RUN chown -R elasticsearch /usr/share/elasticsearch
 
 # Define working directory.
 WORKDIR /data/es
 
 # Define default command.
-CMD ["/elasticsearch/bin/elasticsearch"]
+CMD [su - elasticsearch -c '/elasticsearch/bin/elasticsearch']
 
 # Expose ports.
 #   - 9200: HTTP
