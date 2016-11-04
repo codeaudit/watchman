@@ -20,7 +20,7 @@ RUN apt-get -y -q install oracle-java8-installer
 RUN update-java-alternatives -s java-8-oracle
 RUN  apt-get -y -q install libcurl3 curl
 
-ENV ES_PKG_NAME elasticsearch-2.4.1
+ENV ES_PKG_NAME elasticsearch-2.3.5
 
 # Install Elasticsearch.
 RUN \
