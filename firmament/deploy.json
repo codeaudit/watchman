@@ -30,7 +30,7 @@
   },
   {
     "name": "elasticsearch",
-    "Image": "sotera/watchman-elasticsearch:2.1",
+    "Image": "sotera/watchman-elasticsearch:2.2",
     "DockerFilePath": "",
     "Hostname": "elasticsearch",
     "HostConfig": {
