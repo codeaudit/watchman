@@ -1,18 +1,18 @@
 {
-  "db": {
+  "db_old": {
     "host": "localhost",
     "port": 27017,
     "database": "rancor",
-    "name": "db",
+    "name": "db_old",
     "connectionTimeout": 10000,
     "connector": "mongodb"
   },
-  "es": {
+  "db": {
     "host": "localhost",
     "port": 9200,
     "database": "rancor",
-    "name": "es",
+    "name": "db",
     "connectionTimeout": 10000,
-    "connector": "elastic-search"
+    "connector": "es"
   }
 }
