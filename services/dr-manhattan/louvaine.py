@@ -215,4 +215,5 @@ class Louvaine:
                 continue
             res = requests.post(self.url+'events', json=com)
             print res
+        return d1
 
