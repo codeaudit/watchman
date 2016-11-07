@@ -66,7 +66,7 @@ while [ ! "`curl -s -XGET "127.0.0.1:9200" | jq '.tagline'`" == '"You Know, for 
 kill -9 `cat /tmp/elasticsearch.pid`\n\
 ' >> /usr/bin/elasticsearch_install_head.sh && chmod a+rwx /usr/bin/elasticsearch_install_head.sh
 # Install Head
-/usr/bin/elasticsearch_install_head.sh
+RUN /usr/bin/elasticsearch_install_head.sh
 
 # Define default command.
 RUN echo '#/bin/bash\n\
