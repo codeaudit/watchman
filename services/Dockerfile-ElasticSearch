@@ -42,7 +42,6 @@ ADD elasticsearch.yml /elasticsearch/config/elasticsearch.yml
 # Make head available at localhost:9200/_plugin/head ... (plugin install only works if elasticsearch is running)
 RUN mkdir /usr/share/elasticsearch
 RUN mkdir /usr/share/elasticsearch/plugins
-RUN /elasticsearch/bin/plugin install mobz/elasticsearch-head
 
 # Make sure ES running as 'elasticsearch' can access the needed directories
 RUN chown elasticsearch /data/es
@@ -56,9 +55,11 @@ WORKDIR /data/es
 RUN echo '#/bin/bash\n\
 chmod -R a+rw /data/es\n\
 chown -R elasticsearch /data/es\n\
-su - elasticsearch -c "/elasticsearch/bin/elasticsearch"\n'\
->> /usr/bin/elasticsearch_start.sh && chmod a+rwx /usr/bin/elasticsearch_start.sh
+export ES_HOME=/elasticsearch\n\
+su - elasticsearch -c "/elasticsearch/bin/elasticsearch"\n\
+' >> /usr/bin/elasticsearch_start.sh && chmod a+rwx /usr/bin/elasticsearch_start.sh
 CMD [/usr/bin/elasticsearch_start.sh]
+
 
 # Expose ports.
 #   - 9200: HTTP
