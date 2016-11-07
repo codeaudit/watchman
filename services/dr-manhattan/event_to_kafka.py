@@ -3,6 +3,16 @@ from datetime import datetime
 import json
 
 def mongo_to_kafka(rec):
+    loc = sorted(rec['location'], key=lambda x: x['weight'], reverse=True)
+    o_loc = None
+    if len(loc) > 0:
+        o_loc = {"type": "Point",
+                         "coordinates": [
+                             loc[0]["coords"]["lat"],
+                             loc[0]["coords"]["lon"]
+                         ]
+                }
+
     return {'uid':rec['id'],
             'label':rec['name'],
             'startDate': datetime.fromtimestamp(rec['start_time_ms']/1000.0).isoformat(),
@@ -14,8 +24,7 @@ def mongo_to_kafka(rec):
             'importanceScore':rec['importance_score'],
             'topicMessageCount':rec['topic_message_count'],
             'newsEventIds':[],
-            'location': rec['location']
-            }
+            'location': o_loc}
 
 def stream_events(l_clusts, kafka_url, kafka_topic):
     kds = map(lambda x: mongo_to_kafka(x), l_clusts)
