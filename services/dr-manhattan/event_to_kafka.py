@@ -21,5 +21,4 @@ def stream_events(l_clusts, kafka_url, kafka_topic):
     kds = map(lambda x: mongo_to_kafka(x), l_clusts)
     producer = KafkaProducer(bootstrap_servers=kafka_url, value_serializer=lambda v: json.dumps(v).encode('utf-8'))
     for doc in kds:
-        print json.dumps(doc)
         producer.send(kafka_topic, doc)
