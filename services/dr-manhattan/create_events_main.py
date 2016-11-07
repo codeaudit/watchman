@@ -60,8 +60,8 @@ if __name__ == "__main__":
     parser.add_argument("host", help="protocol + host - Ex. http://localhost:3000 or http://watchman:3003")
     parser.add_argument("start_time", type=int, help="Milisecond timestamp for query start")
     parser.add_argument("end_time", type=int,help="Milisecond timestamp for query end")
-    parser.add_argument("kafka_url", type=str, help="If writing events to kafka, specify url (default=None)", default=None)
-    parser.add_argument("kafka_topic", type=str, help="If writing event to kafka, specify topic (default=None)", default=None)
+    parser.add_argument("-kafka_url", type=str, help="If writing events to kafka, specify url (default=None)", default=None)
+    parser.add_argument("-kafka_topic", type=str, help="If writing event to kafka, specify topic (default=None)", default=None)
 
     args = parser.parse_args()
 
