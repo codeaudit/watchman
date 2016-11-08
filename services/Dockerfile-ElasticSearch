@@ -87,4 +87,3 @@ CMD [/usr/bin/elasticsearch_start.sh]
 #   - 9300: transport
 EXPOSE 9200
 EXPOSE 9300
-
