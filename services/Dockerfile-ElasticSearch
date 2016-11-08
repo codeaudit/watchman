@@ -53,7 +53,7 @@ RUN if [ ! -d "/usr/share/elasticsearch/plugins" ] ; then mkdir /usr/share/elast
 WORKDIR /data/es
 
 #Define install Head script ... yes we must start and stop ES twice.
-RUN echo '#/bin/bash\n\
+RUN echo '#!/bin/bash\n\
 chown -R elasticsearch /data/es\n\
 chmod -R a+rw /data/es\n\
 chown -R elasticsearch /elasticsearch\n\
@@ -68,7 +68,7 @@ while [ ! "`curl -s -XGET 127.0.0.1:9200 | jq \".tagline == \\\"You Know, for Se
 kill -9 `cat /tmp/elasticsearch.pid`\n\
 ' > /usr/bin/elasticsearch_install_head.sh && chmod a+rwx /usr/bin/elasticsearch_install_head.sh
 # Install Head
-RUN /usr/bin/elasticsearch_install_head.sh
+RUN /bin/bash -C /usr/bin/elasticsearch_install_head.sh
 
 # Define default command.
 RUN echo '#/bin/bash\n\
@@ -79,7 +79,7 @@ chmod -R a+rw /elasticsearch\n\
 export ES_HOME=/elasticsearch\n\
 su - elasticsearch -c "/elasticsearch/bin/elasticsearch -p /tmp/elasticsearch.pid"\n\
 ' >> /usr/bin/elasticsearch_start.sh && chmod a+rwx /usr/bin/elasticsearch_start.sh
-CMD [/usr/bin/elasticsearch_start.sh]
+CMD [/bin/bash -C /usr/bin/elasticsearch_start.sh]
 
 
 # Expose ports.
