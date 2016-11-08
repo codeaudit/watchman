@@ -54,16 +54,12 @@ WORKDIR /elasticsearch
 # Make head available at localhost:9200/_plugin/head ... (plugin install only works if elasticsearch is running)
 #Define install Head script ... yes we must start and stop ES twice.
 RUN echo '#!/bin/bash\n\
-chown -R elasticsearch /data/es\n\
-chmod -R a+rw /data/es\n\
-chown -R elasticsearch /elasticsearch\n\
-chmod -R a+rw /elasticsearch\n\
 export ES_HOME=/elasticsearch\n\
-su - elasticsearch -c "/elasticsearch/bin/elasticsearch -p /tmp/elasticsearch.pid" &\n\
+/elasticsearch/bin/elasticsearch -Des.insecure.allow.root=true -p /tmp/elasticsearch.pid &\n\
 while [ ! "`curl -s -XGET 127.0.0.1:9200 | jq \".tagline == \\\"You Know, for Search\\\""`" == "true" ]; do echo "waiting for ES"; sleep 1; done\n\
 /elasticsearch/bin/plugin install mobz/elasticsearch-head\n\
 kill -9 `cat /tmp/elasticsearch.pid`\n\
-su - elasticsearch -c "/elasticsearch/bin/elasticsearch -p /tmp/elasticsearch.pid" &\n\
+/elasticsearch/bin/elasticsearch -Des.insecure.allow.root=true -p /tmp/elasticsearch.pid &\n\
 while [ ! "`curl -s -XGET 127.0.0.1:9200 | jq \".tagline == \\\"You Know, for Search\\\""`" == "true" ]; do echo "waiting for ES"; sleep 1; done\n\
 kill -9 `cat /tmp/elasticsearch.pid`\n\
 ' > /usr/bin/elasticsearch_install_head.sh && chmod a+rwx /usr/bin/elasticsearch_install_head.sh
@@ -71,13 +67,9 @@ kill -9 `cat /tmp/elasticsearch.pid`\n\
 RUN /bin/bash -C /usr/bin/elasticsearch_install_head.sh
 
 # Define default command.
-RUN echo '#/bin/bash\n\
-chown -R elasticsearch /data/es\n\
-chmod -R a+rw /data/es\n\
-chown -R elasticsearch /elasticsearch\n\
-chmod -R a+rw /elasticsearch\n\
+RUN echo '#!/bin/bash\n\
 export ES_HOME=/elasticsearch\n\
-su - elasticsearch -c "/elasticsearch/bin/elasticsearch -p /tmp/elasticsearch.pid"\n\
+/elasticsearch/bin/elasticsearch -Des.insecure.allow.root=true -p /tmp/elasticsearch.pid\n\
 ' >> /usr/bin/elasticsearch_start.sh && chmod a+rwx /usr/bin/elasticsearch_start.sh
 CMD [/bin/bash -C /usr/bin/elasticsearch_start.sh]
 
