@@ -1,12 +1,14 @@
 [
   {
     "name": "data-container",
-    "Image": "sotera/watchman-data-container:2.1",
+    "Image": "sotera/watchman-data-container:2.2",
     "DockerFilePath": "",
     "Hostname": "data-container",
     "HostConfig": {
       "Binds": [
-        "/data:/data"
+        "/data/db:/data/db",
+        "/data/es:/data/es",
+        "/downloads:/downloads"
       ]
     }
   },
