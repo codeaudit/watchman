@@ -1,7 +1,1 @@
-FROM sotera/watchman-elasticsearch:2.8
-
-RUN if [ ! -d "/usr/share/elasticsearch" ] ; then mkdir /usr/share/elasticsearch ; chown elasticsearch /usr/share/elasticsearch ; fi ; 
-RUN if [ ! -d "/usr/share/elasticsearch/plugins" ] ; then mkdir /usr/share/elasticsearch/plugins ; chown elasticsearch /usr/share/elasticsearch/plugins ; fi ; 
-
-RUN /elasticsearch/bin/plugin install mobz/elasticsearch-head
-
+OBE DO NOT USE
