@@ -21,7 +21,7 @@ RUN update-java-alternatives -s java-8-oracle
 RUN  apt-get -y -q install libcurl3 curl
 RUN apt-get -y -q install jq
 
-RUN useradd -m -p 'papAq5PwY/QQM' -s /bin/bash elasticsearch
+RUN groupadd -g 1000 elasticsearch && useradd -m -u 1000 -g 0 -p 'papAq5PwY/QQM' -s /bin/bash elasticsearch
 
 ENV ES_PKG_NAME elasticsearch-2.3.5
 
@@ -40,7 +40,6 @@ VOLUME ["/data/es"]
 # Mount elasticsearch.yml config
 ADD elasticsearch.yml /elasticsearch/config/elasticsearch.yml
 
-# Make head available at localhost:9200/_plugin/head ... (plugin install only works if elasticsearch is running)
 RUN mkdir /usr/share/elasticsearch
 RUN mkdir /usr/share/elasticsearch/plugins
 
@@ -50,8 +49,9 @@ RUN if [ ! -d "/usr/share/elasticsearch" ] ; then mkdir /usr/share/elasticsearch
 RUN if [ ! -d "/usr/share/elasticsearch/plugins" ] ; then mkdir /usr/share/elasticsearch/plugins ; chown elasticsearch /usr/share/elasticsearch/plugins ; fi ; 
 
 # Define working directory.
-WORKDIR /data/es
+WORKDIR /elasticsearch
 
+# Make head available at localhost:9200/_plugin/head ... (plugin install only works if elasticsearch is running)
 #Define install Head script ... yes we must start and stop ES twice.
 RUN echo '#!/bin/bash\n\
 chown -R elasticsearch /data/es\n\

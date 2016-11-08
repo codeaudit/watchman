@@ -6,7 +6,7 @@
     "Hostname": "data-container",
     "HostConfig": {
       "Binds": [
-        "/data/es:/data/es"
+        "/data:/data"
       ]
     }
   },
@@ -36,9 +36,6 @@
     "HostConfig": {
       "VolumesFrom": [
         "data-container"
-      ],
-      "Binds": [
-        "/data/es:/data/es"
       ],
       "PortBindings": {
         "9200/tcp": [
