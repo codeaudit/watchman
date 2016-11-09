@@ -6,7 +6,6 @@
     "Hostname": "data-container",
     "HostConfig": {
       "Binds": [
-        "/data/db:/data/db",
         "/data/es:/data/es",
         "/downloads:/downloads"
       ]
