@@ -71,7 +71,7 @@ RUN echo '#!/bin/bash\n\
 export ES_HOME=/elasticsearch\n\
 /elasticsearch/bin/elasticsearch -Des.insecure.allow.root=true -p /tmp/elasticsearch.pid\n\
 ' >> /usr/bin/elasticsearch_start.sh && chmod a+rwx /usr/bin/elasticsearch_start.sh
-CMD [/bin/bash -C /usr/bin/elasticsearch_start.sh]
+CMD /bin/bash -C /usr/bin/elasticsearch_start.sh
 
 
 # Expose ports.
