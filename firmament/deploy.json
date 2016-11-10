@@ -203,6 +203,7 @@
       ],
       "Links": [
         "mongo:mongo",
+        "elasticsearch:elasticsearch",
         "redis:redis",
         "mitie:mitie"
       ],
@@ -252,6 +253,7 @@
       ],
       "Links": [
         "mongo:mongo",
+        "elasticsearch:elasticsearch",
         "mitie:mitie",
         "redis:redis"
       ],
@@ -300,6 +302,7 @@
       ],
       "Links": [
         "mongo:mongo",
+        "elasticsearch:elasticsearch",
         "redis:redis"
       ],
       "PortBindings": {

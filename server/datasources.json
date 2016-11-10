@@ -1,12 +1,4 @@
 {
-  "db_old": {
-    "host": "localhost",
-    "port": 27017,
-    "database": "rancor",
-    "name": "db_old",
-    "connectionTimeout": 10000,
-    "connector": "mongodb"
-  },
   "db": {
     "connector": "es",
     "name": "db",
@@ -14,7 +6,7 @@
     "hosts": [
         {
           "protocol": "http",
-          "host": "127.0.0.1",
+          "host": "172.17.0.1",
           "port": 9200
         }
     ],
