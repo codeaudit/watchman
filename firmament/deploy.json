@@ -34,12 +34,12 @@
     "Image": "sotera/watchman-elasticsearch:2.14",
     "DockerFilePath": "",
     "Hostname": "elasticsearch",
+    "Env": [
+     "GITHUB_REPO=Sotera/watchman",
+     "GITHUB_BRANCH=kjeelastic",
+     "ES_CONFIG_PATH=services/elasticsearch.yml"
+    ],    
     "HostConfig": {
-      "Env": [
-       "GITHUB_REPO=Sotera/watchman",
-       "GITHUB_BRANCH=kjeelastic",
-       "ES_CONFIG_PATH=services/elasticsearch.yml"
-      ],    
       "VolumesFrom": [
         "data-container"
       ],
