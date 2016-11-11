@@ -70,12 +70,12 @@ RUN /bin/bash -C /usr/bin/elasticsearch_install_head.sh
 # Uses es.insecure.allow.root bypass to allow ES to run as root in the container.
 # NOTE:  We are not currently using ES 5.0.  If we get there and this bypass is 
 # still removed, we may have to fork the ES code base in order run under Docker.
-RUN echo "#!/bin/bash\n\
+RUN echo '#!/bin/bash\n\
 export ES_HOME=/elasticsearch\n\
-CONFIG_URL='https://raw.githubusercontent.com/'$GITHUB_REPO'/'$GITHUB_BRANCH'/'$ES_CONFIG_PATH\n\
-curl -s -XGET $CONFIG_URL -o $ES_HOME'/config/elasticsearch.yml'\n\
+CONFIG_URL="https://raw.githubusercontent.com/"$GITHUB_REPO"/"$GITHUB_BRANCH"/"$ES_CONFIG_PATH\n\
+curl -s -XGET $CONFIG_URL -o $ES_HOME"/config/elasticsearch.yml"\n\
 /elasticsearch/bin/elasticsearch -Des.insecure.allow.root=true -p /tmp/elasticsearch.pid\n\
-" >> /usr/bin/elasticsearch_start.sh && chmod a+rwx /usr/bin/elasticsearch_start.sh
+' >> /usr/bin/elasticsearch_start.sh && chmod a+rwx /usr/bin/elasticsearch_start.sh
 CMD /bin/bash -C /usr/bin/elasticsearch_start.sh
 
 
