@@ -21,7 +21,10 @@ RUN update-java-alternatives -s java-8-oracle
 RUN  apt-get -y -q install libcurl3 curl
 RUN apt-get -y -q install jq
 
-RUN groupadd -g 1000 elasticsearch && useradd -m -u 1000 -g 0 -p 'papAq5PwY/QQM' -s /bin/bash elasticsearch
+# KJE 2016-11-07:
+#     Gave up on struggling to make this work with Docker + Common Data Container + Virtual Box + Virtual Box shares
+#     Using -Des.insecure.allow.root=true param on elasticsearch command line to run as root instead.
+# RUN groupadd -g 1000 elasticsearch && useradd -m -u 1000 -g 0 -p 'papAq5PwY/QQM' -s /bin/bash elasticsearch
 
 ENV ES_PKG_NAME elasticsearch-2.3.5
 
@@ -36,9 +39,6 @@ RUN \
 # Use the -v /data/es:/data/es flags to override the parts we want to externalize
 # Define mountable directories.
 VOLUME ["/data/es"]
-
-# Mount elasticsearch.yml config
-ADD elasticsearch.yml /elasticsearch/config/elasticsearch.yml
 
 RUN mkdir /usr/share/elasticsearch
 RUN mkdir /usr/share/elasticsearch/plugins
@@ -65,11 +65,17 @@ kill -9 `cat /tmp/elasticsearch.pid`\n\
 # Install Head
 RUN /bin/bash -C /usr/bin/elasticsearch_install_head.sh
 
-# Define default command.
-RUN echo '#!/bin/bash\n\
+# Define default command script
+# Copies the ES config file from GitHub using passed-in environment variables
+# Uses es.insecure.allow.root bypass to allow ES to run as root in the container.
+# NOTE:  We are not currently using ES 5.0.  If we get there and this bypass is 
+# still removed, we may have to fork the ES code base in order run under Docker.
+RUN echo "#!/bin/bash\n\
 export ES_HOME=/elasticsearch\n\
+CONFIG_URL='https://raw.githubusercontent.com/'$GITHUB_REPO'/'$GITHUB_BRANCH'/'$ES_CONFIG_PATH\n\
+curl -s -XGET $CONFIG_URL -o $ES_HOME'/config/elasticsearch.yml'\n\
 /elasticsearch/bin/elasticsearch -Des.insecure.allow.root=true -p /tmp/elasticsearch.pid\n\
-' >> /usr/bin/elasticsearch_start.sh && chmod a+rwx /usr/bin/elasticsearch_start.sh
+" >> /usr/bin/elasticsearch_start.sh && chmod a+rwx /usr/bin/elasticsearch_start.sh
 CMD /bin/bash -C /usr/bin/elasticsearch_start.sh
 
 

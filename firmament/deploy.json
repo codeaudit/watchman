@@ -35,6 +35,11 @@
     "DockerFilePath": "",
     "Hostname": "elasticsearch",
     "HostConfig": {
+      "Env": [
+       "GITHUB_REPO=Sotera/watchman",
+       "GITHUB_BRANCH=kjeelastic",
+       "ES_CONFIG_PATH=services/elasticsearch.yml"
+      ],    
       "VolumesFrom": [
         "data-container"
       ],
