@@ -56,7 +56,7 @@ RUN echo '#!/bin/bash\n\
 export ES_HOME=/elasticsearch\n\
 /elasticsearch/bin/elasticsearch -Des.insecure.allow.root=true -p /tmp/elasticsearch.pid &\n\
 while [ ! "`curl -s -XGET 127.0.0.1:9200 | jq \".tagline == \\\"You Know, for Search\\\""`" == "true" ]; do echo "waiting for ES"; sleep 1; done\n\
-/elasticsearch/bin/plugin install mobz/elasticsearch-head\n\
+/elasticsearch/bin/plugin install --batch mobz/elasticsearch-head\n\
 kill -9 `cat /tmp/elasticsearch.pid`\n\
 /elasticsearch/bin/elasticsearch -Des.insecure.allow.root=true -p /tmp/elasticsearch.pid &\n\
 while [ ! "`curl -s -XGET 127.0.0.1:9200 | jq \".tagline == \\\"You Know, for Search\\\""`" == "true" ]; do echo "waiting for ES"; sleep 1; done\n\
