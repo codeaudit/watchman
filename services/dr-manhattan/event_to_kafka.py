@@ -8,8 +8,8 @@ def mongo_to_kafka(rec):
     if len(loc) > 0:
         o_loc = {"type": "Point",
                          "coordinates": [
-                             loc[0]["coords"]["lat"],
-                             loc[0]["coords"]["lon"]
+                             loc[0]["coords"]["lng"],
+                             loc[0]["coords"]["lat"]
                          ]
                 }
 
