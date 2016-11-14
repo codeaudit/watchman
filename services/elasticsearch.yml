@@ -166,7 +166,7 @@ path:
   data: /data/es/data
   work: /data/es/work
   logs: /data/es/log
-  plugins: /elasticsearch/plugins/head
+  plugins: /elasticsearch/plugins
 
 
 #################################### Plugin ###################################
