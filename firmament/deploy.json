@@ -11,7 +11,7 @@
     }
   },{
   "name": "mongo",
-  "Image": "jreeme/mongo:2.6",
+  "Image": "mongo:3.2",
   "DockerFilePath": "",
   "Hostname": "mongo",
   "HostConfig": {
@@ -127,7 +127,7 @@
   },
   {
     "name": "image-fetcher",
-    "Image": "sotera/image-fetcher:1",
+    "Image": "sotera/image-fetcher:2",
     "DockerFilePath": "",
     "Hostname": "image-fetcher",
     "HostConfig": {
@@ -141,7 +141,7 @@
   },
   {
     "name": "aggregate-clustering",
-    "Image": "sotera/aggregate-clustering:1",
+    "Image": "sotera/aggregate-clustering:2",
     "DockerFilePath": "",
     "Hostname": "aggregate-clustering",
     "HostConfig": {
