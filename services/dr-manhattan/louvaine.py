@@ -105,7 +105,7 @@ class Louvaine:
             if 'country' in place.keys():
                 place_name += ' ' + place['country'] + ' '
                 weight += .05
-            if place_name in d1[com]['location']:
+            if place_name in r_o['location']:
                 r_o['location'][place_name]['weight'] += weight
             else:
                 r_o['location'][place_name] = {
@@ -120,8 +120,6 @@ class Louvaine:
 
         for url in list(websites):
             r_o['urls'].add(url)
-
-        for
 
         return None
 
@@ -174,7 +172,7 @@ class Louvaine:
                     'aggregate_cluster_ids':[n],
                     'hashtags':{},
                     'keywords':{},
-                    'campaigns:':{"total":0},
+                    'campaigns':{"total":0, 'ids':{}},
                     'urls':set([]),
                     'image_urls':[],
                     'location':{},
@@ -204,6 +202,12 @@ class Louvaine:
 
         #Cleanup -> transform dicst to order lists, sets to lists for easy javascript comprehension
         for com in d1.keys():
+            l_camps = []
+            if d1[com]['campaigns']['total'] != 0:
+                l_camps = [{k:1.*v/float(d1[com]['campaigns']['total'])} for k, v in d1[com]['campaigns']['ids'].iteritems()]
+
+            d1[com]['campaigns'] = l_camps
+
             l_tags = map(lambda x: x[0], sorted([(k, v) for k, v in d1[com]['hashtags'].iteritems()], key=lambda x: x[1]))
             if len(l_tags) > 10:
                 d1[com]['hashtags'] = l_tags[:10]
