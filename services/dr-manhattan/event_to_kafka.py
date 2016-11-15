@@ -23,6 +23,7 @@ def mongo_to_kafka(rec):
             'photos':rec['image_urls'],
             'importanceScore':rec['importance_score'],
             'topicMessageCount':rec['topic_message_count'],
+            'campaigns': rec['campaigns'],
             'newsEventIds':[],
             'location': o_loc}
 

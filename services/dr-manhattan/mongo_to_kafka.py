@@ -12,7 +12,6 @@ def mongo_to_kafka(rec):
                              loc[0]["coords"][0]["lat"]
                          ]
                 }
-
     return {'uid':rec['id'],
             'label':rec['name'],
             'startDate': datetime.fromtimestamp(rec['start_time_ms']/1000.0).isoformat(),
@@ -23,6 +22,7 @@ def mongo_to_kafka(rec):
             'photos':rec['image_urls'],
             'importanceScore':rec['importance_score'],
             'topicMessageCount':rec['topic_message_count'],
+            'campaigns': rec['campaigns'],
             'newsEventIds':[],
             'location': o_loc}
 
