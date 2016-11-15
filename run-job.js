@@ -31,11 +31,13 @@ if (require.main === module) {
 
   //english
   runJob(Object.assign({
+    service_args: { similarity_threshold: 0.65 },
     lang: 'en',
     featurizer: 'text'
   }, defaults));
   //ar
   runJob(Object.assign({
+    service_args: { similarity_threshold: 0.65 },
     lang: 'ar',
     featurizer: 'text'
   }, defaults));
