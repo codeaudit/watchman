@@ -14,22 +14,22 @@
     ]
   },
   "User": {
-    "dataSource": "db"
+    "dataSource": "es-User"
   },
   "AccessToken": {
-    "dataSource": "db",
+    "dataSource": "es-AccessToken",
     "public": false
   },
   "ACL": {
-    "dataSource": "db",
+    "dataSource": "es-ACL",
     "public": false
   },
   "RoleMapping": {
-    "dataSource": "db",
+    "dataSource": "es-RoleMapping",
     "public": false
   },
   "Role": {
-    "dataSource": "db",
+    "dataSource": "es-Role",
     "public": false
   },
   "extract": {
@@ -41,15 +41,15 @@
     "public": true
   },
   "parsedEvent": {
-    "dataSource": "db",
+    "dataSource": "es-parsedEvent",
     "public": true
   },
   "textFeed": {
-    "dataSource": "db",
+    "dataSource": "es-textFeed",
     "public": true
   },
   "feedObject": {
-    "dataSource": "db",
+    "dataSource": "es-feedObject",
     "public": true
   },
   "translate": {
@@ -61,15 +61,15 @@
     "public": true
   },
   "socialMediaPost": {
-    "dataSource": "db",
+    "dataSource": "es-socialMediaPost",
     "public": true
   },
   "jobMonitor": {
-    "dataSource": "db",
+    "dataSource": "es-jobMonitor",
     "public": true
   },
   "postsCluster": {
-    "dataSource": "db",
+    "dataSource": "es-postsCluster",
     "public": true
   },
   "qcr": {
@@ -77,11 +77,11 @@
     "public": true
   },
   "clusterLink": {
-    "dataSource": "db",
+    "dataSource": "es-clusterLink",
     "public": true
   },
   "aggregateCluster": {
-    "dataSource": "db",
+    "dataSource": "es-aggregateCluster",
     "public": true
   }
 }

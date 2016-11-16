@@ -1,5 +1,7 @@
 // update db schema from model defs
 'use strict';
 module.exports = function(app) {
-  app.dataSources.db.autoupdate(function(err, result) {});
+  for (var ds in app.dataSources) {
+    app.dataSources[ds].autoupdate(function(err, result) {});
+  }
 };
