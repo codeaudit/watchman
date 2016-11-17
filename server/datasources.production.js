@@ -9,7 +9,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -25,7 +25,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -41,7 +41,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -57,7 +57,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -73,7 +73,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -89,7 +89,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -105,7 +105,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -121,7 +121,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -137,7 +137,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -153,7 +153,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -169,7 +169,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -185,7 +185,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -201,7 +201,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -217,7 +217,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -233,7 +233,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -249,7 +249,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -265,7 +265,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
@@ -281,7 +281,7 @@ module.exports = {
           "port": 9200
         }
     ],
-    "apiVersion": "2.4",
+    "apiVersion": "2.3",
     "requestTimeout": 30000,
     "log": "trace",
     "index": "rancor",
