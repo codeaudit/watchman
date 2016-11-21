@@ -34,9 +34,9 @@ class Louvaine:
     def get_text_sum(self, cluster, r_o):
         n_posts = len(cluster['similar_post_ids'])
         l_sample = cluster['similar_post_ids']
-        if n_posts > 50:
-            l_sample = sample(cluster['similar_post_ids'], 50)
-            n_posts = 50
+        if n_posts > 30:
+            l_sample = sample(cluster['similar_post_ids'], 30)
+            n_posts = 30
 
         words = {}
         places = []
@@ -55,6 +55,9 @@ class Louvaine:
             return
 
         for doc in page:
+            if doc['featurizer'] != cluster['data_type']:
+                continue
+
             r = requests.post(self.ent_url, data={'text':doc['text']})
 
             if 'campaigns' in doc:
@@ -83,7 +86,6 @@ class Louvaine:
                     words[word] += 1
                 else:
                     words[word] = 1
-            break
 
         for k, v in words.iteritems():
             if v < 5:
