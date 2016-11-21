@@ -6,6 +6,32 @@ const _ = require('lodash'),
 // def: QCR endpoint to inspect post data
 // and create SocialMediaPost entries.
 module.exports = function(Qcr) {
+
+  let bootTime = Date.now();
+  let postPerSecondCount = 0;
+  let qcrFilterThreshold = 0;
+  let globalHackyPostFilterCount = 0;
+
+  Qcr.setFilter = function(filter, cb) {
+    //should we have to parse this?
+    let f = JSON.parse(filter);
+    qcrFilterThreshold = +f.filter;
+    //reset counters and start time for pps calculation
+    globalHackyPostFilterCount = 0;
+    postPerSecondCount = 0;
+    bootTime = Date.now();
+    if(f.filter === 0)
+      console.log('Filter off!');
+    else
+      console.log('Keeping 1 out of every ' + f.filter + ' posts');
+    cb(null, 'Post Filter set to: ' + f.filter);
+  };
+
+  Qcr.remoteMethod('setFilter', {
+    accepts: {arg: 'filter', type: 'string'},
+    returns: {arg: 'result', type: 'string'}
+  });
+
   Qcr.remoteMethod(
     'insert',
     {
@@ -21,12 +47,33 @@ module.exports = function(Qcr) {
     }
   );
 
+  setInterval(function(){
+      console.log('--==PPS==--:' + postPerSecondCount / ((Date.now() - bootTime)/1000));
+    if(qcrFilterThreshold)
+      console.log("--==FPPS==--:" + globalHackyPostFilterCount / ((Date.now() - bootTime)/1000));
+  },5000);
+
   Qcr.insert = function(req, cb) {
     const attrs = req.body;
+
+    //Calculating our posts per second so we get a real amount to deal with
+    postPerSecondCount ++;
     // stop the deluge
     if (+process.env.IGNORE_QCR) {
       return cb(null, attrs); // send 200 code and stop
     }
+
+    //TODO: either make our system scale correctly or fix this to be less hacky!
+    if (qcrFilterThreshold && postPerSecondCount % qcrFilterThreshold != 0) {
+      return cb(null, attrs); // send 200 code and stop
+    }
+    else{
+      globalHackyPostFilterCount++;
+    }
+
+
+    //TODO: END either make our system scale correctly or fix this to be less hacky!
+
     let qcrData = new Qcr(attrs);
 
     qcrData.isValid(valid => {
