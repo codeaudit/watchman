@@ -1,4 +1,5 @@
 from kafka import KafkaProducer
+from kafka.errors import KafkaError
 from datetime import datetime
 import json
 
@@ -43,4 +44,11 @@ def stream_events(l_clusts, kafka_url, kafka_topic):
     print "Streaming Events"
     for doc in kds:
         state = producer.send(kafka_topic, doc)
-        print "{} was sent with state {}".format(doc, state)
+        try:
+            record_metadata = state.get(timeout=10)
+            print (record_metadata.topic)
+            print (record_metadata.partition)
+            print (record_metadata.offset)
+        except KafkaError:
+            print KafkaError
+            pass
