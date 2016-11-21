@@ -5,14 +5,13 @@ import json
 def mongo_to_kafka(rec):
     loc = sorted(rec['location'], key=lambda x: x['weight'], reverse=True)
     o_loc = None
-if len(loc) > 0:
-    o_loc = {"type": "Point",
-                     "coordinates": [
-                         loc[0]["coords"][0]["lng"],
-                         loc[0]["coords"][0]["lat"]
-                     ]
-            }
-
+    if len(loc) > 0:
+        o_loc = {"type": "Point",
+                         "coordinates": [
+                             loc[0]["coords"][0]["lng"],
+                             loc[0]["coords"][0]["lat"]
+                         ]
+                }
     l_rec = []
     camps = filter(lambda x: x is not None, map(lambda x: x.keys()[0] if x.values()[0]>0.7 else None, rec['campaigns']))
     for camp in camps:
@@ -31,7 +30,6 @@ if len(loc) > 0:
             'newsEventIds':[],
             'location': o_loc}
         )
-
     return l_rec
 
 def stream_events(l_clusts, kafka_url, kafka_topic):
