@@ -20,8 +20,10 @@ module.exports = function(Qcr) {
     globalHackyPostFilterCount = 0;
     postPerSecondCount = 0;
     bootTime = Date.now();
-
-    console.log('Keeping 1 out of every ' + f.filter + ' posts');
+    if(f.filter === 0)
+      console.log('Filter off!');
+    else
+      console.log('Keeping 1 out of every ' + f.filter + ' posts');
     cb(null, 'Post Filter set to: ' + f.filter);
   };
 
