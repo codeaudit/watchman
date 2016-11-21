@@ -9,6 +9,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print "Requesting Events"
+    print "mongo_url = {}".format(args.mongo_url)
     r = requests.get("{}/api/events".format(args.mongo_url)).json()
 
     stream_events(r, args.kafka_url, args.kafka_topic)
