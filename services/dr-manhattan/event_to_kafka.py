@@ -3,7 +3,7 @@ from kafka.errors import KafkaError
 from datetime import datetime
 import json
 
-def mongo_to_kafka(rec):
+def mongo_to_kafka(rec, campaign_thresh = 0.7, debug=False):
     loc = sorted(rec['location'], key=lambda x: x['weight'], reverse=True)
     o_loc = None
     if len(loc) > 0:
@@ -13,8 +13,12 @@ def mongo_to_kafka(rec):
                              loc[0]["coords"][0]["lat"]
                          ]
                 }
+
+    if debug:
+        print "Max campaign association:", max([x.values()[0] for x in rec['campaigns']])
+
     l_rec = []
-    camps = filter(lambda x: x is not None, map(lambda x: x.keys()[0] if x.values()[0]>0.7 else None, rec['campaigns']))
+    camps = filter(lambda x: x is not None, map(lambda x: x.keys()[0] if x.values()[0]>campaign_thresh else None, rec['campaigns']))
     for camp in camps:
         l_rec.append(
             {'uid':rec['id'],
@@ -33,11 +37,14 @@ def mongo_to_kafka(rec):
         )
     return l_rec
 
-def stream_events(l_clusts, kafka_url, kafka_topic):
+def stream_events(l_clusts, kafka_url, kafka_topic, campaign_thresh=0.7, debug=False):
     print "Converting to Kafka format"
-    kds = []
-    for clust in l_clusts:
-        kds.extend(mongo_to_kafka(clust))
+    try:
+        kds = []
+        for clust in l_clusts:
+            kds.extend(mongo_to_kafka(clust))
+    except Exception as inst:
+        print inst
 
     print "Creating Kafka Producer"
     producer = KafkaProducer(bootstrap_servers=kafka_url, value_serializer=lambda v: json.dumps(v).encode('utf-8'))
