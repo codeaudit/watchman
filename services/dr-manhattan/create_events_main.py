@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../util"))
 from loopy import Loopy
 from louvaine import Louvaine
 
-def create_events(host, ts_start, ts_end, kafka_url, kafka_topic):
+def create_events(host, ts_start, ts_end, kafka_url, kafka_topic, debug=False):
     if host[-1] != '/': host += '/'
     api_path = host + 'api/'
     query_params = [{
@@ -62,7 +62,8 @@ if __name__ == "__main__":
     parser.add_argument("end_time", type=int,help="Milisecond timestamp for query end")
     parser.add_argument("-kafka_url", type=str, help="If writing events to kafka, specify url (default=None)", default=None)
     parser.add_argument("-kafka_topic", type=str, help="If writing event to kafka, specify topic (default=None)", default=None)
+    parser.add_argument("--debug", help="Switch on for debugging", action='store_true')
 
     args = parser.parse_args()
 
-    create_events(args.host, args.start_time, args.end_time, args.kafka_url, args.kafka_topic)
+    create_events(args.host, args.start_time, args.end_time, args.kafka_url, args.kafka_topic, debug = args.debug)
