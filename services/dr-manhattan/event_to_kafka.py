@@ -42,7 +42,7 @@ def stream_events(l_clusts, kafka_url, kafka_topic, campaign_thresh=0.7, debug=F
     try:
         kds = []
         for clust in l_clusts:
-            kds.extend(mongo_to_kafka(clust))
+            kds.extend(mongo_to_kafka(clust, debug=debug))
     except Exception as inst:
         print inst
 
