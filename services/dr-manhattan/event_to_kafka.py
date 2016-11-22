@@ -17,7 +17,8 @@ def mongo_to_kafka(rec, campaign_thresh = 0.7, debug=False):
     camps = filter(lambda x: x is not None, map(lambda x: x.keys()[0] if x.values()[0]>campaign_thresh else None, rec['campaigns']))
     if debug:
         print "Max campaign association:", max([x.values()[0] for x in rec['campaigns']])
-        print "n recs to transform: ", l_rec
+        print "n recs to transform: ", len(l_rec)
+        print rec
     for camp in camps:
         l_rec.append(
             {'uid':rec['id'],
