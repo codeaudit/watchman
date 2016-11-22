@@ -14,7 +14,7 @@ def mongo_to_kafka(rec, campaign_thresh = 0.7, debug=False):
                          ]
                 }
     l_rec = []
-    camps = filter(lambda x: x is not None, map(lambda x: x.keys()[0] if x.values()[0]>campaign_thresh else None, rec['campaigns']))
+    camps = filter(lambda x: x is not None, map(lambda x: [y for y in x.iteritems()][0] if x.values()[0]>campaign_thresh else None, rec['campaigns']))
     if debug:
         print "Max campaign association:", max([x.values()[0] for x in rec['campaigns']])
         print "n recs to transform: ", len(l_rec)
@@ -29,9 +29,9 @@ def mongo_to_kafka(rec, campaign_thresh = 0.7, debug=False):
             'keywords':rec['keywords'],
             'urls':rec['urls'],
             'photos':rec['image_urls'],
-            'importanceScore':rec['importance_score'],
+            'importanceScore':camp[1],
             'topicMessageCount':rec['topic_message_count'],
-            'campaignId': camp,
+            'campaignId': camp[0],
             'newsEventIds':[],
             'location': o_loc}
         )
