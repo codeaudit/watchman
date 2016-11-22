@@ -1,4 +1,4 @@
-import community, sys, os, requests
+import community, sys, os, requests, uuid
 import networkx as nx
 from random import sample
 sys.path.append(os.path.join(os.path.dirname(__file__), "../util"))
@@ -165,6 +165,7 @@ class Louvaine:
                 d1[com]['topic_message_count'] += len(clust['similar_post_ids'])
             else:
                 d1[com] = {
+                    'id': uuid.uuid4(),
                     'name': 'default',
                     'start_time_ms': clust['start_time_ms'],
                     'end_time_ms':clust['end_time_ms'],
