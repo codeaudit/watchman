@@ -3,7 +3,7 @@ from kafka.errors import KafkaError
 from datetime import datetime
 import json
 
-def mongo_to_kafka(rec):
+def mongo_to_kafka(rec, campaign_thresh = 0.7, debug=False):
     loc = sorted(rec['location'], key=lambda x: x['weight'], reverse=True)
     o_loc = None
     if len(loc) > 0:
@@ -14,30 +14,37 @@ def mongo_to_kafka(rec):
                          ]
                 }
     l_rec = []
-    camps = filter(lambda x: x is not None, map(lambda x: x.keys()[0] if x.values()[0]>0.7 else None, rec['campaigns']))
+    camps = filter(lambda x: x is not None, map(lambda x: [y for y in x.iteritems()][0] if x.values()[0]>campaign_thresh else None, rec['campaigns']))
+    if debug:
+        print "Max campaign association:", max([x.values()[0] for x in rec['campaigns']])
+        print "n recs to transform: ", len(l_rec)
+        print rec
     for camp in camps:
         l_rec.append(
             {'uid':rec['id'],
-            'label':rec['name'],
+            'label':rec['keywords'][0],
             'startDate': datetime.fromtimestamp(rec['start_time_ms']/1000.0).isoformat(),
             'endDate': datetime.fromtimestamp(rec['end_time_ms']/1000.0).isoformat(),
             'hashtags': rec['hashtags'],
             'keywords':rec['keywords'],
             'urls':rec['urls'],
             'photos':rec['image_urls'],
-            'importanceScore':rec['importance_score'],
+            'importanceScore':camp[1],
             'topicMessageCount':rec['topic_message_count'],
-            'campaigns': camp,
+            'campaignId': camp[0],
             'newsEventIds':[],
             'location': o_loc}
         )
     return l_rec
 
-def stream_events(l_clusts, kafka_url, kafka_topic):
+def stream_events(l_clusts, kafka_url, kafka_topic, campaign_thresh=0.7, debug=False):
     print "Converting to Kafka format"
-    kds = []
-    for clust in l_clusts:
-        kds.extend(mongo_to_kafka(clust))
+    try:
+        kds = []
+        for clust in l_clusts:
+            kds.extend(mongo_to_kafka(clust, debug=debug))
+    except Exception as inst:
+        print inst
 
     print "Creating Kafka Producer"
     producer = KafkaProducer(bootstrap_servers=kafka_url, value_serializer=lambda v: json.dumps(v).encode('utf-8'))
