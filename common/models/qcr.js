@@ -8,23 +8,26 @@ const _ = require('lodash'),
 module.exports = function(Qcr) {
 
   let bootTime = Date.now();
+  let postWindowStart = bootTime;
+  let postWindowPostCount = 0;
+  let postWindowInterval = 1000;
+  let postPerSecondTarget = -1;
   let postPerSecondCount = 0;
-  let qcrFilterThreshold = 0;
-  let globalHackyPostFilterCount = 0;
+  let filteredPostCount = 0;
 
-  Qcr.setFilter = function(filter, cb) {
+  Qcr.setFilter = function(args, cb) {
     //should we have to parse this?
-    let f = JSON.parse(filter);
-    qcrFilterThreshold = +f.filter;
+    let f = JSON.parse(args);
+    postPerSecondTarget = +f.target;
     //reset counters and start time for pps calculation
-    globalHackyPostFilterCount = 0;
+    filteredPostCount = 0;
     postPerSecondCount = 0;
     bootTime = Date.now();
-    if(f.filter === 0)
+    if(f.target <0)
       console.log('Filter off!');
     else
-      console.log('Keeping 1 out of every ' + f.filter + ' posts');
-    cb(null, 'Post Filter set to: ' + f.filter);
+      console.log('Setting target post per second count to ' + f.target + ' posts');
+    cb(null, 'Posts Per Second count set to: ' + f.target);
   };
 
   Qcr.remoteMethod('setFilter', {
@@ -49,8 +52,8 @@ module.exports = function(Qcr) {
 
   setInterval(function(){
       console.log('--==PPS==--:' + postPerSecondCount / ((Date.now() - bootTime)/1000));
-    if(qcrFilterThreshold)
-      console.log("--==FPPS==--:" + globalHackyPostFilterCount / ((Date.now() - bootTime)/1000));
+    if(postPerSecondTarget>=0)
+      console.log("--==FPPS==--:" + filteredPostCount / ((Date.now() - bootTime)/1000));
   },5000);
 
   Qcr.insert = function(req, cb) {
@@ -64,14 +67,17 @@ module.exports = function(Qcr) {
     }
 
     //TODO: either make our system scale correctly or fix this to be less hacky!
-    if (qcrFilterThreshold && postPerSecondCount % qcrFilterThreshold != 0) {
-      return cb(null, attrs); // send 200 code and stop
+    postWindowPostCount++;
+    if(postPerSecondTarget >=0){
+      if(Date.now() >= postWindowStart + postWindowInterval){
+        postWindowStart += postWindowInterval;
+        postWindowPostCount = 1;
+      }
+      if(postWindowPostCount > postPerSecondTarget){
+        return cb(null, attrs);
+      }
+      filteredPostCount++;
     }
-    else{
-      globalHackyPostFilterCount++;
-    }
-
-
     //TODO: END either make our system scale correctly or fix this to be less hacky!
 
     let qcrData = new Qcr(attrs);
