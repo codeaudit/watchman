@@ -52,7 +52,7 @@ def create_events(host, ts_start, ts_end, kafka_url, kafka_topic, debug=False):
     print "Communities Saved!"
     if kafka_url is not None and kafka_topic is not None:
         "Sending events to kafka"
-        stream_events(l_com, kafka_url, kafka_topic)
+        stream_events(l_com, kafka_url, kafka_topic, debug=debug)
 
 
 if __name__ == "__main__":
@@ -66,4 +66,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    create_events(args.host, args.start_time, args.end_time, args.kafka_url, args.kafka_topic, debug = args.debug)
+    create_events(args.host, args.start_time, args.end_time, args.kafka_url, args.kafka_topic, debug=args.debug)
