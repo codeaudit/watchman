@@ -47,7 +47,7 @@ def create_events(host, ts_start, ts_end, kafka_url, kafka_topic, debug=False):
         node = requests.get(agg_url).json()
         com.add_node(node)
 
-    print " communities"
+    print "Finding communities from {} nodes and {} edges.".format(len(com.graph.nodes()), len(com.graph.edges()))
     l_com = com.save_communities()
     print "Communities Saved!"
     if kafka_url is not None and kafka_topic is not None:
