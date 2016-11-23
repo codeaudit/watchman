@@ -78,11 +78,11 @@ module.exports = function(Qcr) {
       postWindowPostCount++;
       if(Date.now() >= postWindowStart + postWindowInterval){
         postWindowStart = Date.now();
-        if((fpps - pps) < -.5)
-        {
-          if((fpps - postPerSecondTarget) < -.5) postPerSecondDelta ++;
-          if((fpps- postPerSecondTarget) > .5) postPerSecondDelta --;
+
+        if((fpps - pps) < -.5 && (fpps - postPerSecondTarget) < -.5){
+          postPerSecondDelta ++;
         }
+        if((fpps - postPerSecondTarget) > .5) postPerSecondDelta --;
 
         postWindowPostCount = 0;
       }
