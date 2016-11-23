@@ -153,7 +153,17 @@ class Louvaine:
         partition = community.best_partition(self.graph)
         d1 = {}
 
+        print "Communities found, getting event summary information"
+        n_nodes = len(self.graph.nodes())
+        checkpoints = [.1, .25, .5, .75, .9, .95, .99999, 1.1]
+        ind_checked = 0
+        n_checked = 0
         for n in self.graph.nodes():
+            n_checked += 1
+            while n_checked > checkpoints[ind_checked]*n_nodes:
+                ind_checked += 1
+                print "Finished {}% of nodes".format(checkpoints[ind_checked]*100)
+
             images = set()
             com = str(partition[n])
             if n not in self.nodes_detailed:
