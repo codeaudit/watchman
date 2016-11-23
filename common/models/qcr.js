@@ -16,6 +16,7 @@ module.exports = function(Qcr) {
   let postPerSecondCount = 0;
   let filteredPostCount = 0;
   let fpps = 0;
+  let pps = 0;
 
   Qcr.setFilter = function(args, cb) {
     //should we have to parse this?
@@ -53,7 +54,8 @@ module.exports = function(Qcr) {
   );
 
   setInterval(function(){
-      console.log('--==PPS==--:' + postPerSecondCount / ((Date.now() - bootTime)/1000));
+      pps = postPerSecondCount / ((Date.now() - bootTime)/1000);
+      console.log('--==PPS==--:' + pps);
     if(postPerSecondTarget>=0) {
       fpps = filteredPostCount / ((Date.now() - bootTime) / 1000);
       console.log("--==FPPS==--:" + fpps + " Delta:" + postPerSecondDelta);
@@ -76,8 +78,12 @@ module.exports = function(Qcr) {
       postWindowPostCount++;
       if(Date.now() >= postWindowStart + postWindowInterval){
         postWindowStart = Date.now();
-        if(Math.round(fpps) < postPerSecondTarget) postPerSecondDelta ++;
-        if(Math.round(fpps) > postPerSecondTarget) postPerSecondDelta --;
+        if((fpps - pps) < -.5)
+        {
+          if((fpps - postPerSecondTarget) < -.5) postPerSecondDelta ++;
+          if((fpps- postPerSecondTarget) > .5) postPerSecondDelta --;
+        }
+
         postWindowPostCount = 0;
       }
       if(postWindowPostCount > postPerSecondTarget + postPerSecondDelta){
