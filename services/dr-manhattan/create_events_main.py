@@ -51,7 +51,8 @@ def create_events(host, ts_start, ts_end, kafka_url, kafka_topic, debug=False):
     l_com = com.save_communities()
     print "Communities Saved!"
     if kafka_url is not None and kafka_topic is not None:
-        "Sending events to kafka"
+        print "Sending events to kafka"
+        print "l_com", l_com
         stream_events(l_com, kafka_url, kafka_topic, debug=debug)
 
 

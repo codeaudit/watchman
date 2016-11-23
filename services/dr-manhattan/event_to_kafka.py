@@ -7,7 +7,7 @@ def mongo_to_kafka(rec, campaign_thresh = 0.7, debug=False):
     if debug:
         print "Start conv, doing location"
         print "rec['location'] = ", rec['location']
-    loc = sorted(rec['location'], key=lambda x: x['weight'], reverse=True)
+    loc = sorted(rec, key=lambda x: x['weight'], reverse=True)
     o_loc = None
     if len(loc) > 0:
         o_loc = {"type": "Point",
