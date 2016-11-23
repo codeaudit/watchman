@@ -12,8 +12,11 @@ module.exports = function(Qcr) {
   let postWindowPostCount = 0;
   let postWindowInterval = 1000;
   let postPerSecondTarget = -1;
+  let postPerSecondDelta = 0;
   let postPerSecondCount = 0;
   let filteredPostCount = 0;
+  let fpps = 0;
+  let pps = 0;
 
   Qcr.setFilter = function(args, cb) {
     //should we have to parse this?
@@ -51,9 +54,12 @@ module.exports = function(Qcr) {
   );
 
   setInterval(function(){
-      console.log('--==PPS==--:' + postPerSecondCount / ((Date.now() - bootTime)/1000));
-    if(postPerSecondTarget>=0)
-      console.log("--==FPPS==--:" + filteredPostCount / ((Date.now() - bootTime)/1000));
+      pps = postPerSecondCount / ((Date.now() - bootTime)/1000);
+      console.log('--==PPS==--:' + pps);
+    if(postPerSecondTarget>=0) {
+      fpps = filteredPostCount / ((Date.now() - bootTime) / 1000);
+      console.log("--==FPPS==--:" + fpps + " Delta:" + postPerSecondDelta);
+    }
   },5000);
 
   Qcr.insert = function(req, cb) {
@@ -72,9 +78,15 @@ module.exports = function(Qcr) {
       postWindowPostCount++;
       if(Date.now() >= postWindowStart + postWindowInterval){
         postWindowStart = Date.now();
+
+        if((fpps - pps) < -.5 && (fpps - postPerSecondTarget) < -.5){
+          postPerSecondDelta ++;
+        }
+        if((fpps - postPerSecondTarget) > .5) postPerSecondDelta --;
+
         postWindowPostCount = 0;
       }
-      if(postWindowPostCount > postPerSecondTarget){
+      if(postWindowPostCount > postPerSecondTarget + postPerSecondDelta){
         return cb(null, attrs);
       }
       filteredPostCount++;
@@ -129,7 +141,7 @@ module.exports = function(Qcr) {
       // QCR re-sends tweets on 5xx (server error) http response codes.
       // b/c they send lots of dupe tweets, we get mongo uniq idx failures.
       // ignore them.
-      console.error('QCR err:', err);
+      // console.error('QCR err:', err);
       cb(null, {ok: 1}); // send bogus 200 response
     });
   }
