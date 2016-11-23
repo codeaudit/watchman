@@ -17,6 +17,9 @@
   "options": {
     "validateUpsert": true
   },
+  "mixins": {
+    "DestroyAll":{}
+  },
   "properties": {
     "start_time_ms": {
       "type": "number",

@@ -67,16 +67,18 @@ module.exports = function(Qcr) {
     }
 
     //TODO: either make our system scale correctly or fix this to be less hacky!
-    postWindowPostCount++;
+
     if(postPerSecondTarget >=0){
+      postWindowPostCount++;
       if(Date.now() >= postWindowStart + postWindowInterval){
-        postWindowStart += postWindowInterval;
-        postWindowPostCount = 1;
+        postWindowStart = Date.now();
+        postWindowPostCount = 0;
       }
       if(postWindowPostCount > postPerSecondTarget){
         return cb(null, attrs);
       }
       filteredPostCount++;
+
     }
     //TODO: END either make our system scale correctly or fix this to be less hacky!
 
