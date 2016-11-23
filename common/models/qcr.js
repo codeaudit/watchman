@@ -17,6 +17,9 @@ module.exports = function(Qcr) {
   let filteredPostCount = 0;
   let fpps = 0;
   let pps = 0;
+  let failures = 0;
+  let postsIgnored = 0;
+  let stupidDupeSet = new Set();
 
   Qcr.setFilter = function(args, cb) {
     //should we have to parse this?
@@ -35,6 +38,34 @@ module.exports = function(Qcr) {
 
   Qcr.remoteMethod('setFilter', {
     accepts: {arg: 'filter', type: 'string'},
+    returns: {arg: 'result', type: 'string'}
+  });
+
+
+  let stupidDupeInterval = 10000;
+  let interval = setInterval(function(){
+    console.log("clearing dupe set...");
+    stupidDupeSet.clear();
+  },stupidDupeInterval);
+
+
+  Qcr.setDupeInterval = function(args, cb) {
+    //should we have to parse this?
+    let f = JSON.parse(args);
+    stupidDupeInterval = +f.target;
+    clearInterval(interval);
+
+    interval = setInterval(function(){
+      console.log("clearing dupe set...");
+      stupidDupeSet.clear();
+    },stupidDupeInterval);
+
+    console.log('Set dupe clear interval to: ' + f.target);
+    cb(null, 'Set dupe clear interval to: ' + f.target);
+  };
+
+  Qcr.remoteMethod('setDupeInterval', {
+    accepts: {arg: 'interval', type: 'string'},
     returns: {arg: 'result', type: 'string'}
   });
 
@@ -60,20 +91,39 @@ module.exports = function(Qcr) {
       fpps = filteredPostCount / ((Date.now() - bootTime) / 1000);
       console.log("--==FPPS==--:" + fpps + " Delta:" + postPerSecondDelta);
     }
+    console.log("qcr dupes over the last 5 seconds: " + failures );
+    console.log("dupes ignored over the last 5 seconds: " + postsIgnored);
+    console.log("dupe list size:" + stupidDupeSet.size);
+
+    postsIgnored = 0;
+    failures = 0;
   },5000);
 
   Qcr.insert = function(req, cb) {
     const attrs = req.body;
 
-    //Calculating our posts per second so we get a real amount to deal with
-    postPerSecondCount ++;
+
     // stop the deluge
     if (+process.env.IGNORE_QCR) {
       return cb(null, attrs); // send 200 code and stop
     }
 
-    //TODO: either make our system scale correctly or fix this to be less hacky!
+    //--------------------------------------------------------------------------
+    //TODO:get rid of this silly crap when we aren't being sent a load of dupes
+    let postId = attrs['post_id'];
+    if(stupidDupeSet.has(postId)){
+      postsIgnored++;
+      return cb(null, attrs); // send 200 code and stop
+    }
+    stupidDupeSet.add(postId);
+    //BLAH!!!
+    //--------------------------------------------------------------------------
 
+
+
+    //TODO: either make our system scale correctly or fix this to be less hacky!
+    //Calculating our posts per second so we get a real amount to deal with
+    postPerSecondCount ++;
     if(postPerSecondTarget >=0){
       postWindowPostCount++;
       if(Date.now() >= postWindowStart + postWindowInterval){
@@ -142,6 +192,7 @@ module.exports = function(Qcr) {
       // b/c they send lots of dupe tweets, we get mongo uniq idx failures.
       // ignore them.
       // console.error('QCR err:', err);
+      failures++;
       cb(null, {ok: 1}); // send bogus 200 response
     });
   }
