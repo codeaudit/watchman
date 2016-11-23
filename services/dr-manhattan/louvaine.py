@@ -162,7 +162,7 @@ class Louvaine:
             n_checked += 1
             while n_checked > checkpoints[ind_checked]*n_nodes:
                 ind_checked += 1
-                print "Finished {}% of nodes".format(checkpoints[ind_checked]*100)
+                print "Finished {}% of nodes".format(checkpoints[ind_checked-1]*100)
 
             images = set()
             com = str(partition[n])
@@ -175,7 +175,7 @@ class Louvaine:
                 d1[com]['topic_message_count'] += len(clust['similar_post_ids'])
             else:
                 d1[com] = {
-                    'id': uuid.uuid4(),
+                    'id': str(uuid.uuid4()),
                     'name': 'default',
                     'start_time_ms': clust['start_time_ms'],
                     'end_time_ms':clust['end_time_ms'],
@@ -210,6 +210,7 @@ class Louvaine:
             if clust['end_time_ms'] > d1[com]['end_time_ms']:
                 d1[com]['end_time_ms'] = clust['end_time_ms']
 
+        print "Information collected, proceed cleaning up dictionaries"
         #Cleanup -> transform dicst to order lists, sets to lists for easy javascript comprehension
         for com in d1.keys():
             l_camps = []
@@ -244,10 +245,11 @@ class Louvaine:
 
     def save_communities(self):
         d1 = self.get_communities()
+        print "Writing communities to mongo"
         for com in d1.values():
-            if len(com['aggregate_cluster_ids'])<3:
+            if len(com['aggregate_cluster_ids']) < 3:
                 continue
-            res = requests.post(self.url+'events', json=com)
+            res = requests.post(self.url+'events/', json=com)
             print res
         return d1
 
