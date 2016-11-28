@@ -91,6 +91,10 @@ module.exports = function(Qcr) {
       fpps = filteredPostCount / ((Date.now() - bootTime) / 1000);
       console.log("--==FPPS==--:" + fpps + " Delta:" + postPerSecondDelta);
     }
+    postPerSecondCount = 0;
+    filteredPostCount = 0;
+    bootTime = Date.now();
+
     console.log("qcr dupes over the last 5 seconds: " + failures );
     console.log("dupes ignored over the last 5 seconds: " + postsIgnored);
     console.log("dupe list size:" + stupidDupeSet.size);
