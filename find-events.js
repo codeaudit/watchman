@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-//def: runs job monitors on at specified interval
+//def: run event find script on interval
 
 try {
   require('dotenv').config({silent: true});
@@ -24,7 +24,6 @@ if (require.main === module) {
   };
 
   findEvents(defaults);
-
 }
 
 /* params:
@@ -32,9 +31,9 @@ if (require.main === module) {
    runIntervalMins: mins between job runs
 */
 function findEvents(params) {
-  var endTime = params.seedTime,
+  let endTime = params.seedTime,
     runIntervalMins = params.runIntervalMins,
-    runIntervalMs = 1000 * 60 * runIntervalMins ;
+    runIntervalMs = 1000 * 60 * runIntervalMins;
 
   setInterval(run, runIntervalMs);
 
@@ -50,18 +49,17 @@ function findEvents(params) {
     }
 
 
-    let args = ["run", "--rm", "sotera/dr-manhattan:6", API_ROOT, startTime.toString(), endTime.toString()];
-    console.log("running: docker " + args.join(" "));
+    let args = ['run', '--rm', 'sotera/dr-manhattan:6', API_ROOT, startTime.toString(), endTime.toString()];
+    console.log('running: docker', args.join(' '));
 
-    let job = spawn("docker",args);
+    let job = spawn('docker', args);
 
-    job.stdout.on('data', (data) => {
+    job.stdout.on('data', data => {
       console.log(`stdout: ${data}`);
     });
 
-    job.on('error', (err) => {
-      console.log('Failed to start child process.');
+    job.on('error', err => {
+      console.error('Failed to start child process:', err);
     });
-
   }
 }
