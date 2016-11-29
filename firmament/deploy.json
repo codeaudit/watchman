@@ -14,12 +14,15 @@
   "Image": "mongo:3.2",
   "DockerFilePath": "",
   "Hostname": "mongo",
-  "ExtraHosts": ["mongo-cfg0:192.168.104.12","mongo-cfg1:192.168.104.57","mongo-cfg2:192.168.104.58","mongo-rs1-0:192.168.104.75","mongo-rs1-1:192.168.104.77","mongo-rs1-2:192.168.104.73", "mongo-rs2-0:192.168.104.84","mongo-rs2-1:192.168.104.82","mongo-rs2-2:192.168.104.80"],
-  "Cmd": "mongos --configdb configReplSet/mongo-cfg0:27019,mongo-cfg1:27019,mongo-cfg2:27019",
+  "Cmd": ["mongos", "--configdb", "configReplSet/mongo-cfg-0:27019,mongo-cfg-1:27019,mongo-cfg-2:27019"],
   "HostConfig": {
     "VolumesFrom": [
       "data-container"
     ],
+    "ExtraHosts": [
+        "mongo-cfg-0:192.168.104.12","mongo-rs0-0:192.168.104.57","mongo-rs1-0:192.168.104.58",
+        "mongo-cfg-1:192.168.104.77","mongo-rs0-1:192.168.104.73","mongo-rs2-0:192.168.104.75",
+        "mongo-cfg-2:192.168.104.82","mongo-rs1-1:192.168.104.88","mongo-rs2-1:192.168.104.87"],
     "PortBindings": {
       "27017/tcp": [
         {
