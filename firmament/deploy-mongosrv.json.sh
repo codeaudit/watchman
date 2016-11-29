@@ -39,9 +39,9 @@ then
     NAME0=mongo-cfg-0
     NAME1=mongo-rs0-0
     NAME2=mongo-rs1-0
-    IP0=MONGO_CFG_IP0
-    IP1=MONGO_RS0_IP0
-    IP2=MONGO_RS1_IP0
+    IP0=$MONGO_CFG_IP0
+    IP1=$MONGO_RS0_IP0
+    IP2=$MONGO_RS1_IP0
     RS0=configReplSet
     RS1=rs0
     RS2=rs1
@@ -50,9 +50,9 @@ then
     NAME0=mongo-cfg-1
     NAME1=mongo-rs0-1
     NAME2=mongo-rs2-0
-    IP0=MONGO_CFG_IP1
-    IP1=MONGO_RS0_IP1
-    IP2=MONGO_RS2_IP0
+    IP0=$MONGO_CFG_IP1
+    IP1=$MONGO_RS0_IP1
+    IP2=$MONGO_RS2_IP0
     RS0=configReplSet
     RS1=rs0
     RS2=rs2
@@ -61,9 +61,9 @@ then
     NAME0=mongo-cfg-2
     NAME1=mongo-rs1-1
     NAME2=mongo-rs2-1
-    IP0=MONGO_CFG_IP2
-    IP1=MONGO_RS1_IP1
-    IP2=MONGO_RS2_IP1
+    IP0=$MONGO_CFG_IP2
+    IP1=$MONGO_RS1_IP1
+    IP2=$MONGO_RS2_IP1
     RS0=configReplSet
     RS1=rs1
     RS2=rs2
@@ -74,23 +74,23 @@ then
 cat > deploy-mongos.json << __UNTIL_HERE_S__
 [
   {
-    '"'name'"': '"'$NAME0'"',
-    '"'Image'"': '"'mongo:3.2'"',
-    '"'DockerFilePath'"': '"''"',
-    '"'Hostname'"': '"'$NAME0'"',
-    '"'ExtraHosts'"': [
-      '"'mongo-cfg-0:$MONGO_CFG_IP0'"','"'mongo-rs0-0:$MONGO_RS0_IP0'"','"'mongo-rs1-0:$MONGO_RS1_IP0'"',
-      '"'mongo-cfg-1:$MONGO_CFG_IP1'"','"'mongo-rs0-1:$MONGO_RS0_IP1'"','"'mongo-rs2-0:$MONGO_RS2_IP0'"',
-      '"'mongo-cfg-2:$MONGO_CFG_IP2'"','"'mongo-rs1-1:$MONGO_RS1_IP1'"','"'mongo-rs2-1:$MONGO_RS2_IP1'"'],
-    '"'Cmd'"': '"' mongos --configdb $RS0/mongo-cfg-0:27019,mongo-cfg-1:27019,mongo-cfg-2:27019'"',
-    '"'HostConfig'"': {
-      '"'Binds'"': [
-        '"'/srv/data-$NAME0:/data'"'
+    "name": "$NAME0",
+    "Image": "mongo:3.2",
+    "DockerFilePath": "",
+    "Hostname": "$NAME0",
+    "Cmd": ["/usr/bin/mongos", "--configdb", "$RS0/mongo-cfg-0:27019,mongo-cfg-1:27019,mongo-cfg-2:27019"],
+    "HostConfig": {
+      "Binds": [
+        "/srv/data-$NAME0:/data"
       ],
-      '"'PortBindings'"': {
-        '"'27017/tcp'"': [
+      "ExtraHosts": [
+        "mongo-cfg-0:$MONGO_CFG_IP0","mongo-rs0-0:$MONGO_RS0_IP0","mongo-rs1-0:$MONGO_RS1_IP0",
+        "mongo-cfg-1:$MONGO_CFG_IP1","mongo-rs0-1:$MONGO_RS0_IP1","mongo-rs2-0:$MONGO_RS2_IP0",
+        "mongo-cfg-2:$MONGO_CFG_IP2","mongo-rs1-1:$MONGO_RS1_IP1","mongo-rs2-1:$MONGO_RS2_IP1"],
+      "PortBindings": {
+        "27017/tcp": [
           {
-            '"'HostPort'"': '"'27017'"'
+            "HostPort": "27017"
           }
         ]
       }
@@ -102,71 +102,59 @@ else
 cat > deploy-mongosrv-$1.json << __UNTIL_HERE_SRV__
 [
   {
-    '"'name'"': '"'$NAME0'"',
-    '"'Image'"': '"'mongo:3.2'"',
-    '"'DockerFilePath'"': '"''"',
-    '"'Hostname'"': '"'$NAME0'"',
-    '"'ExtraHosts'"': [
-      '"'mongo-cfg-0:$MONGO_CFG_IP0'"','"'mongo-rs0-0:$MONGO_RS0_IP0'"','"'mongo-rs1-0:$MONGO_RS1_IP0'"',
-      '"'mongo-cfg-1:$MONGO_CFG_IP1'"','"'mongo-rs0-1:$MONGO_RS0_IP1'"','"'mongo-rs2-0:$MONGO_RS2_IP0'"',
-      '"'mongo-cfg-2:$MONGO_CFG_IP2'"','"'mongo-rs1-1:$MONGO_RS1_IP1'"','"'mongo-rs2-1:$MONGO_RS2_IP1'"'],
-    '"'Cmd'"': '"'mongod --configsvr --replSet $RS0'"',
-    '"'HostConfig'"': {
-      '"'Binds'"': [
-        '"'/srv/data-$NAME0:/data'"'
+    "name": "$NAME0",
+    "Image": "mongo:3.2",
+    "DockerFilePath": "",
+    "Hostname": "$NAME0",
+    "Cmd": ["/usr/bin/mongod", "--configsvr", "--replSet", "$RS0"],
+    "HostConfig": {
+      "Binds": [
+        "/srv/data-$NAME0:/data"
       ],
-      '"'PortBindings'"': {
-        '"'27019/tcp'"': [
-          {
-            '"'HostPort'"': '"'$IP0:27019'"'
-          }
-        ]
+      "ExtraHosts": [
+        "mongo-cfg-0:$MONGO_CFG_IP0","mongo-rs0-0:$MONGO_RS0_IP0","mongo-rs1-0:$MONGO_RS1_IP0",
+        "mongo-cfg-1:$MONGO_CFG_IP1","mongo-rs0-1:$MONGO_RS0_IP1","mongo-rs2-0:$MONGO_RS2_IP0",
+        "mongo-cfg-2:$MONGO_CFG_IP2","mongo-rs1-1:$MONGO_RS1_IP1","mongo-rs2-1:$MONGO_RS2_IP1"],
+      "PortBindings": {
+        "27019/tcp": [ {"HostPort": "27019" }]
       }
     }
   },
   {
-    '"'name'"': '"'$NAME1'"',
-    '"'Image'"': '"'mongo:3.2'"',
-    '"'DockerFilePath'"': '"''"',
-    '"'Hostname'"': '"'$NAME1'"',
-    '"'ExtraHosts'"': [
-      '"'mongo-cfg-0:$MONGO_CFG_IP0'"','"'mongo-rs0-0:$MONGO_RS0_IP0'"','"'mongo-rs1-0:$MONGO_RS1_IP0'"',
-      '"'mongo-cfg-1:$MONGO_CFG_IP1'"','"'mongo-rs0-1:$MONGO_RS0_IP1'"','"'mongo-rs2-0:$MONGO_RS2_IP0'"',
-      '"'mongo-cfg-2:$MONGO_CFG_IP2'"','"'mongo-rs1-1:$MONGO_RS1_IP1'"','"'mongo-rs2-1:$MONGO_RS2_IP1'"'],
-    '"'Cmd'"': '"'mongod --replSet $RS1'"',
-    '"'HostConfig'"': {
-      '"'Binds'"': [
-        '"'/srv/data-$NAME1:/data'"'
+    "name": "$NAME1",
+    "Image": "mongo:3.2",
+    "DockerFilePath": "",
+    "Hostname": "$NAME1",
+    "Cmd": ["/usr/bin/mongod", "--replSet", "$RS1"],
+    "HostConfig": {
+      "Binds": [
+        "/srv/data-$NAME1:/data"
       ],
-      '"'PortBindings'"': {
-        '"'27017/tcp'"': [
-          {
-            '"'HostPort'"': '"'$IP1:27017'"'
-          }
-        ]
+      "ExtraHosts": [
+        "mongo-cfg-0:$MONGO_CFG_IP0","mongo-rs0-0:$MONGO_RS0_IP0","mongo-rs1-0:$MONGO_RS1_IP0",
+        "mongo-cfg-1:$MONGO_CFG_IP1","mongo-rs0-1:$MONGO_RS0_IP1","mongo-rs2-0:$MONGO_RS2_IP0",
+        "mongo-cfg-2:$MONGO_CFG_IP2","mongo-rs1-1:$MONGO_RS1_IP1","mongo-rs2-1:$MONGO_RS2_IP1"],
+      "PortBindings": {
+        "27017/tcp": [ { "HostIp": "$IP1", "HostPort": "27017" } ]
       }
     }
   },
   {
-    '"'name'"': '"'$NAME2'"',
-    '"'Image'"': '"'mongo:3.2'"',
-    '"'DockerFilePath'"': '"''"',
-    '"'Hostname'"': '"'$NAME2'"',
-    '"'ExtraHosts'"': [
-      '"'mongo-cfg-0:$MONGO_CFG_IP0'"','"'mongo-rs0-0:$MONGO_RS0_IP0'"','"'mongo-rs1-0:$MONGO_RS1_IP0'"',
-      '"'mongo-cfg-1:$MONGO_CFG_IP1'"','"'mongo-rs0-1:$MONGO_RS0_IP1'"','"'mongo-rs2-0:$MONGO_RS2_IP0'"',
-      '"'mongo-cfg-2:$MONGO_CFG_IP2'"','"'mongo-rs1-1:$MONGO_RS1_IP1'"','"'mongo-rs2-1:$MONGO_RS2_IP1'"'],
-    '"'Cmd'"': '"'mongod --replSet $RS2'"',
-    '"'HostConfig'"': {
-      '"'Binds'"': [
-        '"'/srv/data-$NAME2:/data'"'
+    "name": "$NAME2",
+    "Image": "mongo:3.2",
+    "DockerFilePath": "",
+    "Hostname": "$NAME2",
+    "Cmd": ["/usr/bin/mongod",  "--replSet",  "$RS2"],
+    "HostConfig": {
+      "Binds": [
+        "/srv/data-$NAME2:/data"
       ],
-      '"'PortBindings'"': {
-        '"'27017/tcp'"': [
-          {
-            '"'HostPort'"': '"'$IP2:27017'"'
-          }
-        ]
+      "ExtraHosts": [
+        "mongo-cfg-0:$MONGO_CFG_IP0","mongo-rs0-0:$MONGO_RS0_IP0","mongo-rs1-0:$MONGO_RS1_IP0",
+        "mongo-cfg-1:$MONGO_CFG_IP1","mongo-rs0-1:$MONGO_RS0_IP1","mongo-rs2-0:$MONGO_RS2_IP0",
+        "mongo-cfg-2:$MONGO_CFG_IP2","mongo-rs1-1:$MONGO_RS1_IP1","mongo-rs2-1:$MONGO_RS2_IP1"],
+      "PortBindings": {
+        "27017/tcp": [ { "HostIp": "$IP2", "HostPort": "27017" } ]
       }
     }
   }
