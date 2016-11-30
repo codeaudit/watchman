@@ -1,0 +1,39 @@
+{
+  "name": "eventModel",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "average_similarity_vector": {
+      "type": [
+        "number"
+      ]
+    },
+    "terms": {
+      "type": [
+        "string"
+      ]
+    },
+    "user": {
+      "type": "string",
+      "required": true,
+      "default": "default"
+    },
+    "contributing_events": {
+      "type": [
+        "string"
+      ],
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
