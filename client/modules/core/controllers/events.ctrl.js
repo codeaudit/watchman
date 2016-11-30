@@ -1,7 +1,7 @@
 angular.module('com.module.core')
   .controller('EventsCtrl', EventsCtrl);
 
-function EventsCtrl($scope, AggregateCluster, Extract, Geocoder, SocialMediaPost, $q) {
+function EventsCtrl($scope, AggregateCluster, Extract, Geocoder, SocialMediaPost,EventModel, $q) {
   $scope.eventPoints = {};
   $scope.clusterText = '';
   $scope.clusterTerm = '';
@@ -15,6 +15,13 @@ function EventsCtrl($scope, AggregateCluster, Extract, Geocoder, SocialMediaPost
   };
 
   $scope.eventChanged= function(evnt){
+    let eventModel = {
+      "name": evnt.name,
+      "terms": evnt.hashtags,
+      "user": "watchman",
+      "contributing_events": [evnt.id]
+    };
+    EventModel.create(eventModel);
     evnt.$save();
   };
 
