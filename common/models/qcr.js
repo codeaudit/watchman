@@ -20,6 +20,7 @@ module.exports = function(Qcr) {
   let failures = 0;
   let postsIgnored = 0;
   let stupidDupeSet = new Set();
+  let postAge = 0;
 
   Qcr.setFilter = function(args, cb) {
     //should we have to parse this?
@@ -91,13 +92,16 @@ module.exports = function(Qcr) {
       fpps = filteredPostCount / ((Date.now() - bootTime) / 1000);
       console.log("--==FPPS==--:" + fpps + " Delta:" + postPerSecondDelta);
     }
+    let avgAge = postAge/postPerSecondCount;
     postPerSecondCount = 0;
     filteredPostCount = 0;
     bootTime = Date.now();
+    postAge = 0;
 
     console.log("qcr dupes over the last 5 seconds: " + failures );
     console.log("dupes ignored over the last 5 seconds: " + postsIgnored);
     console.log("dupe list size:" + stupidDupeSet.size);
+    console.log("Average Post Age: " + avgAge);
 
     postsIgnored = 0;
     failures = 0;
@@ -124,10 +128,13 @@ module.exports = function(Qcr) {
     //--------------------------------------------------------------------------
 
 
+    if((Date.now() - new Date(attrs['timestamp_ms']).getTime())/1000 > 259200)
+      return cb(null, attrs);
 
     //TODO: either make our system scale correctly or fix this to be less hacky!
     //Calculating our posts per second so we get a real amount to deal with
     postPerSecondCount ++;
+    postAge += (Date.now() - new Date(attrs['timestamp_ms']).getTime())/1000;
     if(postPerSecondTarget >=0){
       postWindowPostCount++;
       if(Date.now() >= postWindowStart + postWindowInterval){
@@ -143,6 +150,7 @@ module.exports = function(Qcr) {
       if(postWindowPostCount > postPerSecondTarget + postPerSecondDelta){
         return cb(null, attrs);
       }
+
       filteredPostCount++;
 
     }
