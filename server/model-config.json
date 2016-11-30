@@ -87,5 +87,9 @@
   "event": {
     "dataSource": "db",
     "public": true
+  },
+  "eventModel": {
+    "dataSource": "db",
+    "public": true
   }
 }
