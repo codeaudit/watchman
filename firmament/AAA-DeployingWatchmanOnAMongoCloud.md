@@ -44,27 +44,29 @@ VMs each having 3 network cards.
 1. start the VMs
 1. Note the nine IP addresses
 1. in each VM: 
-   1. mkdir src
-   1. cd src
-   1. git clone https://github.com/Sotera/watchman.git
-   1. cd watchman
-   1. git checkout kjemongos
-   1. cd watchman/firmament
-   1. ./deploy-mongosrv.json.sh \<VM#: 1, 2 or 3\> \<VM1_IP1\> \<VM1_IP2\> ... \<VM3_IP3\><br />e.g.<br />./deploy-mongosrv.json.sh 1 192.168.104.12 192.168.104.57 192.168.104.58 192.168.104.77 192.168.104.73 192.168.104.75 192.168.104.82 192.168.104.88 192.168.104.87
-   1. firmament m b deploy-mongosrv-\<VM#\>.json<br />e.g.<br />firmament m b deploy-mongosrv-1.json
+  1. `mkdir src`
+  1. `cd src`
+  1. `git clone https://github.com/Sotera/watchman.git`
+  1. `cd watchman`
+  1. `git checkout kjemongos`
+  1. `cd watchman/firmament`
+  1. `./deploy-mongosrv.json.sh \<VM#: 1, 2 or 3\> \<VM1_IP1\> \<VM1_IP2\> ... \<VM3_IP3\>`<br />e.g.<br />
+`./deploy-mongosrv.json.sh 1 192.168.104.12 192.168.104.57 192.168.104.58 192.168.104.77
+192.168.104.73 192.168.104.75 192.168.104.82 192.168.104.88 192.168.104.87`<br /> then
+  1. `firmament m b deploy-mongosrv-\<VM#\>.json<br />`e.g.<br />`firmament m b deploy-mongosrv-1.json`
 1. in VM1:
-   1. ./deploy-mongosrv.init-config-repl.sh
-   1. ./deploy-mongosrv.init-rs0-repl.sh
-   1. ./deploy-mongosrv.init-rs1-repl.sh
+  1. `./deploy-mongosrv.init-config-repl.sh`
+  1. `./deploy-mongosrv.init-rs0-repl.sh`
+  1. `./deploy-mongosrv.init-rs1-repl.sh`
 1. in VM2:
-   1. ./deploy-mongosrv.init-rs2-repl.sh
+  1. `./deploy-mongosrv.init-rs2-repl.sh`
 1. in VM1:
-   1. deploy-mongosrv.init-shards.sh
+  1. `deploy-mongosrv.init-shards.sh`
 1. On the Watchman deployment box:
-   1. ./deploy-mongosrv.json.sh 0 \<VM1_IP1\> \<VM1_IP2\> ... \<VM3_IP3\>
-   1. edit depoly.json and replace the mongo block with the contents of the file deploy-mongos.json
-   1. Deploy Watchman as usual:<br />firmament m b deploy.json
-   1. Define sharding indexes:<br />./deploy-mongosrv.shard-collections.sh
+  1. `./deploy-mongosrv.json.sh 0 \<VM1_IP1\> \<VM1_IP2\> ... \<VM3_IP3\>`
+  1. edit depoly.json and replace the mongo block with the contents of the file deploy-mongos.json
+  1. Deploy Watchman as usual:<br />`firmament m b deploy.json`
+  1. Define sharding indexes:<br />`./deploy-mongosrv.shard-collections.sh`
    
 
 
