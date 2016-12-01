@@ -1,6 +1,5 @@
 import sys, os, argparse, requests
 sys.path.append(os.path.join(os.path.dirname(__file__), "./"))
-from event_to_kafka import stream_events
 sys.path.append(os.path.join(os.path.dirname(__file__), "../util"))
 from loopy import Loopy
 from louvaine import Louvaine
@@ -51,6 +50,7 @@ def create_events(host, ts_start, ts_end, kafka_url, kafka_topic, debug=False):
     l_com = com.save_communities()
     print "Communities Saved!"
     if kafka_url is not None and kafka_topic is not None:
+        from event_to_kafka import stream_events
         print "Sending events to kafka"
         stream_events(l_com.values(), kafka_url, kafka_topic, debug=debug)
 
