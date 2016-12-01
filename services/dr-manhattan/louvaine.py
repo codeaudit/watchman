@@ -1,5 +1,6 @@
 import community, sys, os, requests, uuid
 import networkx as nx
+from name_event import name_event
 from random import sample
 sys.path.append(os.path.join(os.path.dirname(__file__), "../util"))
 from loopy import Loopy
@@ -249,6 +250,7 @@ class Louvaine:
         for com in d1.values():
             if len(com['aggregate_cluster_ids']) < 3:
                 continue
+            name_event(self.url, com)
             res = requests.post(self.url+'events/', json=com)
             print res
         return d1
