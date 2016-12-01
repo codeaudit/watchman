@@ -159,6 +159,25 @@ cat > deploy-mongosrv-$1.json << __UNTIL_HERE_SRV__
         "27017/tcp": [ { "HostIp": "$IP2", "HostPort": "27017" } ]
       }
     }
+  },
+  {
+    "name": "mongos-srv-$1",
+    "Image": "mongo:3.2",
+    "DockerFilePath": "",
+    "Hostname": "mongos-srv-$1",
+    "Cmd": ["/usr/bin/mongos", "--configdb", "configReplSet/mongo-cfg-0:27019,mongo-cfg-1:27019,mongo-cfg-2:27019"],
+    "HostConfig": {
+      "Binds": [
+        "/srv/data-mongos-srv-$1:/data"
+      ],
+      "ExtraHosts": [
+        "mongo-cfg-0:$MONGO_CFG_IP0","mongo-rs0-0:$MONGO_RS0_IP0","mongo-rs1-0:$MONGO_RS1_IP0",
+        "mongo-cfg-1:$MONGO_CFG_IP1","mongo-rs0-1:$MONGO_RS0_IP1","mongo-rs2-0:$MONGO_RS2_IP0",
+        "mongo-cfg-2:$MONGO_CFG_IP2","mongo-rs1-1:$MONGO_RS1_IP1","mongo-rs2-1:$MONGO_RS2_IP1"],
+      "PortBindings": {
+        "27017/tcp": [ { "HostIp": "127.0.0.1", "HostPort": "27017" } ]
+      }
+    }
   }
 ]
 __UNTIL_HERE_SRV__
