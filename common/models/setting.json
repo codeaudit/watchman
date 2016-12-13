@@ -27,6 +27,9 @@
       "type": "string",
       "required": true
     },
+    "desc": {
+      "type": "string"
+    },
     "type": {
       "type": "string",
       "description": "options: int, float, boolean, object, or string. use 'object' for array.",
