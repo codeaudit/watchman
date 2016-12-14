@@ -45,7 +45,7 @@ function schedule(startTime) {
   } else {
     createJobSet(startTime, endTime)
       .then(jobSet => {
-        debug('current job set:', jobSet)
+        debug('current job set:', jobSet, new Date())
         if (_.includes(['skip', 'done'], jobSet.state))
           // reschedule for immediate run
           reschedule(endTime + 1, 0);
