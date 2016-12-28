@@ -28,9 +28,9 @@ def vec_from_tweet(model, l_txt, dimensions, s_words, d_idf):
 def get_cos(v1, v2):
     return np.dot(v1, v2)/(np.linalg.norm(v1)*np.linalg.norm(v2))
 
-def main(s_lng='en', test_words=None):
-    #s_path = '/Volumes/ed_00/data/raw_tweet_data/tweets_w_img_url/'
-    s_path = '/Volumes/ed_00/data/arabic_json/'
+def main(s_lng='en', test_words=[]):
+    s_path = '/Volumes/ed_00/data/raw_tweet_data/tweets_w_img_url/'
+    #s_path = '/Users/jgartner/Desktop/tweets/'
     s_save = date.today().strftime('%b%d')+'_'+s_lng
 
     l_files = os.listdir(s_path)
@@ -42,8 +42,7 @@ def main(s_lng='en', test_words=None):
     sent_filt = SentimentFilter()
     keys = set([])
     l_num = 0
-    p_docs = []
-    p_soc = []
+    l_docs = [[] for x in range(len(test_words))]
     for s_file in l_files:
         if s_file[-4:] != 'json':
             continue
@@ -58,14 +57,13 @@ def main(s_lng='en', test_words=None):
             if d0['lang'] != s_lng:
                 continue
             txt = d0['text']
-            if sent_filt.is_scoreable(txt, s_lng) is False:
+            if sent_filt.is_scoreable(txt, s_lng, True) is False:
                 continue
-            l_txt = sent_filt.tokenize(txt, s_lng)
-            if test_words is not None and len(test_words)==2:
-                if test_words[0] in l_txt:
-                    p_docs.append(len(_X))
-                if test_words[1] in l_txt:
-                    p_soc.append(len(_X))
+            l_txt = sent_filt.tokenize(txt, s_lng, True)
+            if test_words is not None:
+                for i in range(len(l_docs)):
+                    if test_words[i] in l_txt:
+                        l_docs[i].append(l_num)
             _X.append(l_txt)
             l_num += 1
             if l_num %100==0:
@@ -82,8 +80,6 @@ def main(s_lng='en', test_words=None):
 
     diff = time.time()-t0
     print "\nTime to read in", l_num, "files", diff
-    if l_test is not None:
-        print "Number of " + l_test[0] + " tweets:", len(p_docs), ", number of " + l_test[1] + " tweets:", len(p_soc)
 
     print "Training Model"
     t0 = time.time()
@@ -108,74 +104,71 @@ def main(s_lng='en', test_words=None):
         outfile.write(json.dumps(d_idf))
 
 
-    print "TEST cosine diff of test phrases on 100! combination of sentances"
     t0 = time.time()
-    l_blm_cos, l_blmi_cos, l_blmif_cos = [], [], []
-    l_soc_cos, l_soci_cos, l_socif_cos = [], [], []
+    l_sim = [[], [], []]
+    l_dif = [[], [], []]
     s_words = set(model.index2word)
-    max_t1 = 100 if len(p_docs) > 100 else len(p_docs)
-    max_t2 = 100 if len(p_soc) > 100 else len(p_soc)
-    for i in range(max_t1):
-        (v1, vi1, vif1) = vec_from_tweet(model, _X[p_docs[i]], dimensions, s_words, d_idf)
-        for j in range(i+1, max_t1):
-            (v2, vi2, vif2) = vec_from_tweet(model, _X[p_docs[j]], dimensions, s_words, d_idf)
-            cos = get_cos(v1, v2)
-            cosi = get_cos(vi1, vi2)
-            cosif = get_cos(vif1, vif2)
-            l_blm_cos.append(cos)
-            l_blmi_cos.append(cosi)
-            l_blmif_cos.append(cosif)
-        for k in range(max_t2):
-            (v3, vi3, vif3) = vec_from_tweet(model, _X[p_soc[k]], dimensions, s_words, d_idf)
-            cos = get_cos(v1, v3)
-            cosi = get_cos(vi1, vi3)
-            cosif = get_cos(vif1, vif3)
-            l_soc_cos.append(cos)
-            l_soci_cos.append(cosi)
-            l_socif_cos.append(cosif)
+    n_comp = 200
+    print "TEST cosine diff of test phrases on {}x{} combination of sentances".format(n_comp,n_comp)
+    for i in l_docs[0][:n_comp]:
+        (v1, vi1, vif1) = vec_from_tweet(model, _X[i], dimensions, s_words, d_idf)
+        for j in l_docs[1][:n_comp]:
+            if i == j:
+                continue
+            (v2, vi2, vif2) = vec_from_tweet(model, _X[j], dimensions, s_words, d_idf)
+            l_sim[0].append(get_cos(v1, v2))
+            l_sim[1].append(get_cos(vi1, vi2))
+            l_sim[2].append(get_cos(vif1, vif2))
+        for k in l_docs[2][:n_comp]:
+            if i == k:
+                continue
+            (v3, vi3, vif3) = vec_from_tweet(model, _X[k], dimensions, s_words, d_idf)
+            l_dif[0].append(get_cos(v1, v3))
+            l_dif[1].append(get_cos(vi1, vi3))
+            l_dif[2].append(get_cos(vif1, vif3))
 
-    if test_words is not None and len(test_words)==2:
+    if test_words is not None:
         diff = time.time()-t0
         print "Time to test model:", diff
         bins = map(lambda x: x*0.01, range(101))
         plt.figure(1)
         plt.subplot(231)
-        plt.hist(l_blm_cos, bins=bins)
+        plt.hist(l_sim[0], bins=bins)
         plt.yscale('log', nonposy='clip')
         x1, x2, y1, y2 = plt.axis()
         plt.axis((x1,x2,0.1,10000))
-        plt.title("Cos Similarity " + test_words[0] + " to " + test_words[0] + ", bag of words")
-        plt.subplot(232)
-        plt.hist(l_blmi_cos, bins=bins)
-        plt.yscale('log', nonposy='clip')
-        x1, x2, y1, y2 = plt.axis()
-        plt.axis((x1,x2,0.1,10000))
-        plt.title("Cos Similarity " + test_words[0] + " to " + test_words[0] + ", tf-idf")
-        plt.subplot(233)
-        print l_blmif_cos
-        plt.hist(l_blmif_cos, bins=bins)
-        plt.yscale('log', nonposy='clip')
-        x1, x2, y1, y2 = plt.axis()
-        plt.axis((x1,x2,0.1,10000))
-        plt.title("Cos Similarity " + test_words[0] + " to " + test_words[0] + ", tf-idf, filtered")
-        plt.subplot(234)
-        plt.hist(l_soc_cos, bins=bins)
         plt.title("Cos Similarity " + test_words[0] + " to " + test_words[1] + ", bag of words")
+        plt.subplot(232)
+        plt.hist(l_sim[1], bins=bins)
+        plt.yscale('log', nonposy='clip')
+        x1, x2, y1, y2 = plt.axis()
+        plt.axis((x1,x2,0.1,10000))
+        plt.title("Cos Similarity " + test_words[0] + " to " + test_words[1] + ", tf-idf")
+        plt.subplot(233)
+        plt.hist(l_sim[2], bins=bins)
+        plt.yscale('log', nonposy='clip')
+        x1, x2, y1, y2 = plt.axis()
+        plt.axis((x1,x2,0.1,10000))
+        plt.title("Cos Similarity " + test_words[0] + " to " + test_words[1] + ", tf-idf, filtered")
+        plt.subplot(234)
+        plt.hist(l_dif[0], bins=bins)
+        plt.title("Cos Similarity " + test_words[0] + " to " + test_words[2] + ", bag of words")
         plt.yscale('log', nonposy='clip')
         x1, x2, y1, y2 = plt.axis()
         plt.axis((x1,x2,0.1,10000))
         plt.subplot(235)
-        plt.hist(l_soci_cos, bins=bins)
-        plt.title("Cos Similarity " + test_words[0] + " to " + test_words[1] + ", tf-idf")
+        plt.hist(l_dif[1], bins=bins)
+        plt.title("Cos Similarity " + test_words[0] + " to " + test_words[2] + ", tf-idf")
         plt.yscale('log', nonposy='clip')
         x1, x2, y1, y2 = plt.axis()
         plt.axis((x1,x2,0.1,10000))
         plt.subplot(236)
-        plt.hist(l_socif_cos, bins=bins)
-        plt.title("Cos Similarity " + test_words[0] + " to " + test_words[1] + ", tf-idf, filtered")
+        plt.hist(l_dif[2], bins=bins)
+        plt.title("Cos Similarity " + test_words[0] + " to " + test_words[2] + ", tf-idf, filtered")
         plt.yscale('log', nonposy='clip')
         x1, x2, y1, y2 = plt.axis()
         plt.axis((x1,x2,0.1,10000))
+        plt.savefig("cos_sep.png")
         plt.show()
 
 if __name__ == "__main__":
