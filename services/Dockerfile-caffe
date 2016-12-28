@@ -43,8 +43,9 @@ RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
 ENV PATH /opt/conda/bin:$PATH
 ENV PYTHONPATH /home/caffe-user/caffe/python:$PYTHONPATH
 
-RUN conda install -c https://conda.anaconda.org/memex elasticsearch-py && \
-  conda install -c https://conda.anaconda.org/anaconda protobuf
+RUN CONDA_SSL_VERIFY=false conda update pyopenssl
+RUN conda install -c https://conda.anaconda.org/memex elasticsearch-py
+RUN conda install -c https://conda.anaconda.org/anaconda protobuf
 
 RUN useradd -ms /bin/bash caffe-user && echo "caffe-user:caffe-user" | chpasswd && adduser caffe-user sudo
 RUN chown -R caffe-user:caffe-user /usr/local
