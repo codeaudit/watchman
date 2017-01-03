@@ -14,6 +14,8 @@ const app = require('../server'),
   AggregateMonitor = require('../../lib/job-monitors/aggregate-monitor'),
   LinkerMonitor = require('../../lib/job-monitors/linker-monitor'),
   createLinkerMonitor = require('../../lib/job-monitors/create-linker-monitor'),
+  eventFinder = require('../../lib/job-monitors/event-finder'),
+  jobScheduler = require('./job-scheduler'),
   workerConcurrency = process.env.WORKER_CONCURRENCY || 4
 ;
 
@@ -29,6 +31,8 @@ function start() {
   const queue = jobs.queue;
   // let's run linkermonitor creation in this worker too
   createLinkerMonitor.start(app);
+  eventFinder.start(app);
+  jobScheduler.start(app);
 
   queue
   .on('job complete', id => {
