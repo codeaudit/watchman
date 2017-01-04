@@ -252,11 +252,6 @@
         "redis:redis"
       ],
       "PortBindings": {
-        "3001/tcp": [
-          {
-            "HostPort": "3002"
-          }
-        ],
         "8701/tcp": [
           {
             "HostPort": "8702"
