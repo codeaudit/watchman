@@ -3,7 +3,7 @@
 // def: send jobs to event finder service
 
 const app = require('../server'),
-  idGen = require('../../lib/id-generator'),
+  idGen = require('../util/id-generator'),
   redis = require('../../lib/redis'),
   debug = require('../util/log').debug,
   _ = require('lodash');
