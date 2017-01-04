@@ -34,21 +34,24 @@ let findEventsInterval = 1000 * 60 * EVENT_FINDER_INTERVAL,
   jobPrefix = 'genie:',
   keyPrefix = jobPrefix + 'eventfinder:';
 
+module.exports = { start };
 
-module.exports = {
-  start() {
-    SocialMediaPost = app.models.SocialMediaPost;
-    Event = app.models.Event;
-    JobSet = app.models.JobSet;
+// start if run as a worker process
+if (require.main === module)
+  start();
 
-    run();
-    function run() {
-      setInterval(function(){
-        checkJobSetStatus();
-      }, jobSetCheckInterval);
-    }
+function start() {
+  SocialMediaPost = app.models.SocialMediaPost;
+  Event = app.models.Event;
+  JobSet = app.models.JobSet;
+
+  run();
+  function run() {
+    setInterval(function(){
+      checkJobSetStatus();
+    }, jobSetCheckInterval);
   }
-};
+}
 
 function catchUpToEventsIfPossible(){
   return new Promise(
