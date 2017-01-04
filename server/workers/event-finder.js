@@ -5,7 +5,7 @@
 const app = require('../server'),
   idGen = require('../util/id-generator'),
   redis = require('../../lib/redis'),
-  debug = require('../util/log').debug,
+  debug = require('debug')('event-finder'),
   _ = require('lodash');
 
 try {

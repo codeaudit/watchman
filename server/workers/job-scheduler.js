@@ -2,7 +2,7 @@
 
 // def: start and monitor job sets
 
-const debug = require('../util/log').debug,
+const debug = require('debug')('job-scheduler'),
   _ = require('lodash');
 
 try {

@@ -2,7 +2,7 @@
 
 const _ = require('lodash'),
   preprocessor = require('../../lib/preprocessors/twitter'),
-  debug = require('../../server/util/log').debug;
+  debug = require('../../server/util/log').debug();
 
 // def: QCR endpoint to inspect post data
 // and create SocialMediaPost entries.
