@@ -1,0 +1,13 @@
+loopback:
+  image: sotera/slc-pm:6.1
+  external_links:
+    - mongo:mongo
+  expose:
+    - "8701"
+    - "3001"
+  environment:
+    - NODE_ENV=production
+
+analytic:
+  environment:
+    - ANALYTIC=1

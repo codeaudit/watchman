@@ -4,75 +4,54 @@ redis:
   ports:
     - "6379:6379"
 
-data-container:
-  image: lukewendling/data-container:3
-  hostname: data-container
-
 web:
-  image: sotera/slc-pm:6.1
+  extends:
+    file: common.yml
+    service: loopback
   hostname: watchman
-  external_links:
-    - mongo3:mongo
   links:
     - redis
     - mitie
   volumes_from:
     - data-container
-  expose:
-    - "8701"
-    - "3001"
-  environment:
-    - NODE_ENV=production
   ports:
     - "8701:8701"
     - "3001:3001"
 
 feed:
-  image: sotera/slc-pm:6.1
+  extends:
+    file: common.yml
+    service: loopback
   hostname: feeds
-  external_links:
-    - mongo3:mongo
   links:
     - redis
     - mitie
   volumes_from:
     - data-container
-  expose:
-    - "8701"
-  environment:
-    - NODE_ENV=production
   ports:
     - "8702:8701"
 
 queue:
-  image: sotera/slc-pm:6.1
+  extends:
+    file: common.yml
+    service: loopback
   hostname: queue
-  external_links:
-    - mongo3:mongo
   links:
     - redis
   volumes_from:
     - data-container
-  expose:
-    - "8701"
-  environment:
-    - NODE_ENV=production
   ports:
     - "8703:8701"
 
 event-finder:
-  image: sotera/slc-pm:6.1
+  extends:
+    file: common.yml
+    service: loopback
   hostname: event-finder
-  external_links:
-    - mongo3:mongo
   links:
     - redis
   volumes_from:
     - data-container
-  expose:
-    - "8701"
-  environment:
-    - NODE_ENV=production
   ports:
     - "8704:8701"
 
@@ -95,18 +74,27 @@ embed-map:
     - "3005:3000"
 
 dr-manhattan:
+  extends:
+    file: common.yml
+    service: analytic
   image: sotera/dr-manhattan:18
   hostname: dr-manhattan
   links:
     - redis
 
 text-featurizer:
+  extends:
+    file: common.yml
+    service: analytic
   image: sotera/rorschach:8
   hostname: text-featurizer
   links:
     - redis
 
 hashtag-clusterer:
+  extends:
+    file: common.yml
+    service: analytic
   image: sotera/comedian:18
   hostname: hashtag-clusterer
   environment:
@@ -115,12 +103,18 @@ hashtag-clusterer:
     - redis
 
 cluster-linker:
+  extends:
+    file: common.yml
+    service: analytic
   image: sotera/ozymandias:5
   hostname: cluster-linker
   links:
     - redis
 
 feature-sim:
+  extends:
+    file: common.yml
+    service: analytic
   image: sotera/feature-sim:10
   hostname: feature-sim
   environment:
@@ -129,6 +123,9 @@ feature-sim:
     - redis
 
 image-fetcher:
+  extends:
+    file: common.yml
+    service: analytic
   image: sotera/image-fetcher:5
   hostname: image-fetcher
   links:
@@ -137,6 +134,9 @@ image-fetcher:
     - data-container
 
 caffe:
+  extends:
+    file: common.yml
+    service: analytic
   image: sotera/caffe_redis_client:17
   hostname: caffe
   links:
@@ -145,6 +145,9 @@ caffe:
     - data-container
 
 aggregate-clustering:
+  extends:
+    file: common.yml
+    service: analytic
   image: sotera/aggregate-clustering:6
   hostname: aggregate-clustering
   links:

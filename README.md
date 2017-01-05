@@ -9,10 +9,10 @@ A core set of utilities frequently used in large data processing / ML projects, 
 1. Node 4
 1. Strongloop 2
 1. Bower
-1. Docker 1.9+ / Firmament2
-1. Mongo 2.6
+1. Docker 1.12
+1. Mongo 3
 1. Redis 3
-1. Python 2.7 / Conda
+1. Python 2.7 + 3.5
 
 ## Install
 
