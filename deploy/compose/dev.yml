@@ -1,0 +1,151 @@
+redis:
+  image: sotera/redis-watchman:1
+  hostname: redis
+  ports:
+    - "6379:6379"
+
+data-container:
+  image: lukewendling/data-container:3
+  hostname: data-container
+
+web:
+  image: sotera/slc-pm:6.1
+  hostname: watchman
+  external_links:
+    - mongo3:mongo
+  links:
+    - redis
+    - mitie
+  volumes_from:
+    - data-container
+  expose:
+    - "8701"
+    - "3001"
+  environment:
+    - NODE_ENV=production
+  ports:
+    - "8701:8701"
+    - "3001:3001"
+
+feed:
+  image: sotera/slc-pm:6.1
+  hostname: feeds
+  external_links:
+    - mongo3:mongo
+  links:
+    - redis
+    - mitie
+  volumes_from:
+    - data-container
+  expose:
+    - "8701"
+  environment:
+    - NODE_ENV=production
+  ports:
+    - "8702:8701"
+
+queue:
+  image: sotera/slc-pm:6.1
+  hostname: queue
+  external_links:
+    - mongo3:mongo
+  links:
+    - redis
+  volumes_from:
+    - data-container
+  expose:
+    - "8701"
+  environment:
+    - NODE_ENV=production
+  ports:
+    - "8703:8701"
+
+event-finder:
+  image: sotera/slc-pm:6.1
+  hostname: event-finder
+  external_links:
+    - mongo3:mongo
+  links:
+    - redis
+  volumes_from:
+    - data-container
+  expose:
+    - "8701"
+  environment:
+    - NODE_ENV=production
+  ports:
+    - "8704:8701"
+
+mitie:
+  image: lukewendling/mitie-server
+  hostname: mitie
+  ports:
+    - "8888:8888"
+
+trained-models:
+  image: sotera/trained-models:1
+  hostname: trained-models
+
+embed-map:
+  image: lukewendling/embed-map:2
+  hostname: embed-map
+  expose:
+    - "3000"
+  ports:
+    - "3005:3000"
+
+dr-manhattan:
+  image: sotera/dr-manhattan:18
+  hostname: dr-manhattan
+  links:
+    - redis
+
+text-featurizer:
+  image: sotera/rorschach:8
+  hostname: text-featurizer
+  links:
+    - redis
+
+hashtag-clusterer:
+  image: sotera/comedian:18
+  hostname: hashtag-clusterer
+  environment:
+    - TRUNCATE_POSTS=1
+  links:
+    - redis
+
+cluster-linker:
+  image: sotera/ozymandias:5
+  hostname: cluster-linker
+  links:
+    - redis
+
+feature-sim:
+  image: sotera/feature-sim:10
+  hostname: feature-sim
+  environment:
+    - TRUNCATE_POSTS=1
+  links:
+    - redis
+
+image-fetcher:
+  image: sotera/image-fetcher:5
+  hostname: image-fetcher
+  links:
+    - redis
+  volumes_from:
+    - data-container
+
+caffe:
+  image: sotera/caffe_redis_client:17
+  hostname: caffe
+  links:
+    - redis
+  volumes_from:
+    - data-container
+
+aggregate-clustering:
+  image: sotera/aggregate-clustering:6
+  hostname: aggregate-clustering
+  links:
+    - redis
