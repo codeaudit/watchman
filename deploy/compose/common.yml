@@ -1,7 +1,5 @@
 loopback:
-  image: sotera/slc-pm:6.1
-  external_links:
-    - mongo:mongo
+  image: lukewendling/strong-pm:2
   expose:
     - "8701"
     - "3001"

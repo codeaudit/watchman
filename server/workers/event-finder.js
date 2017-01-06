@@ -80,8 +80,10 @@ function catchUpToFirstJobsetIfPossible(){
       //if we dont have a default start time by catching up to events, find the first job set and get the start time
       JobSet.findOne()
       .then(jobSet=>{
-        if(!jobSet || jobSet.state !== 'done'){
-          return reject('There are no JobSets available so we cannot start finding events...bailing.');
+        if(!jobSet) {
+          return reject('No JobSets found...bailing.');
+        } else if(jobSet.state !== 'done') {
+          return reject('JobSet found but not done...bailing.');
         }
         resolve(jobSet.start_time);
       })
@@ -107,8 +109,10 @@ function verifyTimeWindow(window){
 
       JobSet.findOne(query)
       .then(jobSet=>{
-        if(!jobSet || jobSet.state !== 'done'){
-          return reject('There are no finished JobSets with an end date greater than our window end date...bailing.');
+        if(!jobSet) {
+          return reject('No JobSets found...bailing.');
+        } else if(jobSet.state !== 'done') {
+          return reject('No JobSets with end date > window end date...bailing.');
         }
         resolve(true);
       })

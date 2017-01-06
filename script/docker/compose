@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+compose_file=deploy/compose/dev.yml
+helpme=$"Usage: $0 {deploy|tail|(Compose COMMAND)} [Compose options]"
+
+case "$1" in
+  -h|--help)
+    docker-compose $1
+    echo $helpme
+    ;;
+
+  deploy)
+    docker-compose -f $compose_file up -d
+    docker-compose -f $compose_file scale image-fetcher=4
+
+    if [ "$2" == "slc" ]; then
+      deploy/compose/slc-deploy.dev.sh
+    fi
+    ;;
+
+  tail)
+    docker-compose -f $compose_file logs -f $2
+    ;;
+
+  log*)
+    docker-compose -f $compose_file logs $2
+    ;;
+
+  ps|down|restart|exec|scale|rm|config|version)
+    docker-compose -f $compose_file "$@"
+    ;;
+
+  *)
+    echo $helpme
+    exit 1
+
+esac

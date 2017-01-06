@@ -1,3 +1,15 @@
+data-container:
+  image: lukewendling/data-container:3
+  hostname: data-container
+
+mongo:
+  image: mongo:3.2
+  hostname: mongo
+  ports:
+    - "27017:27017"
+  volumes_from:
+    - data-container
+
 redis:
   image: sotera/redis-watchman:1
   hostname: redis
@@ -11,12 +23,13 @@ web:
   hostname: watchman
   links:
     - redis
+    - mongo
     - mitie
   volumes_from:
     - data-container
   ports:
     - "8701:8701"
-    - "3001:3001"
+    - "3003:3001"
 
 feed:
   extends:
@@ -25,6 +38,7 @@ feed:
   hostname: feeds
   links:
     - redis
+    - mongo
     - mitie
   volumes_from:
     - data-container
@@ -38,6 +52,7 @@ queue:
   hostname: queue
   links:
     - redis
+    - mongo
   volumes_from:
     - data-container
   ports:
@@ -50,6 +65,7 @@ event-finder:
   hostname: event-finder
   links:
     - redis
+    - mongo
   volumes_from:
     - data-container
   ports:
@@ -77,7 +93,7 @@ dr-manhattan:
   extends:
     file: common.yml
     service: analytic
-  image: sotera/dr-manhattan:18
+  image: sotera/dr-manhattan:19
   hostname: dr-manhattan
   links:
     - redis
