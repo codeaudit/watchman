@@ -9,7 +9,7 @@ case "$1" in
     echo $helpme
     ;;
 
-  deploy)
+  deploy|up)
     docker-compose -f $compose_file up -d
     docker-compose -f $compose_file scale image-fetcher=4
 
@@ -19,7 +19,7 @@ case "$1" in
     ;;
 
   tail)
-    docker-compose -f $compose_file logs -f $2
+    docker-compose -f $compose_file logs --tail 100 -f $2
     ;;
 
   log*)
