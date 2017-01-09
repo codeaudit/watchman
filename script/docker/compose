@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 compose_file=deploy/compose/dev.yml
-helpme=$"Usage: $0 {deploy|tail|(Compose COMMAND)} [Compose options]"
+helpme=$"Usage: $0 {up|tail|(Compose COMMAND)} [Compose options]"
 
 case "$1" in
   -h|--help)
@@ -9,11 +9,11 @@ case "$1" in
     echo $helpme
     ;;
 
-  deploy|up)
+  up)
     docker-compose -f $compose_file up -d
     docker-compose -f $compose_file scale image-fetcher=4
 
-    if [ "$2" == "slc" ]; then
+    if [ "$2" == "deploy" ]; then
       deploy/compose/slc-deploy.dev.sh
     fi
     ;;
