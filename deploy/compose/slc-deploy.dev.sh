@@ -30,9 +30,7 @@ SLC_HOST="http://localhost:8703"
 slc deploy -z cpus $SLC_HOST
 slc ctl -C $SLC_HOST env-set 1 $SHARED_ENV_VARS \
 WORKER_SCRIPT=./workers/job-queue \
-JOBSET_QUERYSPAN_MIN=5 \
-SYSTEM_START_TIME=1481124174000 \
-DEBUG=*job-scheduler*
+DEBUG=*job-monitor*
 slc ctl -C $SLC_HOST set-size 1 1
 
 # event-finder
@@ -45,4 +43,15 @@ EVENT_FINDER_INTERVAL_MIN=10 \
 KAFKA_URL=r105u05.dsra.local:9092 \
 KAFKA_TOPIC=dev.events.social-media \
 DEBUG=*event-finder*
+slc ctl -C $SLC_HOST set-size 1 1
+
+# job-scheduler
+SLC_HOST="http://localhost:8705"
+
+slc deploy -z cpus $SLC_HOST
+slc ctl -C $SLC_HOST env-set 1 $SHARED_ENV_VARS \
+WORKER_SCRIPT=./workers/job-scheduler \
+JOBSET_QUERYSPAN_MIN=5 \
+SYSTEM_START_TIME=1481124174000 \
+DEBUG=*job-scheduler*
 slc ctl -C $SLC_HOST set-size 1 1

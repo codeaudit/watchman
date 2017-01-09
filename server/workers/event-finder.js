@@ -12,21 +12,21 @@ try {
   require('dotenv').config({silent: true});
 } catch(ex) {}
 
-const API_ROOT = process.env.API_ROOT;
-const KAFKA_URL = process.env.KAFKA_URL;
-const KAFKA_TOPIC = process.env.KAFKA_TOPIC;
-const EVENT_FINDER_INTERVAL = process.env.EVENT_FINDER_INTERVAL_MIN ?
-  +process.env.EVENT_FINDER_INTERVAL_MIN :
-  1440;
+const API_ROOT = process.env.API_ROOT,
+  KAFKA_URL = process.env.KAFKA_URL,
+  KAFKA_TOPIC = process.env.KAFKA_TOPIC,
+  EVENT_FINDER_INTERVAL = process.env.EVENT_FINDER_INTERVAL_MIN ?
+    +process.env.EVENT_FINDER_INTERVAL_MIN :
+    1440,
+  jobSetCheckInterval = 30000, //ms
+  findEventsInterval = 1000 * 60 * EVENT_FINDER_INTERVAL
+;
 
 if (!API_ROOT) {
   throw new Error('Missing required API_ROOT env var');
 }
 
-const jobSetCheckInterval = 30000; //ms
-
-let findEventsInterval = 1000 * 60 * EVENT_FINDER_INTERVAL,
-  currentJob,
+let currentJob,
   lastWindow,
   SocialMediaPost,
   Event,

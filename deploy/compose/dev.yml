@@ -73,6 +73,19 @@ services:
     ports:
       - "8704:8701"
 
+  scheduler:
+    extends:
+      file: common.yml
+      service: loopback
+    hostname: scheduler
+    depends_on:
+      - redis
+      - mongo
+    volumes_from:
+      - data-container
+    ports:
+      - "8705:8701"
+
   mitie:
     image: lukewendling/mitie-server
     hostname: mitie
