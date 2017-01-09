@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -o errexit
+
+git pull
 compose_file=deploy/compose/dev.yml
 helpme=$"Usage: $0 {up|tail|(Compose COMMAND)} [Compose options]"
 
