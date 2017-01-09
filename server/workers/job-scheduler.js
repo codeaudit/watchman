@@ -44,7 +44,7 @@ const JOBSET_QUERYSPAN_MIN = process.env.JOBSET_QUERYSPAN_MIN ?
   MAX_RETRIES = QUERY_SPAN * RETRY_MULTIPLIER / LOOP_INTERVAL;
 
 function schedule(startTime) {
-  let endTime = startTime + QUERY_SPAN;
+  let endTime = startTime + QUERY_SPAN - 1;
 
   if (endTime > Date.now()) {
     debug('endtime > now. waiting...');

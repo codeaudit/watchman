@@ -8,6 +8,7 @@ set -x
 git pull
 slc build
 
+# web
 SLC_HOST="http://localhost:8701"
 
 slc deploy -z cpus $SLC_HOST
@@ -15,6 +16,7 @@ slc ctl -C $SLC_HOST env-set 1 $SHARED_ENV_VARS \
 IGNORE_QCR=0
 slc ctl -C $SLC_HOST set-size 1 1
 
+# feed
 SLC_HOST="http://localhost:8702"
 
 slc deploy -z cpus $SLC_HOST
@@ -22,6 +24,7 @@ slc ctl -C $SLC_HOST env-set 1 $SHARED_ENV_VARS \
 WORKER_SCRIPT=./workers/start-extractor
 slc ctl -C $SLC_HOST set-size 1 1
 
+# queue
 SLC_HOST="http://localhost:8703"
 
 slc deploy -z cpus $SLC_HOST
@@ -32,6 +35,7 @@ SYSTEM_START_TIME=1481124174000 \
 DEBUG=*job-scheduler*
 slc ctl -C $SLC_HOST set-size 1 1
 
+# event-finder
 SLC_HOST="http://localhost:8704"
 
 slc deploy -z cpus $SLC_HOST
