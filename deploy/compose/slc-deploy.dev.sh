@@ -15,7 +15,6 @@ slc ctl -C $SLC_HOST env-set 1 $SHARED_ENV_VARS \
 IGNORE_QCR=0
 slc ctl -C $SLC_HOST set-size 1 1
 
-
 SLC_HOST="http://localhost:8702"
 
 slc deploy -z cpus $SLC_HOST
