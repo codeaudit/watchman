@@ -81,6 +81,7 @@ services:
     depends_on:
       - redis
       - mongo
+      - queue
     volumes_from:
       - data-container
     ports:
