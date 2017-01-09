@@ -23,7 +23,7 @@ services:
       file: common.yml
       service: loopback
     hostname: watchman
-    links:
+    depends_on:
       - redis
       - mongo
       - mitie
@@ -38,7 +38,7 @@ services:
       file: common.yml
       service: loopback
     hostname: feeds
-    links:
+    depends_on:
       - redis
       - mongo
       - mitie
@@ -52,7 +52,7 @@ services:
       file: common.yml
       service: loopback
     hostname: queue
-    links:
+    depends_on:
       - redis
       - mongo
     volumes_from:
@@ -65,7 +65,7 @@ services:
       file: common.yml
       service: loopback
     hostname: event-finder
-    links:
+    depends_on:
       - redis
       - mongo
     volumes_from:
@@ -97,7 +97,7 @@ services:
       service: analytic
     image: sotera/dr-manhattan:19
     hostname: dr-manhattan
-    links:
+    depends_on:
       - redis
 
   text-featurizer:
@@ -106,7 +106,7 @@ services:
       service: analytic
     image: sotera/rorschach:8
     hostname: text-featurizer
-    links:
+    depends_on:
       - redis
 
   hashtag-clusterer:
@@ -117,7 +117,7 @@ services:
     hostname: hashtag-clusterer
     environment:
       - TRUNCATE_POSTS=1
-    links:
+    depends_on:
       - redis
 
   cluster-linker:
@@ -126,7 +126,7 @@ services:
       service: analytic
     image: sotera/ozymandias:5
     hostname: cluster-linker
-    links:
+    depends_on:
       - redis
 
   feature-sim:
@@ -137,7 +137,7 @@ services:
     hostname: feature-sim
     environment:
       - TRUNCATE_POSTS=1
-    links:
+    depends_on:
       - redis
 
   image-fetcher:
@@ -146,7 +146,7 @@ services:
       service: analytic
     image: sotera/image-fetcher:5
     hostname: image-fetcher
-    links:
+    depends_on:
       - redis
     volumes_from:
       - data-container
@@ -157,7 +157,7 @@ services:
       service: analytic
     image: sotera/caffe_redis_client:17
     hostname: caffe
-    links:
+    depends_on:
       - redis
     volumes_from:
       - data-container
@@ -168,5 +168,5 @@ services:
       service: analytic
     image: sotera/aggregate-clustering:6
     hostname: aggregate-clustering
-    links:
+    depends_on:
       - redis
