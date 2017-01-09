@@ -29,7 +29,7 @@ case "$1" in
     docker-compose -f $compose_file logs $2
     ;;
 
-  ps|down|restart|exec|scale|rm|config|version)
+  ps|down|stop|restart|exec|scale|rm|config|version)
     docker-compose -f $compose_file "$@"
     ;;
 
