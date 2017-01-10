@@ -20,6 +20,9 @@ def process_message(key, job):
     if job['state'] == 'error':
         return
 
+    query_url = os.environ['QUERY_URL'] if os.environ['QUERY_URL'] else job['query_url']
+    result_url = os.environ['RESULT_URL'] if os.environ['RESULT_URL'] else job['result_url']
+
     query_params = [{
         'query_type': 'between',
         'property_name': 'end_time_ms',
@@ -28,7 +31,7 @@ def process_message(key, job):
 
     print 'BEGIN LINKING CLUSTERS'
     linker = ClusterLinker(job.get('min_overlap', 0.6))
-    loopy = Loopy(job['query_url'], query_params)
+    loopy = Loopy(query_url, query_params)
 
     if loopy.result_count == 0:
         print 'No data to process'
@@ -48,7 +51,7 @@ def process_message(key, job):
 
     print 'FINISHED LINKING CLUSTERS'
     for link in linker.get_links():
-        loopy.post_result(job['result_url'], link)
+        loopy.post_result(result_url, link)
 
     job['data'] = json.dumps({}) # no need to save anything to job
     job['state'] = 'processed'

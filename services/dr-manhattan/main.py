@@ -23,32 +23,20 @@ def process_message(key,job):
     if job['state'] == 'error':
         return
 
-    host = job['host']
-    ts_start = job['start_time']
+    host = os.environ['HOST'] if os.environ['HOST'] else job['host']
     ts_end = job['end_time']
     debug = False
 
     if host[-1] != '/': host += '/'
     api_path = host
     query_params = [{
-        "query_type": "between",
+        "query_type": "where",
         "property_name": "end_time_ms",
-        "query_value": [ts_start, ts_end]
+        "query_value": ts_end
     }]
     com = Louvaine(api_path,
        '{}extract/entities'.format(api_path),
        '{}geocoder/forward-geo'.format(api_path))
-
-    # this one line was being run..not sure why..as it was unused???
-    # lp_n = Loopy('{}aggregateClusters'.format(api_path), query_params, page_size=500)
-
-    #print "getting aggregate clusters"
-    #while True:
-    #    page = lp_n.get_next_page()
-    #    if page is None:
-    #        break
-    #    for doc in page:
-    #        com.add_node(doc)
 
     nodes_to_add = set()
     lp_e = Loopy('{}clusterLinks'.format(api_path), query_params, page_size=500)
@@ -60,7 +48,7 @@ def process_message(key,job):
         job['state'] = 'error'
         return
 
-    print "getting aggregate cluster links"
+    print "getting cluster links"
     while True:
         page = lp_e.get_next_page()
         if page is None:
@@ -74,8 +62,8 @@ def process_message(key,job):
 
     print "filling in missing nodes"
     for node_id in nodes_to_add:
-        agg_url = "{}{}{}".format(api_path, "aggregateClusters/", node_id)
-        node = requests.get(agg_url).json()
+        clust_url = "{}{}{}".format(api_path, "postsClusters/", node_id)
+        node = requests.get(clust_url).json()
         com.add_node(node)
 
     print "Finding communities from {} nodes and {} edges.".format(len(com.graph.nodes()), len(com.graph.edges()))
