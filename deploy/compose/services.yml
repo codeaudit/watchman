@@ -180,7 +180,7 @@ services:
     extends:
       file: common.yml
       service: analytic
-    image: sotera/aggregate-clustering:6
+    image: sotera/aggregate-clustering:10
     hostname: aggregate-clustering
     depends_on:
       - redis
