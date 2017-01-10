@@ -2,6 +2,5 @@ version: '2.1'
 # stub mongo until docker swarm manages external mongo
 services:
   mongo:
-    image: scratch
+    image: debian:jessie
     hostname: mongo
-    cmd: ["bash"]

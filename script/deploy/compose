@@ -2,7 +2,8 @@
 
 set -o errexit
 
-compose_file=deploy/compose/services.yml
+# get additional files from env var
+compose_files="-f deploy/compose/services.yml ${printenv COMPOSE_FILES}"
 helpme=$"Usage: $0 {up|tail|(Compose COMMAND)} [Compose options]"
 
 case "$1" in
@@ -13,24 +14,24 @@ case "$1" in
 
   up)
     git pull
-    docker-compose -f $compose_file up -d
-    docker-compose -f $compose_file scale image-fetcher=4
+    docker-compose $compose_files up -d
+    docker-compose $compose_files scale image-fetcher=4
 
     if [ "$2" == "deploy" ]; then
-      deploy/compose/slc-deploy.dev.sh
+      script/deploy/slc-deploy.sh
     fi
     ;;
 
   tail)
-    docker-compose -f $compose_file logs --tail 100 -f $2
+    docker-compose $compose_files logs --tail 100 -f $2
     ;;
 
   log*)
-    docker-compose -f $compose_file logs $2
+    docker-compose $compose_files logs $2
     ;;
 
   ps|down|stop|restart|exec|scale|rm|config|version)
-    docker-compose -f $compose_file "$@"
+    docker-compose $compose_files "$@"
     ;;
 
   *)
