@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -o errexit
+# set -o errexit
 
 # get additional files from env var
 compose_files=$"-f deploy/compose/services.yml `printenv COMPOSE_FILES`"
