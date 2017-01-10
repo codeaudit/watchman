@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SHARED_ENV_VARS="API_ROOT=http://172.17.0.1:3003/api NODE_ENV=production ${printenv SHARED_ENV_VARS}"
+SHARED_ENV_VARS=$"API_ROOT=http://172.17.0.1:3003/api NODE_ENV=production `printenv SHARED_ENV_VARS`"
 
 set -x
 
