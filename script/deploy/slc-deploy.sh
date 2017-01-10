@@ -4,8 +4,6 @@ shared_env_vars=$"API_ROOT=http://172.17.0.1:3003/api NODE_ENV=production `print
 
 set -x
 
-# cd ~/apps/
-git pull
 #slc build
 
 # web

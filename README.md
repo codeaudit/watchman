@@ -35,6 +35,13 @@ npm run dev # open localhost:3000
 WORKER_SCRIPT=./workers/job-queue npm run dev
 ```
 
+## Run with Docker Compose
+
+```
+script/docker/install-compose.sh
+script/deploy/compose up deploy
+```
+
 ## Misc
 
 ```
