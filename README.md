@@ -14,7 +14,7 @@ A core set of utilities frequently used in large data processing / ML projects, 
 1. Redis 3
 1. Python 2.7 + 3.5
 
-## Install
+## Dev boostrap
 
 ```
 # get working copy of .env file from a friend
@@ -24,18 +24,7 @@ npm i
 lb-ng server/server.js client/js/lb-services.js
 ```
 
-## Dev boostrap
-
-```
-# get working copy of .env
-./script/setup.js
-npm run dev # open localhost:3000
-
-# to process job monitors, in another terminal:
-WORKER_SCRIPT=./workers/job-queue npm run dev
-```
-
-## Run with Docker Compose
+## Install with Docker Compose
 
 ```
 script/docker/install-compose.sh
@@ -51,6 +40,11 @@ docker build --no-cache --force-rm -t lukewendling/mitie-server .
 
 docker run -d -p 8888:8888 --name mitie lukewendling/mitie-server
 ./server/workers/start-extractor.js # start workers
+```
+
+```
+# run a worker standalone
+WORKER_SCRIPT=./workers/job-queue npm run dev
 ```
 
 ## Tests
