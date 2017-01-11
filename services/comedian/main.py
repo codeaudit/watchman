@@ -25,8 +25,6 @@ def err_check(job):
 
 def process_message(key, job):
 
-    query_url = os.environ['QUERY_URL'] if os.environ['QUERY_URL'] else job['query_url']
-    result_url = os.environ['RESULT_URL'] if os.environ['RESULT_URL'] else job['result_url']
 
     # if type == 'featurizer', immediately process and return b/c hashtags
     # are not featurized. allows system to continue with clustering process.
@@ -38,6 +36,9 @@ def process_message(key, job):
     err_check(job)
     if job['state'] == 'error':
         return
+
+    query_url = job['query_url']
+    result_url = job['result_url']
 
     print 'FINDING SIMILARITY'
     print 'min_post set to %s' % job['min_post']
