@@ -26,8 +26,8 @@ lb-ng server/server.js client/js/lb-services.js
 
 ```
 docker rm $(docker ps -a -q) # optional, remove all un'composed' containers
-git clone https://github.com/Sotera/watchman.git app
-cd app
+sudo service docker restart # optional, but should speed things up
+git clone https://github.com/Sotera/watchman.git app; cd app # optional if in dev env
 cp slc-conf.template.json slc-conf.json
 script/docker/install-compose.sh
 script/deploy/compose up deploy [branch] # branch optional, default: master
