@@ -253,7 +253,7 @@ class Louvaine:
         d1 = self.get_communities()
         print "Writing communities to mongo"
         for com in d1.values():
-            if len(com['cluster_ids']) < 1:
+            if len(com['cluster_ids']) < 3:
                 continue
             res = requests.post(self.url+'events/', json=com)
             print res

@@ -24,9 +24,9 @@ def process_message(key, job):
     result_url = os.environ['RESULT_URL'] if os.environ['RESULT_URL'] else job['result_url']
 
     query_params = [{
-        'query_type': 'between',
+        'query_type': 'where',
         'property_name': 'end_time_ms',
-        'query_value': [job['start_time_ms'], job['end_time_ms']]
+        'query_value': job['end_time_ms']
     }]
 
     print 'BEGIN LINKING CLUSTERS'
