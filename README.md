@@ -25,6 +25,7 @@ lb-ng server/server.js client/js/lb-services.js
 ## Install with Docker Compose
 
 ```
+docker rm $(docker ps -a -q) # optional, remove all un'composed' containers
 git clone https://github.com/Sotera/watchman.git app
 cd app
 cp slc-conf.template.json slc-conf.json
