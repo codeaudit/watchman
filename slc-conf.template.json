@@ -42,9 +42,7 @@
       "WORKER_SCRIPT=./workers/event-finder",
       "DEBUG=*event-finder*",
       "MONGO_HOST=localhost",
-      "EVENT_FINDER_INTERVAL_MIN=10",
-      "KAFKA_URL=r105u05.dsra.local:9092",
-      "KAFKA_TOPIC=dev.events.social-media"
+      "EVENT_FINDER_INTERVAL_MIN=10"
     ],
     "cluster_size": 1
   },
