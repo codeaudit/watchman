@@ -15,10 +15,9 @@ case "$1" in
   up)
     git pull
     docker-compose $compose_files up -d
-    docker-compose $compose_files scale image-fetcher=4
 
     if [ "$2" == "deploy" ]; then
-      script/deploy/slc-deploy.sh
+      script/deploy/slc-deploy.js
     fi
     ;;
 

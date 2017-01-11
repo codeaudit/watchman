@@ -25,6 +25,7 @@ lb-ng server/server.js client/js/lb-services.js
 ## Install with Docker Compose
 
 ```
+cp slc-conf.template.json slc-conf.json
 script/docker/install-compose.sh
 script/deploy/compose up deploy
 ```
