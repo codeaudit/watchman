@@ -2,8 +2,9 @@
 
 'use strict';
 
+let conf;
 try {
-  const conf = require('../../slc-conf.json');
+  conf = require('../../slc-conf.json');
 } catch(ex) {
   console.error('%s. Does slc-config.json exist?', ex);
   process.exit(1);
@@ -12,7 +13,7 @@ try {
 const spawn = require( 'child_process' ).spawnSync
 ;
 
-run('slc', 'build');
+run('slc', ['build']);
 
 for (let app of conf) {
   run('slc', ['deploy', '-z', 'cpus', app.slc_host]);
