@@ -16,7 +16,7 @@ case "$1" in
     docker-compose $compose_files up -d
 
     if [ "$2" == "deploy" ]; then
-      old_branch=`git branch | grep \*`
+      old_branch=`git rev-parse --abbrev-ref HEAD`
       new_branch=${3:-master}
       echo $"⇨ Current branch is $old_branch. Switching to $new_branch ..."
       git checkout $new_branch
