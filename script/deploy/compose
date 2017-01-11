@@ -13,11 +13,16 @@ case "$1" in
     ;;
 
   up)
-    git pull
     docker-compose $compose_files up -d
 
     if [ "$2" == "deploy" ]; then
+      old_branch=`git branch | grep \*`
+      new_branch=${3:-master}
+      echo $"⇨ Current branch is $old_branch. Switching to $new_branch ..."
+      git checkout $new_branch
+      git pull
       script/deploy/slc-deploy.js
+      git checkout $old_branch
     fi
     ;;
 
