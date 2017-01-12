@@ -32,6 +32,8 @@ cp slc-conf.template.json slc-conf.json
 sudo script/docker/install-compose.sh
 script/deploy/compose up deploy [branch] # branch optional, default: master
 script/deploy/compose scale image-fetcher=3
+
+# hint: add /docker-compose.override.yml to override services.
 ```
 
 ## Misc

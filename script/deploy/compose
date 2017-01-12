@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-
-# get additional files from env var
-compose_files=$"-f deploy/compose/services.yml `printenv COMPOSE_FILES`"
-
 # exit immediately on error
 abort() {
   exit 1
@@ -14,6 +10,14 @@ display_usage() {
     \n\tDeploy: $0 up deploy [branch]"
   abort
 }
+
+compose_files="-f deploy/compose/services.yml"
+
+# append overrides.yml file if present, for prod or dev conf.
+if [ -f docker-compose.override.yml ]; then
+  compose_files=$compose_files" -f docker-compose.override.yml"
+fi
+echo "⇨ Using conf flags: $compose_files"
 
 case "$1" in
   -h|--help)
