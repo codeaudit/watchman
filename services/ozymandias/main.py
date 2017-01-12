@@ -20,8 +20,8 @@ def process_message(key, job):
     if job['state'] == 'error':
         return
 
-    query_url = job['query_url']
-    result_url = job['result_url']
+    query_url = os.environ['QUERY_URL'] if 'QUERY_URL' in os.environ else job['query_url']
+    result_url = os.environ['RESULT_URL'] if 'RESULT_URL' in os.environ else job['result_url']
 
     query_params = [{
         'query_type': 'where',
