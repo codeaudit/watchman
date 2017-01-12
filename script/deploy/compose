@@ -2,7 +2,6 @@
 
 # get additional files from env var
 compose_files=$"-f deploy/compose/services.yml `printenv COMPOSE_FILES`"
-usage=$"\tUsage: $0 {up|tail|(Compose COMMAND)} [Compose options]\n\tDeploy: $0 up deploy [branch]"
 
 # exit immediately on error
 abort() {
@@ -10,10 +9,16 @@ abort() {
 }
 trap abort ERR
 
+display_usage() {
+  echo -e $"\n\tUsage: $0 {up|tail|(Compose COMMAND)} [Compose options]
+    \n\tDeploy: $0 up deploy [branch]"
+  abort
+}
+
 case "$1" in
   -h|--help)
     docker-compose $1
-    echo -e "\n$usage"
+    display_usage
     ;;
 
   up)
@@ -43,7 +48,6 @@ case "$1" in
     ;;
 
   *)
-    echo -e $usage
-    exit 1
+    display_usage
 
 esac

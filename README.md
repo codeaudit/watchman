@@ -29,7 +29,7 @@ docker rm $(docker ps -a -q) # optional, remove all un'composed' containers
 sudo service docker restart # optional, but should speed things up
 git clone https://github.com/Sotera/watchman.git app; cd app # optional if in dev env
 cp slc-conf.template.json slc-conf.json
-script/docker/install-compose.sh
+sudo script/docker/install-compose.sh
 script/deploy/compose up deploy [branch] # branch optional, default: master
 script/deploy/compose scale image-fetcher=3
 ```
