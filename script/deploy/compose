@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# get additional files from env var
+compose_files=$"-f deploy/compose/services.yml `printenv COMPOSE_FILES`"
+helpme=$"Usage: $0 {up|tail|(Compose COMMAND)} [Compose options]"
+
+# exit immediately on error
+abort() {
+  exit 1
+}
+trap abort ERR
+
+case "$1" in
+  -h|--help)
+    docker-compose $1
+    echo $helpme
+    ;;
+
+  up)
+    docker-compose $compose_files up -d
+
+    if [ "$2" == "deploy" ]; then
+      old_branch=`git rev-parse --abbrev-ref HEAD`
+      new_branch=${3:-master}
+      echo $"⇨ Current branch is $old_branch. Switching to $new_branch ..."
+      git checkout $new_branch
+      git pull
+      script/deploy/slc-deploy.js
+      git checkout $old_branch
+    fi
+    ;;
+
+  tail)
+    docker-compose $compose_files logs --tail 100 -f $2
+    ;;
+
+  log*)
+    docker-compose $compose_files logs $2
+    ;;
+
+  ps|down|start|stop|restart|exec|scale|rm|config|version)
+    docker-compose $compose_files "$@"
+    ;;
+
+  *)
+    echo $helpme
+    exit 1
+
+esac
