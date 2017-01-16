@@ -60,19 +60,6 @@ services:
     ports:
       - "8703:8701"
 
-  event-finder:
-    extends:
-      file: common.yml
-      service: loopback
-    hostname: event-finder
-    depends_on:
-      - redis
-      - mongo
-    volumes_from:
-      - data-container
-    ports:
-      - "8704:8701"
-
   scheduler:
     extends:
       file: common.yml
