@@ -69,7 +69,7 @@ for i in range(num_files):
     posts_df = posts_df.withColumn('featurizer', explode(array(lit('image'), posts_df['featurizer'])))
     posts_df = posts_df.withColumn('featurizer', explode(array(lit('text'), posts_df['featurizer'])))
 
-    posts_df.write.format(mongo_ds).mode('overwrite').options(**posts_uri).save()
+    posts_df.write.format(mongo_ds).mode('append').options(**posts_uri).save()
 
 print('count:', db[posts_coll].count())
 
