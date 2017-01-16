@@ -16,8 +16,7 @@
     "env": [
       "NODE_ENV=production",
       "API_ROOT=http://172.17.0.1:3003/api",
-      "WORKER_SCRIPT=./workers/start-extractor",
-      "MONGO_HOST=localhost"
+      "WORKER_SCRIPT=./workers/start-extractor"
     ],
     "cluster_size": 1
   },
@@ -28,8 +27,7 @@
       "NODE_ENV=production",
       "API_ROOT=http://172.17.0.1:3003/api",
       "WORKER_SCRIPT=./workers/job-queue",
-      "DEBUG=*job-monitor*",
-      "MONGO_HOST=localhost"
+      "DEBUG=*job-monitor*"
     ],
     "cluster_size": 1
   },
@@ -41,7 +39,6 @@
       "API_ROOT=http://172.17.0.1:3003/api",
       "WORKER_SCRIPT=./workers/job-scheduler",
       "DEBUG=*job-scheduler*",
-      "MONGO_HOST=localhost",
       "JOBSET_QUERYSPAN_MIN=5"
     ],
     "cluster_size": 1
