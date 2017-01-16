@@ -207,7 +207,7 @@
     "ExpressApps": [
       {
         "GitUrl": "https://github.com/Sotera/watchman.git",
-        "GitSrcBranchName": "96-remove-agg-clustering",
+        "GitSrcBranchName": "88-96-merge",
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8701",
         "ServiceName": "watchman",
@@ -251,7 +251,7 @@
     "ExpressApps": [
       {
         "GitUrl": "https://github.com/Sotera/watchman.git",
-        "GitSrcBranchName": "96-remove-agg-clustering",
+        "GitSrcBranchName": "88-96-merge",
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8702",
         "ServiceName": "watchman",
@@ -294,7 +294,7 @@
     "ExpressApps": [
       {
         "GitUrl": "https://github.com/Sotera/watchman.git",
-        "GitSrcBranchName": "96-remove-agg-clustering",
+        "GitSrcBranchName": "88-96-merge",
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8703",
         "ServiceName": "watchman-queue",
