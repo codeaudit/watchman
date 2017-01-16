@@ -34,19 +34,6 @@
     "cluster_size": 1
   },
   {
-    "name": "event-finder",
-    "slc_host": "http://localhost:8704",
-    "env": [
-      "NODE_ENV=production",
-      "API_ROOT=http://172.17.0.1:3003/api",
-      "WORKER_SCRIPT=./workers/event-finder",
-      "DEBUG=*event-finder*",
-      "MONGO_HOST=localhost",
-      "EVENT_FINDER_INTERVAL_MIN=10"
-    ],
-    "cluster_size": 1
-  },
-  {
     "name": "job-scheduler",
     "slc_host": "http://localhost:8705",
     "env": [
