@@ -48,16 +48,17 @@ def rec_to_row(tweet):
 # for a in [b'lang', b'post_id', b'post_url', b'post_type', b'text']:
 #     print(type(rdd.take(1)[0][a]))
 
-start_time = 0
+time0 = time.time()
+block_time = 0
 num_files = sum(os.path.isfile(f) for f in glob.glob(os.path.join(input_dir, 'part-*')))
 print('found %s files' % num_files)
 
 for i in range(num_files):
     # print run time per 10 files
     if i % 10 == 0:
-        if start_time:
-            print(time.time() - start_time, 'sec')
-        start_time = time.time()
+        if block_time:
+            print(time.time() - block_time, 'sec')
+        block_time = time.time()
 
     fname = 'part-' + str(i).rjust(5, '0')
     print(fname)
@@ -71,5 +72,7 @@ for i in range(num_files):
     posts_df.write.format(mongo_ds).mode('overwrite').options(**posts_uri).save()
 
 print('count:', db[posts_coll].count())
+
+print('total time (sec.):', time.time() - time0)
 
 sc.stop()
