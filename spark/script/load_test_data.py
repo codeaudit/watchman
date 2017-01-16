@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-# usage: spark/spark-submit.sh spark/docker-compose.yml load_test_data.py
-
 from pymongo import MongoClient, IndexModel, ASCENDING
 from pyspark.sql import SparkSession, Row
 from pyspark.sql.functions import array, explode, lit
