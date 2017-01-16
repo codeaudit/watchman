@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
-# assumes spark runs via project's docker-compose file.
 
-'''
-BEFORE RUNNING:
-1.
-'''
+# usage: spark/spark-submit.sh spark/docker-compose.yml load_test_data.py
 
 from pymongo import MongoClient, IndexModel, ASCENDING
 from pyspark.sql import SparkSession, Row
@@ -17,7 +13,6 @@ mongo = MongoClient(uri_str)
 db_name = 'rancor'
 db = mongo[db_name]
 posts_coll = 'SocialMediaPost'
-# input_dir = os.getenv('PROVIDERS_PATH', '/tmp/data/')
 input_dir = '/tmp/data'
 
 mongo_ds = 'com.mongodb.spark.sql'
@@ -78,11 +73,5 @@ for i in range(num_files):
     posts_df.write.format(mongo_ds).mode('overwrite').options(**posts_uri).save()
 
 print('count:', db[posts_coll].count())
-
-# db[posts_coll].drop_indexes()
-# idx1 = IndexModel([('ProviderID', ASCENDING)], unique=True)
-# idx2 = IndexModel([('iProviderID', ASCENDING)], unique=True)
-# idx3 = IndexModel([('featured', ASCENDING)], sparse=True)
-# db[posts_coll].create_indexes([idx1, idx2, idx3])
 
 sc.stop()
