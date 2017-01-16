@@ -25,6 +25,7 @@ lb-ng server/server.js client/js/lb-services.js
 ## Install with Docker Compose
 
 ```
+docker -v # must be 1.12+
 docker rm $(docker ps -a -q) # optional, remove all un'composed' containers
 sudo service docker restart # optional, but should speed things up
 git clone https://github.com/Sotera/watchman.git app; cd app # optional if in dev env
