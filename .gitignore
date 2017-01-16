@@ -10,3 +10,4 @@ tmp
 .swp
 slc-conf.json
 docker-compose.override.yml
+spark/data
