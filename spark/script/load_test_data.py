@@ -9,7 +9,7 @@ BEFORE RUNNING:
 from pymongo import MongoClient, IndexModel, ASCENDING
 from pyspark.sql import SparkSession, Row
 from pyspark.sql.functions import array, explode, lit
-import os, datetime
+import os, datetime, time, glob
 
 host = 'mongo:27017'
 uri_str = 'mongodb://' + host
@@ -50,15 +50,32 @@ def rec_to_row(tweet):
         system_created=datetime.datetime.now(),
         featurizer='hashtag'
     )
+
+# check for 'bytes' type in all attrs (fails schema inference if so)
 # for a in [b'lang', b'post_id', b'post_url', b'post_type', b'text']:
 #     print(type(rdd.take(1)[0][a]))
 
-rdd = sc.pickleFile(os.path.join(input_dir, 'part-00000'))
-posts_df = spark.createDataFrame(rdd.map(rec_to_row))
-posts_df = posts_df.withColumn('featurizer', explode(array(lit('image'), posts_df['featurizer'])))
-posts_df = posts_df.withColumn('featurizer', explode(array(lit('text'), posts_df['featurizer'])))
+start_time = 0
+num_files = sum(os.path.isfile(f) for f in glob.glob(os.path.join(input_dir, 'part-*')))
+print('found %s files' % num_files)
 
-posts_df.write.format(mongo_ds).mode('overwrite').options(**posts_uri).save()
+for i in range(num_files):
+    # print run time per 10 files
+    if i % 10 == 0:
+        if start_time:
+            print(time.time() - start_time, 'sec')
+        start_time = time.time()
+
+    fname = 'part-' + str(i).rjust(5, '0')
+    print(fname)
+
+    rdd = sc.pickleFile(os.path.join(input_dir, fname))
+    posts_df = spark.createDataFrame(rdd.map(rec_to_row))
+    # duplicate for other featurizers
+    posts_df = posts_df.withColumn('featurizer', explode(array(lit('image'), posts_df['featurizer'])))
+    posts_df = posts_df.withColumn('featurizer', explode(array(lit('text'), posts_df['featurizer'])))
+
+    posts_df.write.format(mongo_ds).mode('overwrite').options(**posts_uri).save()
 
 print('count:', db[posts_coll].count())
 
