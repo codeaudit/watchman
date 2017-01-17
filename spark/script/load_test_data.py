@@ -10,7 +10,7 @@ uri_str = 'mongodb://' + host
 mongo = MongoClient(uri_str)
 db_name = 'rancor'
 db = mongo[db_name]
-posts_coll = 'SocialMediaPost'
+posts_coll = 'socialMediaPost'
 input_dir = '/tmp/data'
 
 mongo_ds = 'com.mongodb.spark.sql'
@@ -92,8 +92,9 @@ print('count:', db[posts_coll].count())
 idx2 = IndexModel([('state', ASCENDING)])
 idx3 = IndexModel([('timestamp_ms', ASCENDING)])
 idx4 = IndexModel([('lang', ASCENDING)])
+idx5 = IndexModel([('system_created', ASCENDING)])
 
-db[posts_coll].create_indexes([idx2, idx3, idx4])
+db[posts_coll].create_indexes([idx2, idx3, idx4, idx5])
 
 print('total time (sec.):', time.time() - time0)
 
