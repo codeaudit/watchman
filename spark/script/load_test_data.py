@@ -17,8 +17,10 @@ mongo_ds = 'com.mongodb.spark.sql'
 posts_uri = dict(uri=uri_str, database=db_name, collection=posts_coll)
 
 # must specify partitioner for mongo 3.0
+# also ignore errors, likely due to dupe uniq key.
 spark = SparkSession.builder \
   .config('spark.mongodb.input.partitioner', 'MongoSplitVectorPartitioner') \
+  .config('spark.mongodb.output.writeConcern.w', 0) \
   .getOrCreate()
 
 sc = spark.sparkContext
@@ -27,6 +29,10 @@ sc.setLogLevel('ERROR')
 
 # drop collection
 db.drop_collection(posts_coll)
+
+# prevent dupes
+idx1 = IndexModel([('post_id', ASCENDING), ('featurizer', ASCENDING)], unique=True)
+db[posts_coll].create_indexes([idx1])
 
 # help pyspark to infer schema
 def rec_to_row(tweet):
@@ -79,7 +85,15 @@ for i in range(num_files):
 
     posts_df.write.format(mongo_ds).mode('append').options(**posts_uri).save()
 
+print('load time (sec.):', time.time() - time0)
 print('count:', db[posts_coll].count())
+
+# add more indexes
+idx2 = IndexModel([('state', ASCENDING)])
+idx3 = IndexModel([('timestamp_ms', ASCENDING)])
+idx4 = IndexModel([('lang', ASCENDING)])
+
+db[posts_coll].create_indexes([idx2, idx3, idx4])
 
 print('total time (sec.):', time.time() - time0)
 
