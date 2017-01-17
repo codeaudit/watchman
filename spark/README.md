@@ -2,6 +2,6 @@
 
 ```
 # from project root
-spark/start-spark.sh
-spark/spark-submit.sh spark/docker-compose.yml load_test_data.py
+# add spark/docker-compose.override.yml to override
+spark/spark-submit.sh load_test_data.py
 ```

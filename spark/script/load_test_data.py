@@ -2,7 +2,7 @@
 
 from pymongo import MongoClient, IndexModel, ASCENDING
 from pyspark.sql import SparkSession, Row
-from pyspark.sql.functions import array, explode, lit
+from pyspark.sql.functions import array, explode, lit, size, length
 import os, datetime, time, glob
 
 host = 'mongo:27017'
@@ -68,6 +68,14 @@ for i in range(num_files):
     # duplicate for other featurizers
     posts_df = posts_df.withColumn('featurizer', explode(array(lit('image'), posts_df['featurizer'])))
     posts_df = posts_df.withColumn('featurizer', explode(array(lit('text'), posts_df['featurizer'])))
+
+    # filter invalids
+    image_df = posts_df.where(size(posts_df['image_urls']) > 0).where(posts_df['featurizer'] == 'image')
+    hashtag_df = posts_df.where(size(posts_df['hashtags']) > 0).where(posts_df['featurizer'] == 'hashtag')
+    text_df = posts_df.where(length(posts_df['text']) > 0).where(posts_df['featurizer'] == 'text')
+
+    # union
+    posts_df = image_df.union(hashtag_df).union(text_df)
 
     posts_df.write.format(mongo_ds).mode('append').options(**posts_uri).save()
 
