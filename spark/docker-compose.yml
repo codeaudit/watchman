@@ -1,10 +1,16 @@
 version: '2.1'
 services:
+  data-container:
+    image: lukewendling/data-container:3
+    hostname: data-container
+
   mongo:
     image: mongo:3.2
     hostname: mongo
     ports:
       - "27017:27017"
+    volumes_from:
+      - data-container
 
   master:
     image: sotera/spark-mongo:1
