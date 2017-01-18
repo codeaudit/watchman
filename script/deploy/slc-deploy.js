@@ -24,10 +24,11 @@ for (let app of conf) {
 
 function run(cmd, args) {
   let out = spawn(cmd, args);
-  if (out.stdout.length)
-    console.info('⇨ %s', out.stdout);
+  if (out.error) {
+    return console.error('err: %s', out.error);
+  }
   if (out.stderr.length)
     console.error(':: %s', out.stderr);
-  if (out.error)
-    console.error('err: %s', out.error);
+  if (out.stdout.length)
+    console.info('⇨ %s', out.stdout);
 }
