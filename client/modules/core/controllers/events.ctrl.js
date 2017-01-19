@@ -7,7 +7,8 @@ function EventsCtrl($scope, PostsCluster, Extract, Geocoder, SocialMediaPost, $q
   $scope.clusterTerm = '';
   $scope.events = null;
   $scope.selectedEvents = null;
-  $scope.selectedEvent=null;
+  $scope.selectedEvent= null;
+  $scope.filterText = null;
   // obj: represents a cluster but not a loopback model
 
   $scope.eventSelected = function(evnt){
@@ -17,6 +18,30 @@ function EventsCtrl($scope, PostsCluster, Extract, Geocoder, SocialMediaPost, $q
   $scope.eventChanged= function(evnt){
     evnt.$save();
   };
+
+  $scope.filterChanged = function(){
+    var tempEvents = $scope.selectedEvents;
+    $scope.selectedEvents = [];
+    tempEvents.forEach(function(aggEvent){
+      filterEvent(aggEvent);
+    });
+  };
+
+  function filterEvent(evnt){
+    PostsCluster.find({
+      filter: {
+        where: {
+          id: { inq: evnt.cluster_ids }
+        }
+      }
+    }).$promise
+      .then(clusters => {
+        $scope.communityClusters = clusters;
+        return clusters;
+      })
+      .then(clusters => $scope.filter(clusters,evnt))
+      .catch(console.error);
+  }
 
   function visualizeEvent(evnt) {
     $scope.selectedEvent = evnt;
@@ -63,6 +88,39 @@ function EventsCtrl($scope, PostsCluster, Extract, Geocoder, SocialMediaPost, $q
     $scope.selectedEvents = events;
   }
 
+  $scope.filter = filter;
+  function filter(clusters, evnt){
+    function sampleSocialMediaPosts(dataType, sampleSize=100) {
+      let similarPostIds = _(clusters).map('similar_post_ids')
+        .flatten().compact().uniq().value();
+
+      let ids = _.sampleSize(similarPostIds, sampleSize);
+
+      return SocialMediaPost.find({
+        filter: {
+          where: {
+            post_id: { inq: ids },
+            featurizer: dataType
+          }
+        }
+      }).$promise;
+    }
+
+    var terms = evnt.hashtags.join(', ');
+    if(terms.includes($scope.filterText)){
+      $scope.selectedEvents.push(evnt);
+      return;
+    }
+
+    sampleSocialMediaPosts('text')
+      .then(posts => {
+        let allText = posts.map(p => p.text).join(' ');
+        if(allText.includes($scope.filterText)){
+          $scope.selectedEvents.push(evnt);
+        }
+      })
+      .catch(console.error);
+  }
 
 
    // 'visualize': show me the details

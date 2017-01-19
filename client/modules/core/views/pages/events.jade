@@ -10,9 +10,16 @@ h5 drag mouse over an area to select
     table.table.table-striped
       thead
         tr
-          th Events
-      tbody(ng-repeat="selectedEvent in selectedEvents")
-        tr
+          th
+            .row
+              .col-md-6
+                |Events
+              p(style="display:inline") Filter:
+              input(style="display:inline;width:100px;margin-left:16px",ng-model='filterText').form-control
+              button(type="button", ng-click="filterChanged()").btn.btn-info
+                span.glyphicon.glyphicon-search
+      tbody
+        tr(ng-repeat="selectedEvent in selectedEvents")
           td
             p(style="display:inline",ng-click="eventSelected(selectedEvent)") {{selectedEvent.start_time_ms | date:'short'  }} - {{selectedEvent.end_time_ms | date:'short'  }}
             input(style="display:inline;width:100px;margin-left:16px",ng-model='selectedEvent.name', ng-blur="eventChanged(selectedEvent)").form-control
