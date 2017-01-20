@@ -6,7 +6,7 @@
       "NODE_ENV=production",
       "API_ROOT=http://172.17.0.1:3003/api",
       "IGNORE_QCR=0",
-      "MONGO_HOST=mongo"
+      "DB_HOST=mongo"
     ],
     "cluster_size": 1
   },
@@ -17,7 +17,7 @@
       "NODE_ENV=production",
       "API_ROOT=http://172.17.0.1:3003/api",
       "WORKER_SCRIPT=./workers/start-extractor",
-      "MONGO_HOST=mongo"
+      "DB_HOST=mongo"
     ],
     "cluster_size": 1
   },
@@ -28,8 +28,7 @@
       "NODE_ENV=production",
       "API_ROOT=http://172.17.0.1:3003/api",
       "WORKER_SCRIPT=./workers/job-queue",
-      "DEBUG=*job-monitor*",
-      "MONGO_HOST=mongo"
+      "DB_HOST=mongo"
     ],
     "cluster_size": 1
   },
@@ -41,7 +40,7 @@
       "API_ROOT=http://172.17.0.1:3003/api",
       "WORKER_SCRIPT=./workers/event-finder",
       "DEBUG=*event-finder*",
-      "MONGO_HOST=mongo",
+      "DB_HOST=mongo",
       "EVENT_FINDER_INTERVAL_MIN=10"
     ],
     "cluster_size": 1
@@ -54,7 +53,7 @@
       "API_ROOT=http://172.17.0.1:3003/api",
       "WORKER_SCRIPT=./workers/job-scheduler",
       "DEBUG=*job-scheduler*",
-      "MONGO_HOST=mongo",
+      "DB_HOST=mongo",
       "JOBSET_QUERYSPAN_MIN=5"
     ],
     "cluster_size": 1
