@@ -151,6 +151,10 @@ function EventsCtrl($scope, PostsCluster, SocialMediaPost) {
         $scope.eventPoints = _.isEmpty(features) ? null : features;
       },
 
+      forDomains() {
+        $scope.clusterTerm = $scope.selectedEvent.domains.join(', ');
+      },
+
       forHashtags() {
         $scope.clusterTerm = $scope.selectedEvent.hashtags.join(', ');
       },

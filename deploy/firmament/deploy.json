@@ -80,11 +80,25 @@
   },
   {
     "name": "hashtag-clusterer",
-    "Image": "sotera/comedian:b96",
+    "Image": "sotera/comedian:19",
     "DockerFilePath": "",
     "Hostname": "hashtag-clusterer",
     "Env": [
       "TRUNCATE_POSTS=0"
+    ],
+    "HostConfig": {
+      "Links": [
+        "redis:redis"
+      ]
+    }
+  },
+  {
+    "name": "domain-clusterer",
+    "Image": "sotera/absentfriends:6",
+    "DockerFilePath": "",
+    "Hostname": "domain-clusterer",
+    "Env": [
+      "TRUNCATE_POSTS=1"
     ],
     "HostConfig": {
       "Links": [
@@ -119,7 +133,7 @@
   },
   {
     "name": "dr-manhattan",
-    "Image": "sotera/dr-manhattan:b96",
+    "Image": "sotera/dr-manhattan:20",
     "DockerFilePath": "",
     "Hostname": "dr-manhattan",
     "HostConfig": {
@@ -207,7 +221,7 @@
     "ExpressApps": [
       {
         "GitUrl": "https://github.com/Sotera/watchman.git",
-        "GitSrcBranchName": "88-96-merge",
+        "GitSrcBranchName": "master",
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8701",
         "ServiceName": "watchman",
@@ -251,7 +265,7 @@
     "ExpressApps": [
       {
         "GitUrl": "https://github.com/Sotera/watchman.git",
-        "GitSrcBranchName": "88-96-merge",
+        "GitSrcBranchName": "master",
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8702",
         "ServiceName": "watchman",
@@ -294,7 +308,7 @@
     "ExpressApps": [
       {
         "GitUrl": "https://github.com/Sotera/watchman.git",
-        "GitSrcBranchName": "88-96-merge",
+        "GitSrcBranchName": "master",
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8703",
         "ServiceName": "watchman-queue",
