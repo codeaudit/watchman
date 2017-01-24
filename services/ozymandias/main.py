@@ -4,31 +4,36 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../util'))
 from redis_dispatcher import Dispatcher
 from loopy import Loopy
 
+
 def set_err(job, msg):
     job['state'] = 'error'
     job['data'] = []
     job['error'] = msg
 
+
 def err_check(job):
-    required = {'query_url', 'start_time_ms', 'end_time_ms',
-        'result_url', 'job_id'}
+    required = {'query_url', 'start_time_ms', 'end_time_ms', 'result_url', 'job_id'}
     if not required.issubset(job):
         set_err(job, 'Missing some required fields {}'.format(required))
+
 
 def process_message(key, job):
     err_check(job)
     if job['state'] == 'error':
         return
 
+    query_url = os.getenv('QUERY_URL', job['query_url'])
+    result_url = os.getenv('RESULT_URL', job['result_url'])
+
     query_params = [{
-        'query_type': 'between',
+        'query_type': 'where',
         'property_name': 'end_time_ms',
-        'query_value': [job['start_time_ms'], job['end_time_ms']]
+        'query_value': job['end_time_ms']
     }]
 
     print 'BEGIN LINKING CLUSTERS'
     linker = ClusterLinker(job.get('min_overlap', 0.6))
-    loopy = Loopy(job['query_url'], query_params)
+    loopy = Loopy(query_url, query_params)
 
     if loopy.result_count == 0:
         print 'No data to process'
@@ -48,9 +53,9 @@ def process_message(key, job):
 
     print 'FINISHED LINKING CLUSTERS'
     for link in linker.get_links():
-        loopy.post_result(job['result_url'], link)
+        loopy.post_result(result_url, link)
 
-    job['data'] = json.dumps({}) # no need to save anything to job
+    job['data'] = json.dumps({})  # no need to save anything to job
     job['state'] = 'processed'
 
 if __name__ == '__main__':

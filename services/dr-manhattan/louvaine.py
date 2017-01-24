@@ -22,10 +22,10 @@ class Louvaine:
         else:
             self.url = base_url + '/'
 
-    def add_node(self, agg_cluster):
-        n_id = agg_cluster['id']
+    def add_node(self, cluster):
+        n_id = cluster['id']
         self.graph.add_node(n_id)
-        self.nodes_detailed[n_id] = agg_cluster
+        self.nodes_detailed[n_id] = cluster
 
 
     def add_edge(self, c_link):
@@ -177,7 +177,7 @@ class Louvaine:
                 continue
             clust = self.nodes_detailed[n]
             if com in d1:
-                d1[com]['aggregate_cluster_ids'].append(n)
+                d1[com]['cluster_ids'].append(n)
                 d1[com]['topic_message_count'] += len(clust['similar_post_ids'])
             else:
                 d1[com] = {
@@ -185,7 +185,8 @@ class Louvaine:
                     'name': 'default',
                     'start_time_ms': clust['start_time_ms'],
                     'end_time_ms':clust['end_time_ms'],
-                    'aggregate_cluster_ids':[n],
+                    'cluster_ids':[n],
+                    'domains':{},
                     'hashtags':{},
                     'keywords':{},
                     'campaigns':{"total":0, 'ids':{}},
@@ -195,11 +196,16 @@ class Louvaine:
                     'importance_score':1.0,
                     'topic_message_count':len(clust['similar_post_ids'])}
 
-            #Expand Summary data (hashtags, keywords, images, urls, geo)
+            #Expand Summary data (hashtags, keywords, images, urls, geo, domains)
             if clust['data_type'] == 'hashtag':
                 d1[com]['hashtags'][clust['term']] = len(clust['similar_post_ids'])
                 images |= self.get_img_sum(clust)
                 #Add full text analysis, many communities have no image/text nodes
+                self.get_text_sum(clust, d1[com])
+            elif clust['data_type'] == 'domain':
+                # TODO: Verify we don't need hashtag or a get_domain_sum function
+                d1[com]['domains'][clust['term']] = len(clust['similar_post_ids'])
+                images |= self.get_img_sum(clust)
                 self.get_text_sum(clust, d1[com])
 
             elif clust['data_type'] == 'image':
@@ -239,6 +245,12 @@ class Louvaine:
 
             d1[com]['urls'] = list(d1[com]['urls'])
 
+            l_domains = map(lambda x: x[0], sorted([(k, v) for k, v in d1[com]['domains'].iteritems()], key=lambda x: x[1]))
+            if len(l_domains) > 10:
+                d1[com]['domains'] = l_domains[:10]
+            else:
+                d1[com]['domains'] = l_domains
+
             temp = []
             for k, v in d1[com]['location'].iteritems():
                 dt = v
@@ -253,7 +265,7 @@ class Louvaine:
         d1 = self.get_communities()
         print "Writing communities to mongo"
         for com in d1.values():
-            if len(com['aggregate_cluster_ids']) < 3:
+            if len(com['cluster_ids']) < 3:
                 continue
             res = requests.post(self.url+'events/', json=com)
             print res

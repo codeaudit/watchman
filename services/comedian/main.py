@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, uuid
 from hashtag_similarity import HashtagClusters
 sys.path.append(os.path.join(os.path.dirname(__file__), "../util"))
 from redis_dispatcher import Dispatcher
@@ -24,6 +24,8 @@ def err_check(job):
         set_err(job, "No 'min_post' in job fields")
 
 def process_message(key, job):
+
+
     # if type == 'featurizer', immediately process and return b/c hashtags
     # are not featurized. allows system to continue with clustering process.
     if job.get('type') == 'featurizer':
@@ -35,9 +37,12 @@ def process_message(key, job):
     if job['state'] == 'error':
         return
 
+    query_url = os.getenv('QUERY_URL', job['query_url'])
+    result_url = os.getenv('RESULT_URL', job['result_url'])
+
     print 'FINDING SIMILARITY'
     print 'min_post set to %s' % job['min_post']
-    hash_clust = HashtagClusters(float(job['min_post']), job['result_url'], job['start_time_ms'])
+    hash_clust = HashtagClusters(float(job['min_post']), result_url, job['start_time_ms'])
 
     query_params = [{
         "query_type": "between",
@@ -59,7 +64,7 @@ def process_message(key, job):
             "property_name": "lang",
             "query_value": job['lang']
         })
-    loopy = Loopy(job['query_url'], query_params)
+    loopy = Loopy(query_url, query_params)
 
     if loopy.result_count == 0:
         print "No data to process"
@@ -85,18 +90,20 @@ def process_message(key, job):
 
     print 'FINISHED SIMILARITY PROCESSING'
     for k, v in hash_clust.get_clusters().iteritems():
-        cluster = {}
-        cluster['term'] = k
-        cluster['similar_ids'] = v['similar_ids']
-        cluster['similar_post_ids'] = v['similar_post_ids']
-        cluster['job_monitor_id'] = job['job_id']
-        cluster['start_time_ms'] = job['start_time_ms']
-        cluster['end_time_ms'] = job['end_time_ms']
-        cluster['stats'] = v['stats']
-        cluster['data_type'] = 'hashtag'
+        cluster = {
+            'id': str(uuid.uuid4()),
+            'term': k,
+            'similar_ids': v['similar_ids'],
+            'similar_post_ids': v['similar_post_ids'],
+            'job_monitor_id': job['job_id'],
+            'start_time_ms': job['start_time_ms'],
+            'end_time_ms': job['end_time_ms'],
+            'stats': v['stats'],
+            'data_type': 'hashtag'
+        }
 
         try:
-            loopy.post_result(job['result_url'], cluster)
+            loopy.post_result(result_url, cluster)
         except Exception as e:
             # TODO: we should set data = None when error.
             job['data'] = []

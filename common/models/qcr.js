@@ -178,6 +178,7 @@ module.exports = function(Qcr) {
     processedAttrs.text = attrs.text || '';
     processedAttrs.image_urls = attrs.image_urls || [];
     processedAttrs.hashtags = attrs.hashtags || [];
+    processedAttrs.domains = attrs.domains || [];
 
     // Twitter-specific modifications
     processedAttrs = preprocessor(processedAttrs);
@@ -195,6 +196,10 @@ module.exports = function(Qcr) {
       processedAttrs.featurizer = 'hashtag';
       createActions.push(SocialMediaPost.create(processedAttrs));
     }
+    if (processedAttrs.image_urls.length > 0) {
+      processedAttrs.featurizer = 'domain';
+      createActions.push(SocialMediaPost.create(processedAttrs));
+    }
 
     // returns default 200 for everything.
     // if nil text, hashtags, and images just forget about it.
@@ -204,7 +209,7 @@ module.exports = function(Qcr) {
       // QCR re-sends tweets on 5xx (server error) http response codes.
       // b/c they send lots of dupe tweets, we get mongo uniq idx failures.
       // ignore them.
-      // console.error('QCR err:', err);
+      debug(err);
       failures++;
       cb(null, {ok: 1}); // send bogus 200 response
     });

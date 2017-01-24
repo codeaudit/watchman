@@ -11,6 +11,7 @@ function networkGraphDirective() {
 
 function networkGraphController($scope, ClusterLink) {
   var colors = {
+    domain: 'SeaGreen',
     hashtag: 'Goldenrod',
     text: 'SteelBlue',
     image: 'Maroon'
@@ -196,5 +197,5 @@ function addTitle(selection, width) {
     .attr('y', 20)
     .attr('text-anchor', 'middle')
     .style('font-size', '20px')
-    .text('Aggregate Clusters');
+    .text('Post Clusters');
 }

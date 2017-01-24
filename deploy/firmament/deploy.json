@@ -80,7 +80,7 @@
   },
   {
     "name": "hashtag-clusterer",
-    "Image": "sotera/comedian:18",
+    "Image": "sotera/comedian:20",
     "DockerFilePath": "",
     "Hostname": "hashtag-clusterer",
     "Env": [
@@ -93,8 +93,22 @@
     }
   },
   {
+    "name": "domain-clusterer",
+    "Image": "sotera/absentfriends:7",
+    "DockerFilePath": "",
+    "Hostname": "domain-clusterer",
+    "Env": [
+      "TRUNCATE_POSTS=1"
+    ],
+    "HostConfig": {
+      "Links": [
+        "redis:redis"
+      ]
+    }
+  },
+  {
     "name": "cluster-linker",
-    "Image": "sotera/ozymandias:5",
+    "Image": "sotera/ozymandias:6",
     "DockerFilePath": "",
     "Hostname": "cluster-linker",
     "HostConfig": {
@@ -119,7 +133,7 @@
   },
   {
     "name": "dr-manhattan",
-    "Image": "sotera/dr-manhattan:19",
+    "Image": "sotera/dr-manhattan:21",
     "DockerFilePath": "",
     "Hostname": "dr-manhattan",
     "HostConfig": {
@@ -152,17 +166,6 @@
       "VolumesFrom": [
         "data-container"
       ],
-      "Links": [
-        "redis:redis"
-      ]
-    }
-  },
-  {
-    "name": "aggregate-clustering",
-    "Image": "sotera/aggregate-clustering:10",
-    "DockerFilePath": "",
-    "Hostname": "aggregate-clustering",
-    "HostConfig": {
       "Links": [
         "redis:redis"
       ]
@@ -218,7 +221,7 @@
     "ExpressApps": [
       {
         "GitUrl": "https://github.com/Sotera/watchman.git",
-        "GitSrcBranchName": "kjemaxprobdot3",
+        "GitSrcBranchName": "111-image-features-from-prob-layer",
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8701",
         "ServiceName": "watchman",
@@ -262,7 +265,7 @@
     "ExpressApps": [
       {
         "GitUrl": "https://github.com/Sotera/watchman.git",
-        "GitSrcBranchName": "kjemaxprobdot3",
+        "GitSrcBranchName": "111-image-features-from-prob-layer",
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8702",
         "ServiceName": "watchman",
@@ -305,7 +308,7 @@
     "ExpressApps": [
       {
         "GitUrl": "https://github.com/Sotera/watchman.git",
-        "GitSrcBranchName": "kjemaxprobdot3",
+        "GitSrcBranchName": "111-image-features-from-prob-layer",
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8703",
         "ServiceName": "watchman-queue",
@@ -316,6 +319,7 @@
           "NODE_ENV": "production",
           "API_ROOT": "http://172.17.0.1:3003/api",
           "WORKER_SCRIPT": "./workers/job-queue",
+          "JOBSET_QUERYSPAN_MIN": "7",
           "DEBUG": "*job-scheduler*"
         },
         "Scripts": [
@@ -349,7 +353,7 @@
     "ExpressApps": [
       {
         "GitUrl": "https://github.com/Sotera/watchman.git",
-        "GitSrcBranchName": "kjemaxprobdot3",
+        "GitSrcBranchName": "111-image-features-from-prob-layer",
         "StrongLoopBranchName": "deploy",
         "StrongLoopServerUrl": "http://localhost:8704",
         "ServiceName": "watchman-event-finder",
