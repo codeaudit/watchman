@@ -3,7 +3,7 @@
 angular.module('com.module.core')
 .controller('EventsCtrl', EventsCtrl);
 
-function EventsCtrl($scope, PostsCluster, SocialMediaPost) {
+function EventsCtrl($scope, PostsCluster, SocialMediaPost, Event) {
   $scope.eventPoints = null;
   $scope.clusterText = '';
   $scope.clusterTerm = '';
@@ -13,11 +13,21 @@ function EventsCtrl($scope, PostsCluster, SocialMediaPost) {
   $scope.filterText = null;
 
   $scope.eventSelected = function(evnt) {
+    // already selected
+    if ($scope.selectedEvent && $scope.selectedEvent.id === evnt.id)
+      return;
+
     visualizeEvent(evnt);
   };
 
-  $scope.eventChanged = function(evnt) {
-    evnt.$save();
+  $scope.eventNamed = function(evnt) {
+    Event.prototype$updateAttributes({
+      id: evnt.id,
+      name: evnt.name
+    })
+    .$promise
+    .then(console.info)
+    .catch(console.error);
   };
 
   $scope.filterChanged = function() {
