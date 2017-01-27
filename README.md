@@ -31,6 +31,7 @@ git clone https://github.com/Sotera/watchman.git app; cd app # optional if in de
 cp slc-conf.template.json slc-conf.json
 sudo script/docker/install-compose.sh
 script/deploy/compose up deploy [branch] # branch optional, default: master
+# script/deploy/compose up deploy local # deploy local branch, not remote
 script/deploy/compose scale image-fetcher=3
 
 # hint: add /docker-compose.override.yml to override services.
