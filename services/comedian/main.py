@@ -24,8 +24,6 @@ def err_check(job):
         set_err(job, "No 'min_post' in job fields")
 
 def process_message(key, job):
-
-
     # if type == 'featurizer', immediately process and return b/c hashtags
     # are not featurized. allows system to continue with clustering process.
     if job.get('type') == 'featurizer':

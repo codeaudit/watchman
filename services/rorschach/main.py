@@ -1,67 +1,111 @@
-import sys, os, argparse
-from syntax_similarity import SyntaxVectorizer
+import sys, os, uuid
+from mutual_information import MutualInformation
 sys.path.append(os.path.join(os.path.dirname(__file__), "../util"))
 from redis_dispatcher import Dispatcher
-from sentiment_filters import SentimentFilter
+from loopy import Loopy
 
 def set_err(job, msg):
     job['state'] = 'error'
     job['data'] = []
     job['error'] = msg
 
+def err_check(job):
+    if 'query_url' not in job:
+        set_err(job, "No 'query_url' in job fields")
+    if 'result_url' not in job:
+        set_err(job, "No 'result_url' in job fields")
+    if 'start_time_ms' not in job:
+        set_err(job, "No 'start_time_ms' in job fields")
+    if 'end_time_ms' not in job:
+        set_err(job, "No 'end_time_ms' in job fields")
+    if 'job_id' not in job:
+        set_err(job, "No 'job_id' in job fields")
+    if 'min_post' not in job:
+        set_err(job, "No 'min_post' in job fields")
 
 def process_message(key, job):
-    # Examine job for correct fields
-    if 'txt' not in job.keys():
-        set_err(job, "No 'txt' in job fields")
-        return
-    if 'lang' not in job.keys():
-        set_err(job, "No 'lang' in job fields")
+    # if type == 'featurizer', immediately process and return b/c the text nodes
+    # are not featurized. allows system to continue with clustering process.
+    if job.get('type') == 'featurizer':
+        job['state'] = 'processed'
+        job['data'] = []
         return
 
     # Check if the text language can be featurized
-    lng = job['lang']
-    if lng in model_langs:
-        try:
-            if sent_filt.is_scoreable(job['txt'], lng) is False:
-                job['data'] = []
-                job['state'] = 'processed'
-                return
-        except:
-            set_err(job, "Error checking if doc is 'scorable', language=" + str(lng))
-            return
-
-        try:
-            job['data'] = syntax_vectorizer[lng].vec_from_tweet(sent_filt.tokenize(job['txt'], lng))
-            job['state'] = 'processed'
-            return
-        except:
-            set_err(job, "Error making syntax vector (" + lng + "):\n" + str(sys.exc_info()[0]))
-            return
-    else:
-        job['data'] = []
-        job['state'] = 'processed'
+    err_check(job)
+    if job['state'] == 'error':
         return
 
-if __name__ == '__main__':
-    ar = argparse.ArgumentParser()
-    ar.add_argument("-modelPath", help="Path to model (e.g. ./models)")
-    ar.add_argument("-englishModel", help="Name of Engilsh model")
-    ar.add_argument("-arabicModel", help="Name of Arabic model")
-    args = ar.parse_args()
-    print "Parsed args"
-    global model_langs
-    model_langs = ['en', 'ar']
-    print "Making filter"
-    global sent_filt
-    sent_filt = SentimentFilter()
-    global syntax_vectorizer
-    syntax_vectorizer = {}
+    query_url = os.environ['QUERY_URL'] if 'QUERY_URL' in os.environ else job['query_url']
+    result_url = os.environ['RESULT_URL'] if 'RESULT_URL' in os.environ else job['result_url']
 
-    if args.englishModel != '':
-        syntax_vectorizer['en'] = SyntaxVectorizer(args.modelPath, args.englishModel)
-    if args.arabicModel != '':
-        syntax_vectorizer['ar'] = SyntaxVectorizer(args.modelPath, args.arabicModel)
+    print 'FINDING SIMILARITY'
+    print 'min_post set to %s' % job['min_post']
+    word_clust = MutualInformation(float(job['min_post']), result_url, job['start_time_ms'])
+
+    query_params = [{
+        "query_type": "between",
+        "property_name": "timestamp_ms",
+        "query_value": [job['start_time_ms'], job['end_time_ms']]
+    }, {
+        "query_type": "where",
+        "property_name": "featurizer",
+        "query_value": "text"
+    }, {
+        "query_type": "neq",
+        "property_name": "hashtags",
+        "query_value": "null"
+    }]
+
+    loopy = Loopy(query_url, query_params)
+    if loopy.result_count == 0:
+        print "No data to process"
+        job['data'] = []
+        job['error'] = "No data found to process."
+        job['state'] = 'error'
+        return
+
+    while True:
+        print "Scrolling...{}".format(loopy.total_returned)
+        page = loopy.get_next_page()
+        if page is None:
+            break
+        # Do something with the obtained page
+        for doc in page:
+            word_clust.process_vector(doc['id'], doc['post_id'], doc['text'], doc['lang'])
+
+    if int(os.getenv('TRUNCATE_POSTS') or 0):
+        print 'Truncating posts...'
+        print truncate_posts(word_clust.get_deletable_ids(), loopy)
+    else:
+        print 'Skipping truncate posts because TRUNCATE_POSTS env var is not set...'
+
+    print 'FINISHED SIMILARITY PROCESSING'
+    for k, v in word_clust.get_clusters().iteritems():
+        cluster = {}
+        cluster['id'] = str(uuid.uuid4())
+        cluster['term'] = k
+        cluster['similar_ids'] = v['similar_ids']
+        cluster['similar_post_ids'] = v['similar_post_ids']
+        cluster['job_monitor_id'] = job['job_id']
+        cluster['start_time_ms'] = job['start_time_ms']
+        cluster['end_time_ms'] = job['end_time_ms']
+        cluster['stats'] = v['stats']
+        cluster['data_type'] = 'text'
+
+        try:
+            loopy.post_result(result_url, cluster)
+        except Exception as e:
+            # TODO: we should set data = None when error.
+            job['data'] = []
+            job['state'] = 'error'
+            job['error'] = e
+            break
+    else: # no errors
+        job['data'] = hash_clust.to_json()
+        job['state'] = 'processed'
+
+if __name__ == '__main__':
     dispatcher = Dispatcher(redis_host='redis', process_func=process_message,
-        queues=['genie:feature_txt'])
+        queues=['genie:feature_txt', 'genie:cluster_txt'])
     dispatcher.start()
