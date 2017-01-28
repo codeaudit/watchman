@@ -5,9 +5,14 @@ require('dotenv').config({silent: true});
 // create browser global object to store system vars in browser.
 // used in npm scripts in package.json
 
-const browserEnvVars = {
-  MY_API_KEY: process.env.MY_API_KEY,
-  NODE_ENV: process.env.NODE_ENV
-};
+// take all env vars with prefix 'UI_'
+let envVars = {};
+for(let k in process.env) {
+  let match = k.match(/^UI_(.*)/);
+  if (match) {
+    envVars[match[1]] = process.env[k];
+  }
+}
 
-process.stdout.write(`const WatchmanEnv = ${JSON.stringify(browserEnvVars)};`);
+// output can be piped to scripts
+process.stdout.write(`const WatchmanEnv = ${JSON.stringify(envVars)};`);
