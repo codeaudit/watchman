@@ -5,7 +5,9 @@ from stop_words import get_stop_words
 class SentimentFilter:
     def __init__(self):
         self.good_langs = ['en', 'ar']
-        self.stop = {'ar':set(get_stop_words('ar')), 'en':set(map(lambda x: re.sub('[^\w\s]', '', x, flags=re.UNICODE) ,get_stop_words('en')))}
+        black_list = ['rt']
+        self.stop = {'ar':set(get_stop_words('ar') + black_list), 'en':set(map(lambda x: re.sub('[^\w\s]', '', x, flags=re.UNICODE) ,get_stop_words('en')+black_list))}
+
 
     def which_languages(self):
         return self.good_langs
@@ -36,7 +38,7 @@ class SentimentFilter:
             if b_filter_special:
                 tokens = filter(lambda x: self.is_special(x) is not True, tokens)
             if b_filter_url:
-                tokens = filter(lambda x: self.is_special(x) is not True, tokens)
+                tokens = filter(lambda x: self.is_url(x) is not True, tokens)
             if b_remove_stop:
                 tokens = filter(lambda x: x not in self.stop[lang], tokens)
             if b_unique:
@@ -48,7 +50,7 @@ class SentimentFilter:
                     caption = ' '.join(filter(lambda x: len(x) > 0 and x[0] !='#', caption.split(' ')))
                 tokens = Text(caption).words
                 if b_filter_url:
-                    tokens = filter(lambda x: self.is_special(x) is not True, tokens)
+                    tokens = filter(lambda x: self.is_url(x) is not True, tokens)
                 tokens = filter(lambda x: len(x)>1, tokens)
                 if b_remove_stop:
                     tokens = filter(lambda x: x not in self.stop[lang], tokens)

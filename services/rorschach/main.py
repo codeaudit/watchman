@@ -53,11 +53,11 @@ def process_message(key, job):
         "query_value": "text"
     }, {
         "query_type": "neq",
-        "property_name": "hashtags",
+        "property_name": "text",
         "query_value": "null"
     }]
 
-    loopy = Loopy(query_url, query_params)
+    loopy = Loopy(query_url + 'socialMediaPosts', query_params)
     if loopy.result_count == 0:
         print "No data to process"
         job['data'] = []
@@ -101,6 +101,8 @@ def process_message(key, job):
             job['state'] = 'error'
             job['error'] = e
             break
+
+    print "Done Processing"
     else: # no errors
         job['data'] = hash_clust.to_json()
         job['state'] = 'processed'

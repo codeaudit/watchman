@@ -10,7 +10,7 @@ class MutualInformation:
         self.word_counts = {}
         self.min_post = min_posts
         self.post_per_lang = {}
-        self.url = results_url if results_url[-1] == "/" results_url+"/"
+        self.url = results_url if results_url[-1] == "/" else results_url + "/"
         self.prior_ms = prior_ms
         self.start_ms = int(start_time_ms)
         self.sf = SentimentFilter()
@@ -108,7 +108,7 @@ class MutualInformation:
         n_lang = self.post_per_lang[lang]
         n1 = self.word_counts[words[0]]
         n2 = self.word_counts[words[1]]
-        n12 = self.word_pairs[term]
+        n12 = len(self.word_pairs[term]['similar_post_ids'])
         return np.log2(float(n12*n_lang)/(n1*n2))
 
 
@@ -119,7 +119,7 @@ class MutualInformation:
             if n_terms >= self.min_post:
                 vSim['stats']['total_posts'] = self.post_per_lang[vSim['lang']]
                 vSim['stats']['pmi'] = self.pmi(k, vSim['lang'])
-                vSim['stats']['is_unlikely'] = 1 if vSim['stats']['pmi'] > (vSim['stats']['mu'] + 2*vSim['stats']['sigma']) else 0
+                vSim['stats']['is_unlikely'] = 1 if vSim['stats']['pmi'] > (vSim['stats']['prior_mu'] + 2*vSim['stats']['prior_sigma']) else 0
                 d0[k] = vSim
         return d0
 
