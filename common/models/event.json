@@ -54,7 +54,7 @@
     },
     "keywords": {
       "type": [
-        "string"
+        "object"
       ]
     },
     "urls": {

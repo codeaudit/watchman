@@ -6,13 +6,12 @@ require('dotenv').config({silent: true});
 // used in npm scripts in package.json
 
 // take all env vars with prefix 'UI_'
-let envVars = {};
-for(let k in process.env) {
-  let match = k.match(/^UI_(.*)/);
-  if (match) {
-    envVars[match[1]] = process.env[k];
-  }
-}
+const envVars = Object.keys(process.env)
+  .filter(key => key.match(/^UI_(.+)/))
+  .reduce((acc, key) => {
+    acc[key] = process.env[key];
+    return acc;
+  }, {});
 
 // output can be piped to scripts
 process.stdout.write(`const WatchmanEnv = ${JSON.stringify(envVars)};`);

@@ -4,9 +4,8 @@ angular.module('com.module.core')
 .controller('EventsCtrl', EventsCtrl);
 
 function EventsCtrl($scope, PostsCluster, SocialMediaPost, Event) {
-  $scope.eventPoints = null;
+  $scope.mapPoints = null;
   $scope.clusterText = '';
-  $scope.clusterTerm = '';
   $scope.events = null;
   $scope.selectedEvents = null;
   $scope.selectedEvent = null;
@@ -16,6 +15,8 @@ function EventsCtrl($scope, PostsCluster, SocialMediaPost, Event) {
     // already selected
     if ($scope.selectedEvent && $scope.selectedEvent.id === evnt.id)
       return;
+
+    $scope.selectedEvent = evnt;
 
     visualizeEvent(evnt);
   };
@@ -35,9 +36,9 @@ function EventsCtrl($scope, PostsCluster, SocialMediaPost, Event) {
       id: evnt.id,
       of_interest: evnt.of_interest
     })
-      .$promise
-      .then(console.info)
-      .catch(console.error);
+    .$promise
+    .then(console.info)
+    .catch(console.error);
   };
 
   $scope.filterChanged = function() {
@@ -60,7 +61,6 @@ function EventsCtrl($scope, PostsCluster, SocialMediaPost, Event) {
   }
 
   function visualizeEvent(evnt) {
-    $scope.selectedEvent = evnt;
     PostsCluster.find({
       filter: {
         where: {
@@ -75,21 +75,19 @@ function EventsCtrl($scope, PostsCluster, SocialMediaPost, Event) {
   }
 
   $scope.dateRangeSelected = function(start, end) {
-    $scope.$apply(() => getEvents(start, end));
+    $scope.$apply(() => getEventsInRange(start, end));
   };
 
-  function getEvents(start, end) {
-    let events = [];
-    $scope.events.forEach(function(evnt) {
-      if(evnt.end_time_ms >= start && evnt.end_time_ms <= end) {
-        events.push(evnt);
-      } else if(evnt.start_time_ms >= start && evnt.start_time_ms <= end) {
-        events.push(evnt);
-      } else if(evnt.start_time_ms <= start && evnt.end_time_ms >= end) {
-        events.push(evnt);
+  function getEventsInRange(start, end) {
+    $scope.selectedEvents = $scope.events.filter(evnt => {
+      if (evnt.end_time_ms >= start && evnt.end_time_ms <= end) {
+        return true;
+      } else if (evnt.start_time_ms >= start && evnt.start_time_ms <= end) {
+        return true;
+      } else if (evnt.start_time_ms <= start && evnt.end_time_ms >= end) {
+        return true;
       }
     });
-    $scope.selectedEvents = events;
   }
 
   $scope.filter = filter;
@@ -140,27 +138,13 @@ function EventsCtrl($scope, PostsCluster, SocialMediaPost, Event) {
 
   function visualize(clusters) {
     let functions = {
-      forText() {
-        $scope.clusterText = '';
-
-        let similarPostIds = _(clusters).map('similar_post_ids')
-          .flatten().compact().uniq().value();
-
-        sampleSocialMediaPosts('text', similarPostIds)
-        .then(posts => {
-          let allText = posts.map(p => p.text).join(' ');
-          $scope.clusterText = allText;
-        })
-        .catch(console.error);
-      },
-
       forMap() {
-        let features = {};
+        let points = {};
         $scope.selectedEvent.location.forEach(location => {
           if (location.geo_type !== 'point')
             return;
 
-          features[location.label] = {
+          points[location.label] = {
             lat: location.coords[0].lat,
             lng: location.coords[0].lng,
             message: location.label,
@@ -168,32 +152,29 @@ function EventsCtrl($scope, PostsCluster, SocialMediaPost, Event) {
             draggable: false
           };
         });
-        $scope.eventPoints = _.isEmpty(features) ? null : features;
-      },
-
-      forDomains() {
-        $scope.clusterTerm = $scope.selectedEvent.domains.join(', ');
+        $scope.mapPoints = _.isEmpty(points) ? null : points;
       },
 
       forHashtags() {
-        $scope.clusterTerm = $scope.selectedEvent.hashtags.join(', ');
+        $scope.hashtags = $scope.selectedEvent.hashtags.join(', ');
       },
 
       forImages() {
         $scope.imageUrls = $scope.selectedEvent.image_urls;
       },
 
+      forKeywords() {
+        $scope.keywords = $scope.selectedEvent.keywords;
+      },
+
       forAll() {
-        this.forText();
         this.forMap();
         this.forHashtags();
         this.forImages();
+        this.forKeywords();
       }
     };
 
     return functions;
   }
 }
-
-
-
