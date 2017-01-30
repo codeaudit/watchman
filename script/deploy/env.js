@@ -9,7 +9,7 @@ require('dotenv').config({silent: true});
 const envVars = Object.keys(process.env)
   .filter(key => key.match(/^UI_(.+)/))
   .reduce((acc, key) => {
-    acc[key] = process.env[key];
+    acc[key.replace(/^UI_/, '')] = process.env[key];
     return acc;
   }, {});
 
