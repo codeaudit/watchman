@@ -20,7 +20,7 @@ def process_message(key,job):
     if job['state'] == 'error':
         return
 
-    api_root = job['api_root']
+    api_root = os.getenv('API_ROOT', job['api_root'])
     ts_end = job['end_time']
 
     if api_root[-1] != '/': api_root += '/'

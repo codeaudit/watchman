@@ -102,8 +102,7 @@ def process_message(key, job):
                 domain_clust.process_vector(doc['id'], doc['post_id'], domains)
 
     if int(os.getenv('TRUNCATE_POSTS') or 0):
-        print 'Truncating posts...'
-        print truncate_posts(feature_similarity.get_clusters_to_delete(), loopy)
+        print 'TODO: write code to truncate posts...'
     else:
         print 'Skipping truncate posts because TRUNCATE_POSTS env var is not set...'
 

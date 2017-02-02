@@ -140,7 +140,8 @@ function EventsCtrl($scope, PostsCluster, SocialMediaPost, Event) {
     let functions = {
       forMap() {
         let points = {};
-        $scope.selectedEvent.location.forEach(location => {
+        let locations = $scope.selectedEvent.location.sort((a, b) => b.weight - a.weight);
+        locations.slice(0,3).forEach(location => {
           if (location.geo_type !== 'point')
             return;
 

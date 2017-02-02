@@ -1,0 +1,7 @@
+spinner(show='showSpinner') //- boolean scope property to toggle spinner
+h3 Plot Text
+.row(style='padding-bottom:20px')
+  textarea(style='width:100%; height:200px;' ng-model='textAreaText' ng-model-options='{ debounce: 1000 }' ng-change='textChanged()')
+.row
+  event-map(ng-show='mapPoints' points='mapPoints')
+    iframe(src='http://54.86.248.86:3005/index.html' style='width:100%; height:600px' scrolling='no' frameborder='0' id='map-frame')
