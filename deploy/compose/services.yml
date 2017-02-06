@@ -97,7 +97,7 @@ services:
     extends:
       file: common.yml
       service: analytic
-    image: sotera/dr-manhattan:21
+    image: sotera/dr-manhattan:22
     hostname: dr-manhattan
     depends_on:
       - redis
