@@ -37,7 +37,7 @@
     },
     "of_interest": {
       "type": "Boolean",
-      "default":true
+      "default": true
     },
     "name": {
       "type": "string"

@@ -1,0 +1,155 @@
+{
+  "name": "qcrnews",
+  "plural": "qcrnews",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "SentenceID": {
+      "type": "string"
+    },
+    "TargetActorRole": {
+      "type:":"string"
+    },
+    "TargetActorEntity": {
+      "type:":"string"
+    },
+    "Month": {
+      "type": "number"
+    },
+    "Lon": {
+      "type": "number"
+    },
+    "DateString": {
+      "type:":"string"
+    },
+    "LocationName": {
+      "type:":"string"
+    },
+    "SourceActorRole": {
+      "type:":"string"
+    },
+    "SourceActorFull": {
+      "type:":"string"
+    },
+    "NormIntensityUnique": {
+      "type": "number"
+    },
+    "QuadClass": {
+      "type": "number"
+    },
+    "EventRootCodeString": {
+      "type:":"string"
+    },
+    "EventRootCode": {
+      "type:":"string"
+    },
+    "TargetActorAttribute": {
+      "type:":"string"
+    },
+    "EventCode": {
+      "type:":"string"
+    },
+    "StateName": {
+      "type:":"string"
+    },
+    "DateParsed": {
+      "type:":"string"
+    },
+    "ActorArray": {
+      "type": [
+        "string"
+      ]
+    },
+    "Lat": {
+      "type": "number"
+    },
+    "TotalEventSources": {
+      "type": "number"
+    },
+    "Day": {
+      "type": "number"
+    },
+    "UniqueTitle": {
+      "type:":"string"
+    },
+    "PropTotalSources": {
+      "type": "number"
+    },
+    "SourceActorAttribute": {
+      "type:":"string"
+    },
+    "Date": {
+      "type": "number"
+    },
+    "QuadClassString": {
+      "type:":"string"
+    },
+    "URLs": {
+      "type:":"string"
+    },
+    "NewsSources": {
+      "type:":"string"
+    },
+    "Filename": {
+      "type:":"string"
+    },
+    "UniqueSources": {
+      "type": "number"
+    },
+    "PropUniqueSources": {
+      "type": "number"
+    },
+    "NormIntensityTotal": {
+      "type": "number"
+    },
+    "EventID": {
+      "type:":"string"
+    },
+    "CountryCode": {
+      "type:":"string"
+    },
+    "TargetActorFull": {
+      "type:":"string"
+    },
+    "LastUpdated": {
+      "type:":"string"
+    },
+    "TitleArray": {
+      "type:":"string"
+    },
+    "pipeline_id": {
+      "type:":"string"
+    },
+    "SourceActorEntity": {
+      "type:":"string"
+    },
+    "URLArray": {
+      "type": [
+        "string"
+      ]
+    },
+    "Year": {
+      "type":"number"
+    },
+    "TotalSources": {
+      "type": "number"
+    },
+    "UniqueEventSources": {
+      "type": "number"
+    },
+    "GoldsteinScore": {
+      "type": "number"
+    },
+    "Issues": {
+      "type:":"string"
+    }
+
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

@@ -91,5 +91,9 @@
   "setting": {
     "dataSource": "db",
     "public": true
+  },
+  "qcrnews": {
+    "dataSource": "db",
+    "public": true
   }
 }
