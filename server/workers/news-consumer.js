@@ -7,7 +7,7 @@ const request = require('request'),
     WAIT = 30; //seconds;
 
 const { Qcrnews }=app.models;
-
+//Pretty hacky for now..just trying to read in a malformed data file for the integration event.
 const worker = module.exports = {
     start() {
         run();
