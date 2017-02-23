@@ -18,6 +18,7 @@
     "validateUpsert": true
   },
   "mixins": {
+    "Timestamp": {},
     "DestroyAll": {}
   },
   "properties": {
@@ -35,6 +36,10 @@
       ],
       "required": true
     },
+    "of_interest": {
+      "type": "Boolean",
+      "default":true
+    },
     "name": {
       "type": "string"
     },
@@ -43,9 +48,14 @@
         "string"
       ]
     },
-    "keywords": {
+    "domains": {
       "type": [
         "string"
+      ]
+    },
+    "keywords": {
+      "type": [
+        "object"
       ]
     },
     "urls": {

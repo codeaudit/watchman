@@ -6,31 +6,61 @@ h5 drag mouse over an area to select
     .nav-chart-container(style='width:95%; height:160px')
       event-graph
 .row
-  .col-md-3(style='height:550px; overflow-y:auto')
+  .col-md-3(style='height:550px; overflow-y:auto' ng-show='selectedEvents')
+    | Filter
+    form(ng-submit='filterChanged()')
+      .form-group
+        .row
+          .col-md-10
+            input.form-control(ng-model='filterText')
+          .col-md-2
+            button.btn.btn-info(type='submit' style='float:right')
+              span.glyphicon.glyphicon-search
+
     table.table.table-striped
-      thead
-        tr
-          th
-            .row
-              .col-md-6
-                |Events
-              p(style="display:inline") Filter:
-              input(style="display:inline;width:100px;margin-left:16px",ng-model='filterText').form-control
-              button(type="button", ng-click="filterChanged()").btn.btn-info
-                span.glyphicon.glyphicon-search
+      caption Events
       tbody
-        tr(ng-repeat="selectedEvent in selectedEvents")
-          td
-            p(style="display:inline",ng-click="eventSelected(selectedEvent)") {{selectedEvent.start_time_ms | date:'short'  }} - {{selectedEvent.end_time_ms | date:'short'  }}
-            input(style="display:inline;width:100px;margin-left:16px",ng-model='selectedEvent.name', ng-blur="eventChanged(selectedEvent)").form-control
+        tr(ng-repeat='evt in selectedEvents')
+          td(ng-click='eventSelected(evt)' ng-class='{highlight: (selectedEvent && selectedEvent.id === evt.id)}')
+            .row
+              .cell
+                p(style='display:inline') {{evt.start_time_ms | date:'short'}} - {{evt.end_time_ms | date:'short'}}
+                input.form-control(style='display:inline;width:100px;margin-left:16px' ng-model='evt.name' ng-model-options='{ debounce: 1000 }' ng-change='eventNamed(evt)')
+            .row
+              .cell
+                label Interesting:
+              .cell
+                label.switch
+                  input(type='checkbox' ng-model='evt.of_interest' ng-change='ofInterestChanged(evt)')
+                  .slider.round
+
   .col-md-4(style='height:550px; overflow-y:hidden')
-    event-map(ng-model='eventPoints')
-      iframe(src="http://54.86.248.86:3005/index.html", style="width:100%; height:600px;", scrolling="no", frameborder="1", id="map-frame")
-  .col-md-5
+    event-map(ng-show='mapPoints' points='mapPoints')
+      iframe(src='http://54.86.248.86:3005/index.html' style='width:100%; height:600px' scrolling='no' frameborder='0' id='map-frame')
+  .col-md-5(ng-show='selectedEvent')
     .row(ng-show='imageUrls' style='width:100%; height:100px; overflow-y:auto')
       image-grid(hover-dir='left')
     .row(style='width:100%; height:60px; overflow-y:auto')
-      p(ng-show='clusterTerm' style='font-size:1.5em') # {{clusterTerm}}
-    .row(style='width:100%; height:400px')
-      .cloud-container(style='width:100%; height:400px')
-        word-cloud(ng-model='clusterText')
+      p(ng-show='hashtags' style='font-size:1.5em') # {{hashtags}}
+
+.row(ng-show='selectedEvent')
+  .col-md-6(style='height:400px; overflow-y:auto')
+    table.table.table-striped
+      caption Keywords
+      thead
+        tr
+          th word
+          th count
+      tbody
+        tr(ng-repeat='keyword in keywords')
+          td {{keyword[0]}}
+          td {{keyword[1]}}
+  .col-md-6(style='height:400px; overflow-y:auto')
+    table.table.table-striped
+      caption Locations
+      thead
+        tr
+          th loc
+      tbody
+        tr(ng-repeat='loc in locations')
+          td(ng-click='translate(loc)') {{loc}}

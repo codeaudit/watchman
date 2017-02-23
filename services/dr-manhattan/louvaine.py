@@ -1,9 +1,11 @@
-import community, sys, os, requests, uuid
+import community, sys, os, uuid, traceback
 import networkx as nx
 from random import sample
 sys.path.append(os.path.join(os.path.dirname(__file__), "../util"))
 from loopy import Loopy
+from text_utils import remove_punctuation
 from sentiment_filters import SentimentFilter
+from operator import itemgetter as iget
 
 class Louvaine:
     def __init__(self, base_url, ent_url, geo_url):
@@ -27,7 +29,6 @@ class Louvaine:
         self.graph.add_node(n_id)
         self.nodes_detailed[n_id] = cluster
 
-
     def add_edge(self, c_link):
         self.graph.add_edge(c_link['source'], c_link['target'], {'weight':c_link['weight']})
 
@@ -43,7 +44,6 @@ class Louvaine:
         websites = set([])
         r_o["campaigns"]["total"] += n_posts
 
-        #TODO: fix query type once S.L. is fixed
         query_params = [{
             "query_type":"inq",
             "property_name":"post_id",
@@ -57,11 +57,6 @@ class Louvaine:
         for doc in page:
             if doc['featurizer'] != cluster['data_type']:
                 continue
-            r = None
-            try:
-                r = requests.post(self.ent_url, data={'text':doc['text']})
-            except:
-                print 'error getting entities, ignoring'
 
             if 'campaigns' in doc:
                 for cam in doc['campaigns']:
@@ -70,28 +65,37 @@ class Louvaine:
                     else:
                         r_o["campaigns"]["ids"][cam] = 1
 
-            if r is not None:
-                for res in r.json():
-                    if res['tag'] != 'LOCATION':
-                        continue
-                    rg = requests.post(self.geo_url, data={'address':res['label']})
-                    for place in rg.json():
+            locs = self.sf.extract_loc(doc['text'])
+            for loc in locs:
+                print 'Location:', loc.encode('utf-8')
+                try:
+                    geos = Loopy.post(self.geo_url, json={'address': loc})
+                    for place in geos:
                         places.append(place)
                         break
+                except Exception as e:
+                    print "error getting locations from geocoder...continuing.", e
+                    traceback.print_exc()
 
-            for word in [w for w in self.sf.pres_tokenize(doc['text'], doc['lang']) if w not in self.stop]:
+            tokens = [w for w in self.sf.pres_tokenize(doc['text'], doc['lang']) if w not in self.stop]
+            for word in tokens:
                 if word[0] == '#':
                     continue
-                if word[:4]=='http':
+                if word[0] == '@':
+                    continue
+                if word[:4] == 'http':
                     websites.add(word)
-                if word[:3]=='www':
+                    continue
+                if word[:3] == 'www':
                     websites.add('http://' + word)
+                    continue
                 if word in words:
                     words[word] += 1
                 else:
                     words[word] = 1
 
         for k, v in words.iteritems():
+            k = remove_punctuation(k)
             if v < 5:
                 continue
             if v in r_o['keywords']:
@@ -139,9 +143,10 @@ class Louvaine:
 
         #TODO: fix query type once S.L. is fixed
         for id in l_sample:
-            query_params = [{"query_type":"between",
-                     "property_name":"post_id",
-                     "query_value":[id, id]
+            query_params = [{
+                "query_type": "between",
+                "property_name": "post_id",
+                "query_value": [id, id]
             }]
             lp = Loopy(self.url + 'socialMediaPosts', query_params)
             page = lp.get_next_page()
@@ -186,6 +191,7 @@ class Louvaine:
                     'start_time_ms': clust['start_time_ms'],
                     'end_time_ms':clust['end_time_ms'],
                     'cluster_ids':[n],
+                    'domains':{},
                     'hashtags':{},
                     'keywords':{},
                     'campaigns':{"total":0, 'ids':{}},
@@ -195,13 +201,17 @@ class Louvaine:
                     'importance_score':1.0,
                     'topic_message_count':len(clust['similar_post_ids'])}
 
-            #Expand Summary data (hashtags, keywords, images, urls, geo)
+            #Expand Summary data (hashtags, keywords, images, urls, geo, domains)
             if clust['data_type'] == 'hashtag':
                 d1[com]['hashtags'][clust['term']] = len(clust['similar_post_ids'])
                 images |= self.get_img_sum(clust)
                 #Add full text analysis, many communities have no image/text nodes
                 self.get_text_sum(clust, d1[com])
-
+            elif clust['data_type'] == 'domain':
+                # TODO: Verify we don't need hashtag or a get_domain_sum function
+                d1[com]['domains'][clust['term']] = len(clust['similar_post_ids'])
+                images |= self.get_img_sum(clust)
+                self.get_text_sum(clust, d1[com])
             elif clust['data_type'] == 'image':
                 images |= self.get_img_sum(clust)
             elif clust['data_type'] == 'text':
@@ -216,7 +226,8 @@ class Louvaine:
             if clust['end_time_ms'] > d1[com]['end_time_ms']:
                 d1[com]['end_time_ms'] = clust['end_time_ms']
 
-        print "Information collected, proceed cleaning up dictionaries"
+        print "Information collected, formatting output"
+
         #Cleanup -> transform dicst to order lists, sets to lists for easy javascript comprehension
         for com in d1.keys():
             l_camps = []
@@ -225,19 +236,17 @@ class Louvaine:
 
             d1[com]['campaigns'] = l_camps
 
-            l_tags = map(lambda x: x[0], sorted([(k, v) for k, v in d1[com]['hashtags'].iteritems()], key=lambda x: x[1]))
-            if len(l_tags) > 10:
-                d1[com]['hashtags'] = l_tags[:10]
-            else:
-                d1[com]['hashtags'] = l_tags
+            l_tags = map(lambda x: x[0], sorted([(k, v) for k, v in d1[com]['hashtags'].iteritems()], key=iget(1)))
+            d1[com]['hashtags'] = l_tags[:100] # slice
 
-            l_terms = map(lambda x: x[0], sorted([(k, v) for k, v in d1[com]['keywords'].iteritems()], key=lambda x: x[1]))
-            if len(l_terms) > 10:
-                d1[com]['keywords'] = l_terms[:10]
-            else:
-                d1[com]['keywords'] = l_terms
+            # l_terms = map(lambda x: x[0], sorted([(k, v) for k, v in d1[com]['keywords'].iteritems()], key=lambda x: x[1]))
+            l_terms = sorted(list(d1[com]['keywords'].iteritems()), key=iget(1), reverse=1)
+            d1[com]['keywords'] = l_terms[:100] # slice
 
             d1[com]['urls'] = list(d1[com]['urls'])
+
+            l_domains = map(lambda x: x[0], sorted([(k, v) for k, v in d1[com]['domains'].iteritems()], key=iget(1)))
+            d1[com]['domains'] = l_domains[:10] # slice
 
             temp = []
             for k, v in d1[com]['location'].iteritems():
@@ -246,16 +255,16 @@ class Louvaine:
                 temp.append(dt)
             d1[com]['location'] = temp
 
-
         return d1
 
     def save_communities(self):
         d1 = self.get_communities()
-        print "Writing communities to mongo"
         for com in d1.values():
             if len(com['cluster_ids']) < 3:
                 continue
-            res = requests.post(self.url+'events/', json=com)
-            print res
-        return d1
 
+            print 'Posting communities to {}'.format(self.url)
+            Loopy.post(self.url + 'events/', json=com)
+            print 'Communities Saved!'
+
+        return d1

@@ -108,6 +108,12 @@
     },
     "primary_image_download_path": {
       "type": "string"
+    },
+    "campaigns": {
+      "type": [
+        "string"
+      ],
+      "default": []
     }
   },
   "validations": [],

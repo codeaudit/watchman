@@ -59,6 +59,7 @@ services:
       - data-container
     ports:
       - "8703:8701"
+      - "3002:3002"
 
   scheduler:
     extends:
@@ -96,7 +97,7 @@ services:
     extends:
       file: common.yml
       service: analytic
-    image: sotera/dr-manhattan:b96
+    image: sotera/dr-manhattan:24
     hostname: dr-manhattan
     depends_on:
       - redis
@@ -114,7 +115,7 @@ services:
     extends:
       file: common.yml
       service: analytic
-    image: sotera/comedian:b96
+    image: sotera/comedian:20
     hostname: hashtag-clusterer
     environment:
       - TRUNCATE_POSTS=1
@@ -162,12 +163,3 @@ services:
       - redis
     volumes_from:
       - data-container
-
-  aggregate-clustering:
-    extends:
-      file: common.yml
-      service: analytic
-    image: sotera/aggregate-clustering:10
-    hostname: aggregate-clustering
-    depends_on:
-      - redis

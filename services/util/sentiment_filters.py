@@ -1,4 +1,5 @@
 import re
+import traceback
 from polyglot.text import Text
 from stop_words import get_stop_words
 
@@ -58,9 +59,32 @@ class SentimentFilter:
                     return list(set(tokens))
                 return tokens
             except:
-                print 'error in tokenize returning empty array'
+                traceback.print_exc()
                 return []
         else:
             return []
 
 
+    def pres_tokenize(self, caption, lang):
+        if lang=='en':
+            caption = re.sub('[\s]',' ',caption.lower(),flags=re.UNICODE)
+            caption = re.sub('[#]', ' #',caption,flags=re.UNICODE)
+            return filter(lambda x: x!='', caption.strip().split(' '))
+        elif lang=='ar':
+            try:
+                caption = re.sub('[#]', ' #',caption,flags=re.UNICODE)
+                return filter(lambda x: len(x)>1, Text(caption).words)
+            except:
+                traceback.print_exc()
+                return []
+        else:
+            return []
+
+    def extract_loc(self, caption):
+        try:
+            text = Text(caption)
+            ll = [u' '.join(list(x)) for x in filter(lambda x: x.tag=='I-LOC', text.entities)]
+            return set(ll)
+        except:
+            traceback.print_exc()
+            return set([])

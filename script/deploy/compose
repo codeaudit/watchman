@@ -7,7 +7,8 @@ trap abort ERR
 
 display_usage() {
   echo -e $"\n\tUsage: $0 {up|tail|(Compose COMMAND)} [Compose options]
-    \n\tDeploy: $0 up deploy [branch]"
+    \n\tDeploy: $0 up deploy [branch]
+    \n\tDeploy: $0 up deploy local"
   abort
 }
 
@@ -29,13 +30,18 @@ case "$1" in
     docker-compose $compose_files up -d
 
     if [ "$2" == "deploy" ]; then
-      old_branch=`git rev-parse --abbrev-ref HEAD`
-      new_branch=${3:-master}
-      echo $"⇨ Current branch is $old_branch. Switching to $new_branch ..."
-      git checkout $new_branch
-      git pull
-      script/deploy/slc-deploy.js
-      git checkout $old_branch
+      curr_branch=`git rev-parse --abbrev-ref HEAD`
+      if [ "$3" == "local" ]; then
+        echo $"⇨ Deploying from LOCAL branch: $curr_branch"
+        script/deploy/slc-deploy.js
+      else
+        new_branch=${3:-master}
+        echo $"⇨ Current branch is $curr_branch. Switching to $new_branch ..."
+        git checkout $new_branch
+        git pull
+        script/deploy/slc-deploy.js
+        git checkout $curr_branch
+      fi
     fi
     ;;
 

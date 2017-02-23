@@ -4,15 +4,16 @@
   "version": "1.0.0",
   "main": "server/server.js",
   "scripts": {
+    "postinstall": "npm run build",
     "pretest": "jshint .",
-    "predev": "npm install && bower install",
     "dev": "nodemon . -w server -w common -w lib --ext js,json",
-    "build": "bower install"
+    "build": "bower install && npm run build:env",
+    "build:env": "mkdir -p client/build && ./script/deploy/env.js > client/build/env.js"
   },
   "private": true,
   "engines": {
-    "node": "4.5.x",
-    "npm": "2.15.x"
+    "node": "6.9.x",
+    "npm": "3.10.x"
   },
   "dependencies": {
     "bluebird": "^3.4.1",
@@ -21,7 +22,6 @@
     "cors": "^2.5.2",
     "debug": "^2.2.0",
     "dotenv": "^2.0.0",
-    "elasticsearch": "^11.0.1",
     "extract-zip": "^1.5.0",
     "feedparser": "^1.1.4",
     "jade": "^1.11.0",
@@ -30,7 +30,7 @@
     "loopback": "^2.22.0",
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^2.1.0",
-    "loopback-connector-mongodb": "^1.13.3",
+    "loopback-connector-mongodb": "~1.15.0",
     "loopback-datasource-juggler": "^2.39.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.12.0",

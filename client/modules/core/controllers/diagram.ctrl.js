@@ -1,5 +1,7 @@
+'use strict';
+
 angular.module('com.module.core')
-  .controller('DiagramCtrl', DiagramCtrl);
+.controller('DiagramCtrl', DiagramCtrl);
 
 function DiagramCtrl($scope, PostsCluster, SocialMediaPost, $q) {
   $scope.clusterText = '';
@@ -13,19 +15,22 @@ function DiagramCtrl($scope, PostsCluster, SocialMediaPost, $q) {
           id: obj.id
         }
       }
-    }).$promise
-      .then(function(cluster) {
-        let viz = visualize(cluster);
+    })
+    .$promise
+    .then(function(cluster) {
+      let viz = visualize(cluster);
 
-        if (cluster.data_type === 'text'){
-          viz.forText();
-        } else if (cluster.data_type === 'hashtag'){
-          viz.forHashtags();
-        } else if (cluster.data_type === 'image'){
-          viz.forImages();
-        }
-      })
-      .catch(console.error);
+      if (cluster.data_type === 'text'){
+        viz.forText();
+      } else if (cluster.data_type === 'domain') {
+        viz.forDomains();
+      }else if (cluster.data_type === 'hashtag'){
+        viz.forHashtags();
+      } else if (cluster.data_type === 'image'){
+        viz.forImages();
+      }
+    })
+    .catch(console.error);
   };
 
   $scope.dateRangeSelected = function(start, end) {
@@ -50,14 +55,15 @@ function DiagramCtrl($scope, PostsCluster, SocialMediaPost, $q) {
       let similarPostIds = _(clusters).map('similar_post_ids')
         .flatten().compact().uniq().value();
 
-      let ids = _.sampleSize(similarPostIds, sampleSize);
+      similarPostIds = _.sampleSize(similarPostIds, sampleSize);
 
       return SocialMediaPost.find({
         filter: {
           where: {
-            post_id: { inq: ids },
+            post_id: { inq: similarPostIds },
             featurizer: dataType
-          }
+          },
+          fields: ['text', 'image_urls', 'hashtags', 'primary_image_url']
         }
       }).$promise;
     }
@@ -75,6 +81,13 @@ function DiagramCtrl($scope, PostsCluster, SocialMediaPost, $q) {
           $scope.showSpinner = false;
         })
         .catch(console.error);
+      },
+
+      forDomains() {
+        let terms = _(clusters).map('term')
+          .flatten().compact().value().join(', ');
+
+        $scope.clusterTerm = terms;
       },
 
       forHashtags() {
