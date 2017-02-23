@@ -111,7 +111,6 @@ class MutualInformation:
         n12 = len(self.word_pairs[term]['similar_post_ids'])
         return np.log2(float(n12*n_lang)/(n1*n2))
 
-
     def get_clusters(self):
         d0 = {}
         for k, vSim in self.word_pairs.iteritems():

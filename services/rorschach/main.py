@@ -101,11 +101,13 @@ def process_message(key, job):
             job['state'] = 'error'
             job['error'] = e
             break
-
-    print "Done Processing"
+        print "Done Processing"
     else: # no errors
-        job['data'] = hash_clust.to_json()
+        job['data'] = word_clust.to_json()
         job['state'] = 'processed'
+
+def truncate_posts(deletable_ids, loopy):
+    return loopy.post_result('/destroy', {'ids': deletable_ids})
 
 if __name__ == '__main__':
     dispatcher = Dispatcher(redis_host='redis', process_func=process_message,
