@@ -57,7 +57,14 @@ def process_message(key, job):
         "query_value": "null"
     }]
 
-    loopy = Loopy(query_url + 'socialMediaPosts', query_params)
+    if 'lang' in job:
+        query_params.append({
+            'query_type': 'where',
+            'property_name': 'lang',
+            'query_value': job['lang']
+        })
+
+    loopy = Loopy(query_url, query_params)
     if loopy.result_count == 0:
         print "No data to process"
         job['data'] = []
@@ -101,7 +108,6 @@ def process_message(key, job):
             job['state'] = 'error'
             job['error'] = e
             break
-        print "Done Processing"
     else: # no errors
         job['data'] = word_clust.to_json()
         job['state'] = 'processed'
@@ -111,5 +117,5 @@ def truncate_posts(deletable_ids, loopy):
 
 if __name__ == '__main__':
     dispatcher = Dispatcher(redis_host='redis', process_func=process_message,
-        queues=['genie:feature_txt', 'genie:cluster_txt'])
+        queues=['genie:feature_txt', 'genie:clust_txt'])
     dispatcher.start()
