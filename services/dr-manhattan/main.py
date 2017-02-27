@@ -92,12 +92,6 @@ def process_message(key,job):
     del edges_to_add
     del edges_to_remove
 
-    invalid_nodes.clear()
-    nodes_to_lookup.clear()
-    del nodes_to_add
-    del edges_to_add
-    del edges_to_remove
-
     print "Finding communities from {} nodes and {} edges.".format(len(com.graph.nodes()), len(com.graph.edges()))
     l_com = com.save_communities()
     if 'kafka_url' in job and 'kafka_topic' in job:
