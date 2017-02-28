@@ -5,7 +5,7 @@ from stop_words import get_stop_words
 
 class SentimentFilter:
     def __init__(self):
-        self.good_langs = ['en', 'ar']
+        self.good_langs = ['en', 'ar', 'ru']
         black_list = ['rt']
         self.stop = {'ar':set(get_stop_words('ar') + black_list), 'en':set(map(lambda x: re.sub('[^\w\s]', '', x, flags=re.UNICODE) ,get_stop_words('en')+black_list))}
 
@@ -14,9 +14,9 @@ class SentimentFilter:
         return self.good_langs
 
     def is_special(self, word):
-        if word[0]=='#' or word[0]=='@' or word[-1]=='#':
+        if word[0]=='#' or word[0]=='@' or word[-1]=='#' or word[-1]=='@':
             return True
-        return False
+        return word.isdigit()
 
     def is_url(self, word):
         if len(word) > 4 and (word[:4] == 'http' or word[:3] == 'www'):
@@ -35,7 +35,7 @@ class SentimentFilter:
         caption = re.sub('[\s]', ' ', caption.lower(), flags=re.UNICODE)
         if lang=='en':
             caption = re.sub('[^\w\s@#]','',caption,flags=re.UNICODE)
-            tokens = filter(lambda x: x!='', caption.strip().split(' '))
+            tokens = filter(lambda x: len(x) > 2, caption.strip().split(' '))
             if b_filter_special:
                 tokens = filter(lambda x: self.is_special(x) is not True, tokens)
             if b_filter_url:
@@ -45,14 +45,13 @@ class SentimentFilter:
             if b_unique:
                 return list(set(tokens))
             return tokens
-        elif lang=='ar':
+        elif lang=='ar' or lang=='ru':
             try:
                 if b_filter_special:
-                    caption = ' '.join(filter(lambda x: len(x) > 0 and x[0] !='#', caption.split(' ')))
-                tokens = Text(caption).words
+                    caption = ' '.join(filter(lambda x: self.is_special(x)==False, caption.split(' ')))
+                tokens = filter(lambda x: len(x)>1, Text(caption).words)
                 if b_filter_url:
                     tokens = filter(lambda x: self.is_url(x) is not True, tokens)
-                tokens = filter(lambda x: len(x)>1, tokens)
                 if b_remove_stop:
                     tokens = filter(lambda x: x not in self.stop[lang], tokens)
                 if b_unique:
