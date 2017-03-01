@@ -156,7 +156,7 @@ function EventsCtrl($scope, PostsCluster, SocialMediaPost, Event) {
       },
 
       forHashtags() {
-        $scope.hashtags = $scope.selectedEvent.hashtags.join(', ');
+        $scope.hashtags = $scope.selectedEvent.hashtags;
       },
 
       forImages() {
